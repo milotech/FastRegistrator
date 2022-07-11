@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32602.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastRegistrator.API", "FastRegistrator.API\FastRegistrator.API.csproj", "{F0182D5D-3E78-4209-A35C-0EC175BC8FC5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0182D5D-3E78-4209-A35C-0EC175BC8FC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0182D5D-3E78-4209-A35C-0EC175BC8FC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0182D5D-3E78-4209-A35C-0EC175BC8FC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0182D5D-3E78-4209-A35C-0EC175BC8FC5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FAF3991-073C-4410-96F3-EF4595DBE15C}
+	EndGlobalSection
+EndGlobal
