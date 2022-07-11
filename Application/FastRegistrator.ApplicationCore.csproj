@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-    <Folder Include="Common\" />
-    <Folder Include="Persistence\" />
-    <Folder Include="Logging\" />
+    <Folder Include="Behaviours\" />
+    <Folder Include="Entities\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Commands\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
 
 </Project>

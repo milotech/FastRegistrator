@@ -5,9 +5,9 @@ VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastRegistrator.API", "FastRegistrator.API\FastRegistrator.API.csproj", "{F0182D5D-3E78-4209-A35C-0EC175BC8FC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{51739978-5E12-49DA-B901-791500E56B02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastRegistrator.Infrastructure", "Infrastructure\FastRegistrator.Infrastructure.csproj", "{51739978-5E12-49DA-B901-791500E56B02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationCore", "Application\ApplicationCore.csproj", "{B66B052B-EF46-4F99-852E-43058F55F77E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastRegistrator.ApplicationCore", "Application\FastRegistrator.ApplicationCore.csproj", "{B66B052B-EF46-4F99-852E-43058F55F77E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
