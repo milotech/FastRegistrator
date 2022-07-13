@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Entities\" />
     <Folder Include="Interfaces\" />
-    <Folder Include="Commands\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
@@ -20,6 +19,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="Serilog" Version="2.11.0" />
+    <PackageReference Include="FluentValidation" Version="11.1.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.1.0" />
   </ItemGroup>
 
 </Project>
