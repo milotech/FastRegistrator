@@ -17,18 +17,15 @@ namespace FastRegistrator.Infrastructure.EventBus
     {
         private readonly IConnectionFactory _connectionFactory;
         private readonly ILogger<RabbitMqConnection> _logger;
-        private readonly int _retryCount;
         
         private IConnection? _connection;
         private bool _disposed;
+        private object _sync = new object();
 
-        object _sync = new object();
-
-        public RabbitMqConnection(IConnectionFactory connectionFactory, ILogger<RabbitMqConnection> logger, int retryCount = 5)
+        public RabbitMqConnection(IConnectionFactory connectionFactory, ILogger<RabbitMqConnection> logger)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _retryCount = retryCount;
         }
 
         public bool IsConnected
@@ -49,6 +46,39 @@ namespace FastRegistrator.Infrastructure.EventBus
             return _connection!.CreateModel();
         }
 
+        public void Connect()
+        {
+            lock (_sync)
+            {
+                if (_disposed)
+                    return;
+
+                if (!IsConnected)
+                {                    
+                    _logger.LogInformation("RabbitMQ Client trying to connect...");
+
+                    try
+                    {
+                        if (_connection != null)
+                            _connection.Dispose();
+
+                        _connection = _connectionFactory.CreateConnection();
+
+                        _connection.ConnectionShutdown += OnConnectionShutdown;
+                        _connection.CallbackException += OnCallbackException;
+                        _connection.ConnectionBlocked += OnConnectionBlocked;
+
+                        _logger.LogInformation("RabbitMQ Client acquired a connection to '{HostName}'", _connection.Endpoint.HostName);
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to open RabbitMQ connection. ");
+                        throw;
+                    }
+                }
+            }
+        }
+
         public void Dispose()
         {
             if (_disposed) return;
@@ -59,65 +89,21 @@ namespace FastRegistrator.Infrastructure.EventBus
             {
                 if (_connection != null)
                 {
+                    _logger.LogInformation("Close RabbitMQ connection");
+
                     _connection.ConnectionShutdown -= OnConnectionShutdown;
                     _connection.CallbackException -= OnCallbackException;
                     _connection.ConnectionBlocked -= OnConnectionBlocked;
+
+                    _connection.Close();
                     _connection.Dispose();
+                    _connection = null;
                 }
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
-                _logger.LogCritical(ex.ToString());
+                _logger.LogError(ex, "Error on closing the connection");
             }
-        }
-
-        public bool CheckConnection()
-        {
-            _logger.LogInformation("RabbitMQ Client checking connection...");
-
-            if (!IsConnected)
-            {
-                lock (_sync)
-                {
-                    if (!IsConnected)
-                    {
-                        _logger.LogInformation("RabbitMQ Client trying to connect...");
-
-                        var policy = RetryPolicy
-                            .Handle<SocketException>()
-                            .Or<BrokerUnreachableException>()
-                            .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
-                            {
-                                _logger.LogWarning(ex, "RabbitMQ Client could not connect after {TimeOut}s ({ExceptionMessage})", $"{time.TotalSeconds:n1}", ex.Message);
-                            }
-                        );
-
-                        policy.Execute(() =>
-                        {
-                            _connection = _connectionFactory.CreateConnection();
-                        });
-
-                        if (IsConnected)
-                        {
-                            _connection!.ConnectionShutdown += OnConnectionShutdown;
-                            _connection.CallbackException += OnCallbackException;
-                            _connection.ConnectionBlocked += OnConnectionBlocked;
-
-                            _logger.LogInformation("RabbitMQ Client acquired a persistent connection to '{HostName}' and is subscribed to failure events", _connection.Endpoint.HostName);
-
-                            return true;
-                        }
-                        else
-                        {
-                            _logger.LogCritical("FATAL ERROR: RabbitMQ connections could not be created and opened");
-
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            return true;
         }
 
         private void OnConnectionBlocked(object? sender, ConnectionBlockedEventArgs e)
@@ -126,7 +112,7 @@ namespace FastRegistrator.Infrastructure.EventBus
 
             _logger.LogWarning("A RabbitMQ connection is shutdown. Trying to re-connect...");
 
-            CheckConnection();
+            //CheckConnection();
         }
 
         void OnCallbackException(object? sender, CallbackExceptionEventArgs e)
@@ -135,7 +121,7 @@ namespace FastRegistrator.Infrastructure.EventBus
 
             _logger.LogWarning("A RabbitMQ connection throw exception. Trying to re-connect...");
 
-            CheckConnection();
+            //CheckConnection();
         }
 
         void OnConnectionShutdown(object? sender, ShutdownEventArgs reason)
@@ -144,7 +130,7 @@ namespace FastRegistrator.Infrastructure.EventBus
 
             _logger.LogWarning("A RabbitMQ connection is on shutdown. Trying to re-connect...");
 
-            CheckConnection();
+            //CheckConnection();
         }
     }
 }

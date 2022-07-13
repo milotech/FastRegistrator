@@ -8,6 +8,6 @@ namespace FastRegistrator.ApplicationCore.Interfaces
 {
     public interface IIntegrationEventsService
     {
-        void Publish(IIntegrationEvent @event);
+        void Publish(IIntegrationEvent integrationEvent);
     }
 }

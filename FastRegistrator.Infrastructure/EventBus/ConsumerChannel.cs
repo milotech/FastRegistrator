@@ -7,7 +7,7 @@ namespace FastRegistrator.Infrastructure.EventBus
 {
     internal delegate Task NewMessageHandler(string routingKey, string message);
 
-    internal class ConsumerChannel
+    internal class ConsumerChannel : IDisposable
     {
         private readonly RabbitMqConnection _connection;
         private readonly ILogger<ConsumerChannel> _logger;
@@ -17,9 +17,10 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         private IModel? _channel;
         private AsyncEventingBasicConsumer? _consumer;
+        private bool _disposed;
 
-        public string QueueName => _queueName;
-        public bool IsAlive => _channel != null && _channel.IsOpen
+        public bool IsAlive => !_disposed 
+                            && _channel != null && _channel.IsOpen
                             && _consumer != null && _consumer.IsRunning;
 
         public event NewMessageHandler? OnNewMessage;
@@ -36,32 +37,41 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         public void Open()
         {
-            _connection.CheckConnection();
-
             _logger.LogInformation("Creating RabbitMQ consumer channel");
-
+            
+            AsyncEventingBasicConsumer consumer;
             var channel = _connection.CreateChannel();
-            channel.BasicQos(0, 1, false);
-            channel.ExchangeDeclare(exchange: _exchangeName, type: ExchangeType.Direct, durable: true);
-            channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: false);
-            channel.QueueBind(queue: _queueName, exchange: _exchangeName, routingKey: _routingKey);
+            
+            try
+            {
+                channel.BasicQos(0, 1, false);
+                channel.ExchangeDeclare(exchange: _exchangeName, type: ExchangeType.Direct, durable: true);
+                channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: false);
+                channel.QueueBind(queue: _queueName, exchange: _exchangeName, routingKey: _routingKey);
 
-            var consumer = new AsyncEventingBasicConsumer(channel);
-            consumer.Received += Consumer_Received;
+                consumer = new AsyncEventingBasicConsumer(channel);
+                consumer.Received += Consumer_Received;
 
-            channel.BasicConsume(
-                queue: _queueName,
-                autoAck: false,
-                consumer: consumer);
+                channel.BasicConsume(
+                    queue: _queueName,
+                    autoAck: false,
+                    consumer: consumer);
+            }
+            catch
+            {
+                channel.Dispose();
+                throw;
+            }
 
             channel.CallbackException += (sender, ea) =>
             {
-                _logger.LogWarning(ea.Exception, "Model callback exception.");
+                _logger.LogWarning(ea.Exception, "Consumer channel callback exception.");
             };
 
-            channel.ModelShutdown += (sender, ea) =>
+            consumer.Shutdown += (sender, ea) =>
             {
-                _logger.LogInformation("Model shutdown. " + ea.ToString());
+                _logger.LogInformation("Consumer channel shutdown. " + ea.ToString());
+                return Task.CompletedTask;
             };
 
             consumer.ConsumerCancelled += (sender, ea) =>
@@ -115,6 +125,14 @@ namespace FastRegistrator.Infrastructure.EventBus
             }
             
             _channel!.BasicAck(eventArgs.DeliveryTag, multiple: false);
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+
+            Close();
         }
     }
 }

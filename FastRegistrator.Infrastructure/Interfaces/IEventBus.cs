@@ -9,7 +9,8 @@ namespace FastRegistrator.Infrastructure.Interfaces
 {
     public interface IEventBus : IIntegrationEventsService
     {
-        void Subscribe<T, TH>(int consumersCount = 1)
+        // TODO: specify number of consumer instances for parallel processing an events queue
+        void Subscribe<T, TH>()
             where T : IIntegrationEvent
             where TH : IIntegrationEventHandler<T>;
 

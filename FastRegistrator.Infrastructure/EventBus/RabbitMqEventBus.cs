@@ -1,16 +1,24 @@
-﻿using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.ApplicationCore.Exceptions;
+using FastRegistrator.ApplicationCore.Interfaces;
 using FastRegistrator.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FastRegistrator.Infrastructure.EventBus
 {
+    // TODO: background worker for reopenning connection and consumers
+    // TODO: publisher channels pool or single thread-safe publisher
+    //       or pool of messages to publish with single sequential publisher
+    // TODO: publisher confirms
+
     public class RabbitMqEventBus : IEventBus, IDisposable
     {
         private record EventConfiguration(string ExchangeName, string RoutingKey);
@@ -20,10 +28,10 @@ namespace FastRegistrator.Infrastructure.EventBus
         private readonly IServiceProvider _serviceProvider;
 
         private Dictionary<Type, EventConfiguration> _eventConfigurations = new();
-        private Dictionary<Type, Subscription> _subscriptions = new();        
+        private Dictionary<Type, Subscription> _subscriptions = new();
 
         public RabbitMqEventBus(RabbitMqConnection connection, ILogger<RabbitMqEventBus> logger,
-            IServiceProvider serviceProvider, int retryCount = 5)
+            IServiceProvider serviceProvider)
         {
             _connection = connection;
             _logger = logger;
@@ -41,12 +49,29 @@ namespace FastRegistrator.Infrastructure.EventBus
             _eventConfigurations.Add(eventType, new EventConfiguration(exchangeName, routingKey));
         }
 
-        public void Publish(IIntegrationEvent @event)
+        public void Publish(IIntegrationEvent integrationEvent)
         {
-            _connection.CheckConnection();
+            Type eventType = integrationEvent.GetType();
+
+            if (!_eventConfigurations.ContainsKey(eventType))
+                throw new ArgumentException($"Event Type {eventType.Name} not configured");
+
+            var eventConfig = _eventConfigurations[eventType];
+
+            if (!_connection.IsConnected)
+                _connection.Connect();
+
+            var message = JsonSerializer.SerializeToUtf8Bytes(integrationEvent);
+
+            using var publisher = new PublisherChannel(_connection,
+                _serviceProvider.GetRequiredService<ILogger<PublisherChannel>>()
+            );
+
+            publisher.Open();
+            publisher.Publish(eventConfig.ExchangeName, eventConfig.RoutingKey, message);
         }
 
-        public void Subscribe<T, TH>(int consumersCount = 1)
+        public void Subscribe<T, TH>()
             where T : IIntegrationEvent
             where TH : IIntegrationEventHandler<T>
         {
@@ -55,6 +80,9 @@ namespace FastRegistrator.Infrastructure.EventBus
 
             if(!_eventConfigurations.ContainsKey(eventType))
                 throw new ArgumentException($"Event Type {eventType.Name} not configured");
+
+            if (!_connection.IsConnected)
+                _connection.Connect();
 
             var eventConfig = _eventConfigurations[eventType];
 
@@ -89,7 +117,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                 _subscriptions[eventType].HandlerTypes.Remove(handlerType);
                 if (_subscriptions[eventType].HandlerTypes.Count == 0)
                 {
-                    _subscriptions[eventType].Consumer.Close();
+                    _subscriptions[eventType].Consumer.Dispose();
                     _subscriptions.Remove(eventType);
                 }
             }           
@@ -98,8 +126,9 @@ namespace FastRegistrator.Infrastructure.EventBus
         public void Dispose()
         {
             foreach (var subscription in _subscriptions.Values)
-                subscription.Consumer.Close();
+                subscription.Consumer.Dispose();
 
+            _connection.Dispose();
             _subscriptions.Clear();
         }
 
