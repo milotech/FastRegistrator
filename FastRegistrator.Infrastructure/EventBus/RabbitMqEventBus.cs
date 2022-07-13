@@ -123,8 +123,8 @@ namespace FastRegistrator.Infrastructure.EventBus
                     foreach (Type handlerType in subscription.HandlerTypes)
                     {
                         var handler = ActivatorUtilities.CreateInstance(scope.ServiceProvider, handlerType);
-                        await Task.Yield();
                         var handleMethod = handlerType.GetMethod("Handle");
+                        await Task.Yield();
                         await (Task)handleMethod!.Invoke(handler, new object[] { integrationEvent })!;
                     }
                 }
