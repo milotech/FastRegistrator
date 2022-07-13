@@ -38,13 +38,20 @@ namespace FastRegistrator.Infrastructure.EventBus
             _serviceProvider = serviceProvider;
         }
 
-        public void ConfigureEvent<T>(string exchangeName, string routingKey)
+        /// <summary>
+        /// Binds IntegrationEvent type with RabbitMq Exchange name and optonally with routing key.
+        /// If routing key is not specified, it will be taken from IntegrationEvent type name.
+        /// </summary>        
+        public void ConfigureEvent<T>(string exchangeName, string? routingKey = null)
             where T : IIntegrationEvent
         {
             Type eventType = typeof(T);
 
             if (_eventConfigurations.ContainsKey(eventType))
                 throw new ArgumentException($"Event Type {eventType.Name} already configured");
+
+            if (routingKey is null)
+                routingKey = eventType.Name;
 
             _eventConfigurations.Add(eventType, new EventConfiguration(exchangeName, routingKey));
         }
@@ -88,13 +95,13 @@ namespace FastRegistrator.Infrastructure.EventBus
 
             if (!_subscriptions.ContainsKey(eventType))
             {
-                var queueName = eventType.Name;
-
                 var consumerLogger = _serviceProvider.GetRequiredService<ILogger<ConsumerChannel>>();
                 var consumerChannel = new ConsumerChannel(_connection, consumerLogger,
-                    eventConfig.ExchangeName, eventConfig.RoutingKey, queueName);
+                    eventType, eventConfig.ExchangeName, eventConfig.RoutingKey);
 
-                consumerChannel.Open();
+                consumerChannel.OnNewEvent += OnNewMessage;
+
+                consumerChannel.Open();                
 
                 var subscription = new Subscription(consumerChannel, handlerType);
                 _subscriptions.Add(eventType, subscription);
@@ -103,6 +110,29 @@ namespace FastRegistrator.Infrastructure.EventBus
                 _subscriptions[eventType].HandlerTypes.Add(handlerType);
 
             _logger.LogInformation($"Added {handlerType.Name} for {eventType.Name}");
+        }
+
+        private async Task OnNewMessage(IIntegrationEvent integrationEvent)
+        {
+            Type eventType = integrationEvent.GetType();
+
+            if(_subscriptions.TryGetValue(eventType, out Subscription? subscription))
+            {
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    foreach (Type handlerType in subscription.HandlerTypes)
+                    {
+                        var handler = ActivatorUtilities.CreateInstance(scope.ServiceProvider, handlerType);
+                        await Task.Yield();
+                        var handleMethod = handlerType.GetMethod("Handle");
+                        await (Task)handleMethod!.Invoke(handler, new object[] { integrationEvent })!;
+                    }
+                }
+            }
+            else
+            {
+                _logger.LogWarning($"No subscription for '{eventType.Name}'");
+            }
         }
 
         public void Unsubscribe<T, TH>()
@@ -131,6 +161,5 @@ namespace FastRegistrator.Infrastructure.EventBus
             _connection.Dispose();
             _subscriptions.Clear();
         }
-
     }
 }

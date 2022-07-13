@@ -1,16 +1,19 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FastRegistrator.ApplicationCore.Interfaces;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using System.Text.Json;
 
 namespace FastRegistrator.Infrastructure.EventBus
 {
-    internal delegate Task NewMessageHandler(string routingKey, string message);
+    internal delegate Task NewEventHandler(IIntegrationEvent integrationEvent);
 
     internal class ConsumerChannel : IDisposable
     {
         private readonly RabbitMqConnection _connection;
         private readonly ILogger<ConsumerChannel> _logger;
+        private readonly Type _eventType;
         private readonly string _exchangeName;
         private readonly string _routingKey;
         private readonly string _queueName;
@@ -23,16 +26,27 @@ namespace FastRegistrator.Infrastructure.EventBus
                             && _channel != null && _channel.IsOpen
                             && _consumer != null && _consumer.IsRunning;
 
-        public event NewMessageHandler? OnNewMessage;
+        public event NewEventHandler? OnNewEvent;
 
         public ConsumerChannel(RabbitMqConnection connection, ILogger<ConsumerChannel> logger,
-            string exchangeName, string routingKey, string queueName)
+            Type eventType, string exchangeName, string routingKey)
         {
+            if (!eventType.IsInstanceOfType(typeof(IIntegrationEvent)))
+            {
+                throw new ArgumentException(
+                    $"eventType:{eventType.Name} is not an implementation of IIntegrationEvent interface"
+                );
+            }
+
             _connection = connection;
             _logger = logger;
+            _eventType = eventType;
             _exchangeName = exchangeName;
             _routingKey = routingKey;
-            _queueName = queueName;
+
+            _queueName = eventType.Name;
+            if (_queueName.EndsWith("Event"))
+                _queueName += "s";
         }
 
         public void Open()
@@ -114,10 +128,20 @@ namespace FastRegistrator.Infrastructure.EventBus
 
             try
             {
-                if (OnNewMessage != null)
+                if (OnNewEvent != null)
                 {
-                    await OnNewMessage(routingKey, message);
+                    var integrationEvent = JsonSerializer.Deserialize(message, _eventType) as IIntegrationEvent;
+                    if (integrationEvent is null)
+                    {
+                        _logger.LogWarning($"Received message that can't be deserialized to {_eventType.Name}. Message: {message}");
+                    }
+                    else
+                    {
+                        await OnNewEvent(integrationEvent);
+                    }
                 }
+                else
+                    _logger.LogWarning("OnNewEvent event handler is not set, message will be lost");
             }
             catch (Exception ex)
             {
