@@ -1,37 +1,56 @@
-using FastRegistrator.Infrastructure;
-
 using FastRegistrator.ApplicationCore;
+using FastRegistrator.Infrastructure;
 using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Add services to the container.
+Log.Information("Starting the FastRegistrator Service...");
 
-builder.Host.UseSerilog((context, loggerConfig) => loggerConfig
-        .ReadFrom.Configuration(context.Configuration)
-        .WriteTo.Console()
-    );
+try
+{ 
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddApplicationServices();
+    // Add services to the container.
 
-builder.Services.AddSwaggerGen(x => {
-    x.CustomSchemaIds(i => i.FullName);
-});
-builder.Services.AddInfrastructureServices(builder.Configuration);
+    builder.Host.UseSerilog((context, loggerConfig) => loggerConfig
+            .ReadFrom.Configuration(context.Configuration)
+            .WriteTo.Console()
+        );
 
-var app = builder.Build();
+    builder.Services.AddControllers();
+    builder.Services.AddApplicationServices();
+    builder.Services.AddInfrastructureServices(builder.Configuration);
 
-// Configure the HTTP request pipeline. 
+    builder.Services.AddSwaggerGen(x => {
+        x.CustomSchemaIds(i => i.FullName);
+    });
 
-app.UseSwagger();
-app.UseSwaggerUI();
+    var app = builder.Build();
 
-app.UseHttpsRedirection();
+    // Configure the HTTP request pipeline. 
 
-app.UseSerilogRequestLogging();
-app.UseAuthorization();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
-app.MapControllers();
+    app.UseHttpsRedirection();
 
-app.Run();
+    app.UseSerilogRequestLogging();
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.UseEventBus();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Unhandled exception");
+}
+finally
+{
+    Log.Information("FastRegistrator stopped");
+    Log.CloseAndFlush();
+}

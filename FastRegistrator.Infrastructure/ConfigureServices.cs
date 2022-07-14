@@ -1,6 +1,4 @@
-﻿using FastRegistrator.Infrastructure.EventBus;
-using FastRegistrator.Infrastructure.Options;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -16,12 +14,10 @@ namespace FastRegistrator.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<EventBusConnectionSettings>(configuration.GetSection("EventBus"));
-            services.AddSingleton<RabbitMqConnection>();
-            services.AddSingleton<RabbitMqEventBus>();
+            services.RegisterEventBus(configuration);
 
             return services;
-        }
+        }        
 
     }
 }
