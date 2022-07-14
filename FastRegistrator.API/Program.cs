@@ -16,7 +16,7 @@ try
 
     builder.Host.UseSerilog((context, loggerConfig) => loggerConfig
             .ReadFrom.Configuration(context.Configuration)
-            .WriteTo.Console()
+            .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}")
         );
 
     builder.Services.AddControllers();

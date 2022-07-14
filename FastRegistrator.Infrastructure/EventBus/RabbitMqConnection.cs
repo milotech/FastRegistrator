@@ -146,6 +146,11 @@ namespace FastRegistrator.Infrastructure.EventBus
             if (settings.Ssl)
                 factory.Ssl = new SslOption() { Enabled = true, CertificateValidationCallback = (sender, cert, chain, errors) => true };
 
+            if(!string.IsNullOrEmpty(settings.VirtualHost))
+            {
+                factory.VirtualHost = settings.VirtualHost;
+            }
+
             if (!string.IsNullOrEmpty(settings.User))
             {
                 factory.UserName = settings.User;
