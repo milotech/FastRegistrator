@@ -1,3 +1,5 @@
+using FastRegistrator.Infrastructure;
+
 using FastRegistrator.ApplicationCore;
 using Serilog;
 
@@ -16,6 +18,7 @@ builder.Services.AddApplicationServices();
 builder.Services.AddSwaggerGen(x => {
     x.CustomSchemaIds(i => i.FullName);
 });
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 

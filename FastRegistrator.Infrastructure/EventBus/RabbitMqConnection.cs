@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using FastRegistrator.Infrastructure.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Retry;
 using RabbitMQ.Client;
@@ -22,10 +24,10 @@ namespace FastRegistrator.Infrastructure.EventBus
         private bool _disposed;
         private object _sync = new object();
 
-        public RabbitMqConnection(IConnectionFactory connectionFactory, ILogger<RabbitMqConnection> logger)
+        public RabbitMqConnection(IOptions<EventBusConnectionSettings> settings, ILogger<RabbitMqConnection> logger)
         {
-            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _connectionFactory = CreateConnectionFactory(settings.Value);
         }
 
         public bool IsConnected
@@ -115,7 +117,7 @@ namespace FastRegistrator.Infrastructure.EventBus
             //CheckConnection();
         }
 
-        void OnCallbackException(object? sender, CallbackExceptionEventArgs e)
+        private void OnCallbackException(object? sender, CallbackExceptionEventArgs e)
         {
             if (_disposed) return;
 
@@ -124,13 +126,37 @@ namespace FastRegistrator.Infrastructure.EventBus
             //CheckConnection();
         }
 
-        void OnConnectionShutdown(object? sender, ShutdownEventArgs reason)
+        private void OnConnectionShutdown(object? sender, ShutdownEventArgs reason)
         {
             if (_disposed) return;
 
             _logger.LogWarning("A RabbitMQ connection is on shutdown. Trying to re-connect...");
 
             //CheckConnection();
+        }
+
+        private static IConnectionFactory CreateConnectionFactory(EventBusConnectionSettings settings)
+        {
+            var factory = new ConnectionFactory()
+            {
+                HostName = settings.Host,
+                DispatchConsumersAsync = true,
+            };
+
+            if (settings.Ssl)
+                factory.Ssl = new SslOption() { Enabled = true, CertificateValidationCallback = (sender, cert, chain, errors) => true };
+
+            if (!string.IsNullOrEmpty(settings.User))
+            {
+                factory.UserName = settings.User;
+            }
+
+            if (!string.IsNullOrEmpty(settings.Password))
+            {
+                factory.Password = settings.Password;
+            }
+
+            return factory;
         }
     }
 }
