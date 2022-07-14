@@ -11,11 +11,18 @@ builder.Host.UseSerilog((context, loggerConfig) => loggerConfig
     );
 
 builder.Services.AddControllers();
-builder.Services.AddAplicationServices();
+builder.Services.AddApplicationServices();
+
+builder.Services.AddSwaggerGen(x => {
+    x.CustomSchemaIds(i => i.FullName);
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline. 
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
