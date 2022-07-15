@@ -69,14 +69,11 @@ namespace FastRegistrator.Infrastructure.EventBus
             if (_channel != null)
             {
                 try
-                {
-                    if (_channel != null)
-                    {
-                        if (_channel.IsOpen)
-                            _channel.Close();
-                        _channel.Dispose();
-                        _channel = null;
-                    }
+                {                    
+                    if (_channel.IsOpen)
+                        _channel.Close();
+                    _channel.Dispose();
+                    _channel = null;
                 }
                 catch (Exception ex)
                 {

@@ -50,11 +50,11 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         public void Connect()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Connection disposed");
+
             lock (_sync)
             {
-                if (_disposed)
-                    return;
-
                 if (!IsConnected)
                 {                    
                     _logger.LogInformation("RabbitMQ Client trying to connect...");
