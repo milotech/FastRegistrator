@@ -2,8 +2,9 @@
 {
     public class PersonData
     {
+        public int Id { get; set; }
         public int PersonId { get; set; }
-        public Person Person { get; set; }
+        public Person Person { get; set; } = new Person();
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
