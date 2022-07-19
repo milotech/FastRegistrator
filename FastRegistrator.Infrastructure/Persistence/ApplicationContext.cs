@@ -1,9 +1,10 @@
 ﻿using FastRegistrator.ApplicationCore.Domain.Entities;
+using FastRegistrator.ApplicationCore.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace FastRegistrator.ApplicationCore
+namespace FastRegistrator.Infrastructure.Persistence
 {
-    public partial class ApplicationContext : DbContext
+    public partial class ApplicationContext : DbContext, IApplicationDbContext
     {
         public ApplicationContext()
         { }
