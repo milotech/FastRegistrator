@@ -4,7 +4,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckUserByMobilePhone
 {
     public record class CheckUserByMobilePhoneCommand : IRequest<bool>
     {
-        public string? MobilePhone { get; init; }
+        public string MobilePhone { get; init; } = null!;
     }
 
     public class CheckUserByMobilePhoneCommandHandler : IRequestHandler<CheckUserByMobilePhoneCommand, bool>

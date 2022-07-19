@@ -9,8 +9,8 @@ namespace FastRegistrator.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Person> builder) 
         {
             builder.HasOne(p => p.PersonData)
-                   .WithOne(p => p.Person)
-                   .HasForeignKey<PersonData>(p => p.PersonId);
+                   .WithOne()
+                   .HasForeignKey<PersonData>(p => p.Id);
         }
     }
 }

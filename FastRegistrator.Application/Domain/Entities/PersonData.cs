@@ -1,16 +1,18 @@
-﻿namespace FastRegistrator.ApplicationCore.Domain.Entities
+﻿using FastRegistrator.ApplicationCore.Domain.ValueObjects;
+
+namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class PersonData
+    public class PersonData : BaseEntity
     {
-        public int Id { get; set; }
-        public int PersonId { get; set; }
-        public Person Person { get; set; } = new Person();
-        public string? FirstName { get; set; }
-        public string? MiddleName { get; set; }
-        public string? LastName { get; set; }
-        public string? PassportNumber { get; set; }
-        public DateTime? IssuedDate { get; set; }
-        public DateTime? IssuedBy { get; set; }
-        public string? Snils { get; set; }
+        public PersonName Name { get; private set; }
+        public Passport Passport { get; private set; }
+        public string Snils { get; private set; }
+
+        public PersonData(PersonName name, Passport passport, string snils)
+        {
+            Name = name;
+            Passport = passport;
+            Snils = snils;
+        }
     }
 }

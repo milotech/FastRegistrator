@@ -1,9 +1,35 @@
-﻿namespace FastRegistrator.ApplicationCore.Domain.Entities
+﻿using FastRegistrator.ApplicationCore.Domain.Enums;
+
+namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class Person
+    public class Person: BaseEntity
     {
-        public int Id { get; set; }
-        public string PhoneNumber { get; set; }
-        public PersonData? PersonData { get; set; }
+        private List<StatusHistoryItem> _history = new ();
+
+        public string PhoneNumber { get; private set; }
+        public PersonData? PersonData { get; private set; }
+
+        public IReadOnlyCollection<StatusHistoryItem> StatusHistory => _history;
+
+        public Person(string phoneNumber)
+        {
+            PhoneNumber = phoneNumber;
+        }
+
+        public void SetESIAApproved(PersonData data)
+        {
+            PersonData = data;
+
+            var statusHistoryItem = new StatusHistoryItem(PersonStatus.ESIAApproved);
+            _history.Add(statusHistoryItem);
+        }
+
+        public void SetPrizmaCheckResult(PrizmaCheckResult checkResult)
+        {
+            var historyItem = StatusHistoryItem.FromPrizmaCheckResult(checkResult);
+            _history.Add(historyItem);
+        }
+
+
     }
 }
