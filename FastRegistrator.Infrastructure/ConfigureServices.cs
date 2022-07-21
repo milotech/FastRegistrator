@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using FastRegistrator.ApplicationCore.Interfaces;
+using FastRegistrator.Infrastructure.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -15,6 +17,7 @@ namespace FastRegistrator.Infrastructure
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.RegisterEventBus(configuration);
+            services.AddSingleton<IDateTime, DateTimeService>();
 
             return services;
         }        
