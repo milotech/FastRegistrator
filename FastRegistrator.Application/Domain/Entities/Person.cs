@@ -17,10 +17,8 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
             PhoneNumber = phoneNumber;
         }
 
-        public void SetESIANotApproved(PersonData data)
+        public void SetESIANotApproved()
         {
-            PersonData = data;
-
             AddStatusToHistory(PersonStatus.ESIANotApproved);
         }
 
@@ -31,17 +29,15 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
             AddStatusToHistory(PersonStatus.ESIAApproved);
         }
 
-        public void SetPersonRejected(PersonData data, PersonFormData personFormData)
+        public void SetPersonRejected(PersonFormData personFormData)
         {
-            PersonData = data;
             PersonFormData = personFormData;
 
             AddStatusToHistory(PersonStatus.PersonRejected);
         }
 
-        public void SetClientFilledApplication(PersonData data, PersonFormData personFormData) 
+        public void SetClientFilledApplication(PersonFormData personFormData) 
         {
-            PersonData = data;
             PersonFormData = personFormData;
 
             AddStatusToHistory(PersonStatus.ClientFilledApplication);
@@ -49,10 +45,13 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
 
         public void SetPrizmaCheckInProgress()
             => AddStatusToHistory(PersonStatus.PrizmaCheckInProgress);
-        
+
 
         public void SetPrizmaCheckResult(PrizmaCheckResult checkResult)
-            => SetPrizmaFromCheckResult(checkResult);
+        {
+            var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckResult(checkResult);
+            _history.Add(statusHistoryItem);
+        }
 
         public void SetClientReadyForRegistration()
             => AddStatusToHistory(PersonStatus.ClientReadyForRegistration);
@@ -65,13 +64,6 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         public void SetAccountClosed()
             => AddStatusToHistory(PersonStatus.AccountClosed);
         
-
-        private void SetPrizmaFromCheckResult(PrizmaCheckResult checkResult)
-        {
-            var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckResult(checkResult);
-            _history.Add(statusHistoryItem);
-        }
-
         private void AddStatusToHistory(PersonStatus status) 
         {
             var statusHistoryItem = new StatusHistoryItem(status);
