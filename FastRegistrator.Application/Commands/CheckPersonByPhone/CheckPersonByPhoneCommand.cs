@@ -33,26 +33,28 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPersonByPhone
             DateTime now = _dtService.UtcNow.Date;
             DateTime minDt = now.AddMonths(-6);
 
-            var checkResult = await _dbContext.Persons
+            var query = _dbContext.Persons
                 .Where(p => p.PhoneNumber == request.PhoneNumber)
                 .Select(p => new
                 {
                     LastStatus = p.StatusHistory.OrderByDescending(shi => shi.StatusDT).FirstOrDefault(),
                     PrizmaRejected = p.StatusHistory.Any(shi =>
                         shi.Status == PersonStatus.PrizmaCheckRejected && shi.StatusDT >= minDt)
-                })
+                });
+
+            var checkResult = await query
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (checkResult != null)
             {
                 if (checkResult.PrizmaRejected || checkResult.LastStatus?.Status == PersonStatus.AccountOpened)
                 {
-                    _logger.LogInformation("Клиент не может быть зарегистрирован");
+                    _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' can be registered");
                     return false;
                 }
             }
 
-            _logger.LogInformation("Клиент может быть зарегистрирован");
+            _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' can't be registered");
             return true;
         }
     }
