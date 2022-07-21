@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.Domain.Entities
+﻿namespace FastRegistrator.ApplicationCore.Domain.ValueObjects.PersonFormSections
 {
     public class BankDetail
     {

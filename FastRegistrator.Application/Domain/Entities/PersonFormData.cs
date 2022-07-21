@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Domain.ValueObjects;
+﻿using FastRegistrator.ApplicationCore.Domain.ValueObjects.PersonFormSections;
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {

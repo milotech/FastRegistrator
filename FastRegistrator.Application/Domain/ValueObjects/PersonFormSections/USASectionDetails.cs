@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.Domain.ValueObjects
+﻿namespace FastRegistrator.ApplicationCore.Domain.ValueObjects.PersonFormSections
 {
     public class USASectionDetails
     {
