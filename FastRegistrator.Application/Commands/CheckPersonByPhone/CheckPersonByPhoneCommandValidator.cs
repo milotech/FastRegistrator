@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
 using System.Text.RegularExpressions;
 
-namespace FastRegistrator.ApplicationCore.Commands.CheckUserByMobilePhone
+namespace FastRegistrator.ApplicationCore.Commands.CheckPersonByPhone
 {
-    public class CheckUserByMobilePhoneCommandValidator : AbstractValidator<CheckUserByMobilePhoneCommand>
+    public class CheckPersonByPhoneCommandValidator : AbstractValidator<CheckPersonByPhoneCommand>
     {
-        public CheckUserByMobilePhoneCommandValidator() 
+        public CheckPersonByPhoneCommandValidator() 
         {
-            Transform(x => x.MobilePhone, RemoveAllRedundantSymbols)
+            Transform(x => x.PhoneNumber, RemoveAllRedundantSymbols)
                 .NotEmpty().WithMessage("Mobile phone is empty.")
                 .Matches(@"(7|8)\d{10}").WithMessage("Mobile phone has wrong format.");
         }
