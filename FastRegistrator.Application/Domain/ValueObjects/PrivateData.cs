@@ -8,11 +8,11 @@
         public Passport? Passport { get; private set; }
         public string? RegistryAddress { get; private set; }
         public string? ResidentiaAddress { get; private set; } 
-        public string Phone { get; private set; } = null!;
+        public string? Phone { get; private set; } = null!;
         public string? Fax { get; private set; }
         public string? Email { get; private set; }
 
-        public PrivateData(DateTime? birthDate, string? placeOfBirth, string? identityDocument, Passport? passport, string? registryAddress, string? residentiaAddress, string phone, string? fax, string? email)
+        public PrivateData(DateTime? birthDate, string? placeOfBirth, string? identityDocument, Passport? passport, string? registryAddress, string? residentiaAddress, string? phone, string? fax, string? email)
         {
             BirthDate = birthDate;
             PlaceOfBirth = placeOfBirth;
