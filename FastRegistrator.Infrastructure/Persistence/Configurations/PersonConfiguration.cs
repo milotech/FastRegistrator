@@ -11,6 +11,12 @@ namespace FastRegistrator.Infrastructure.Persistence.Configurations
             builder.HasOne(p => p.PersonData)
                    .WithOne()
                    .HasForeignKey<PersonData>(p => p.Id);
+
+            builder.HasMany(p => p.StatusHistory)
+                   .WithOne()
+                   .HasForeignKey("PersonId");
+
+            builder.Ignore(p => p.PersonFormData);
         }
     }
 }
