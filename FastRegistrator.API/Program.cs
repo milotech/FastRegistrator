@@ -1,4 +1,5 @@
 using FastRegistrator.ApplicationCore;
+using FastRegistrator.Infrastructure;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Host.UseSerilog((context, loggerConfig) => loggerConfig
 
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddSwaggerGen(x => {
     x.CustomSchemaIds(i => i.FullName);
