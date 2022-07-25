@@ -34,7 +34,6 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved
                 _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' exists in database and not approved by ESIA");
                 _logger.LogError(request.Error);
                 person.SetESIANotApproved();
-                await _dbContext.SaveChangesAsync();
             }
             else
             {
@@ -43,8 +42,9 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved
                 var newPerson = new Person(request.PhoneNumber);
                 newPerson.SetESIANotApproved();
                 _dbContext.Persons.Add(newPerson);
-                await _dbContext.SaveChangesAsync();
             }
+
+            await _dbContext.SaveChangesAsync();
 
             return Unit.Value;
         }
