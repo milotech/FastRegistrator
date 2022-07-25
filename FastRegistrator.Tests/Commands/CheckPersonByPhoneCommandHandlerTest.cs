@@ -2,7 +2,6 @@
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
 using FastRegistrator.ApplicationCore.Interfaces;
-using FastRegistrator.Infrastructure.Persistence;
 using Moq;
 using Microsoft.Extensions.Logging;
 
@@ -13,14 +12,14 @@ namespace FastRegistrator.Tests.Commands
         [Fact]
         public async Task Handle_PersonDoesNotExist_ReturnsCanBeRegistered()
         {
-            const string PERSON_PHONE_NUMBER = "+79157872577";
+            const string PERSON_PHONE_NUMBER = "+79999999999";
 
             // Arrange
 
             var logger = new Mock<ILogger<CheckPersonByPhoneCommandHandler>>();
             var dtService = GetDateTimeService();
 
-            using ApplicationDbContext context = CreateDbContext();
+            using var context = CreateDbContext();
 
             // Act
             var handler = new CheckPersonByPhoneCommandHandler(context, dtService, logger.Object);
@@ -33,7 +32,7 @@ namespace FastRegistrator.Tests.Commands
         [Fact]
         public async Task Handle_PrizmaRejected_MoreThanSixMonth_ReturnsCanBeRegistered()
         {
-            const string PERSON_PHONE_NUMBER = "+79157872577";
+            const string PERSON_PHONE_NUMBER = "+79999999999";
             const string PRIZMA_RESPONSE_JSON = "{}";
 
             // Arrange
@@ -41,10 +40,10 @@ namespace FastRegistrator.Tests.Commands
             var logger = new Mock<ILogger<CheckPersonByPhoneCommandHandler>>();
             var dtService = GetDateTimeService((dt) => dt.AddMonths(6).AddDays(1));
 
-            using ApplicationDbContext context = CreateDbContext();
+            using var context = CreateDbContext();
 
-            Person person = new Person(PERSON_PHONE_NUMBER);
-            PrizmaCheckResult rejectedPrizmaCheck = new PrizmaCheckResult(RejectionReason.BlackListed, PRIZMA_RESPONSE_JSON);
+            var person = new Person(PERSON_PHONE_NUMBER);
+            var rejectedPrizmaCheck = new PrizmaCheckResult(RejectionReason.BlackListed, PRIZMA_RESPONSE_JSON);
             person.SetPrizmaCheckResult(rejectedPrizmaCheck);
             context.Persons.Add(person);
 
@@ -61,7 +60,7 @@ namespace FastRegistrator.Tests.Commands
         [Fact]
         public async Task Handle_PrizmaRejected_LessThanSixMonth_ReturnsCanNotBeRegistered()
         {
-            const string PERSON_PHONE_NUMBER = "+79157872577";
+            const string PERSON_PHONE_NUMBER = "+79999999999";
             const string PRIZMA_RESPONSE_JSON = "{}";
 
             // Arrange
@@ -69,10 +68,10 @@ namespace FastRegistrator.Tests.Commands
             var logger = new Mock<ILogger<CheckPersonByPhoneCommandHandler>>();
             var dtService = GetDateTimeService((dt) => dt.AddMonths(6).AddDays(-1));
 
-            using ApplicationDbContext context = CreateDbContext();
+            using var context = CreateDbContext();
 
-            Person person = new Person(PERSON_PHONE_NUMBER);
-            PrizmaCheckResult rejectedPrizmaCheck = new PrizmaCheckResult(RejectionReason.BlackListed, PRIZMA_RESPONSE_JSON);
+            var person = new Person(PERSON_PHONE_NUMBER);
+            var rejectedPrizmaCheck = new PrizmaCheckResult(RejectionReason.BlackListed, PRIZMA_RESPONSE_JSON);
             person.SetPrizmaCheckResult(rejectedPrizmaCheck);
             context.Persons.Add(person);
 
@@ -89,16 +88,16 @@ namespace FastRegistrator.Tests.Commands
         [Fact]
         public async Task Handle_AccountOpened_ReturnsCanNotBeRegistered()
         {
-            const string PERSON_PHONE_NUMBER = "+79157872577";
+            const string PERSON_PHONE_NUMBER = "+79999999999";
 
             // Arrange
 
             var logger = new Mock<ILogger<CheckPersonByPhoneCommandHandler>>();
             var dtService = GetDateTimeService((dt) => dt.AddMonths(6).AddDays(-1));
 
-            using ApplicationDbContext context = CreateDbContext();
+            using var context = CreateDbContext();
 
-            Person person = new Person(PERSON_PHONE_NUMBER);
+            var person = new Person(PERSON_PHONE_NUMBER);
             person.SetAccountOpened();
             context.Persons.Add(person);
 
