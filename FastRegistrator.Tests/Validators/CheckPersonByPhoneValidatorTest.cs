@@ -44,7 +44,7 @@ namespace FastRegistrator.Tests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
-                  .WithErrorMessage("Mobile phone is empty.");
+                  .WithErrorMessage(CheckPersonByPhoneCommandValidator.MobilePhoneIsEmpty);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace FastRegistrator.Tests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
-                  .WithErrorMessage("Mobile phone has wrong format.");
+                  .WithErrorMessage(CheckPersonByPhoneCommandValidator.MobilePhoneHasWrongFormat);
         }
     }
 }
