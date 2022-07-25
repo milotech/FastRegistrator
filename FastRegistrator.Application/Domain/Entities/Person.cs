@@ -60,7 +60,6 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         public void SetAccountOpened()
             => AddStatusToHistory(PersonStatus.AccountOpened);
         
-
         public void SetAccountClosed()
             => AddStatusToHistory(PersonStatus.AccountClosed);
         
