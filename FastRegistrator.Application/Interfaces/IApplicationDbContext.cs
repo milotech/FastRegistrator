@@ -9,5 +9,6 @@ namespace FastRegistrator.ApplicationCore.Interfaces
         DbSet<PersonData> PersonData { get; }
         DbSet<StatusHistoryItem> StatusHistory { get; }
         DbSet<PrizmaCheckResult> PrizmaChecks { get; }
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }
