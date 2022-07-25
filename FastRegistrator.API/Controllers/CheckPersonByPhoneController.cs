@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FastRegistrator.API.Controllers
 {
-    public class CheckUserByMobilePhoneController : ApiControllerBase
+    public class CheckPersonByPhoneController : ApiControllerBase
     {
         [HttpPost]
         public async Task<ActionResult<bool>> Check(CheckPersonByPhoneCommand command) 
