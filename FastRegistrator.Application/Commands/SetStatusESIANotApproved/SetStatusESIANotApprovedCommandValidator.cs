@@ -8,7 +8,7 @@ public class SetStatusESIANotApprovedCommandValidator : AbstractValidator<SetSta
     {
         Transform(x => x.PhoneNumber, RemoveAllRedundantSymbols)
             .NotEmpty().WithMessage("Mobile phone is empty.")
-            .Matches(@"(7|8)\d{10}").WithMessage("Mobile phone has wrong format.");
+            .Matches(@"^(7|8)\d{10}$").WithMessage("Mobile phone has wrong format.");
     }
 
     private string RemoveAllRedundantSymbols(string value)
