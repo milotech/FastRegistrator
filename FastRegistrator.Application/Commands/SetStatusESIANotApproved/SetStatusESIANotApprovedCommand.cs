@@ -9,7 +9,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved
     public record class SetStatusESIANotApprovedCommand : IRequest
     {
         public string PhoneNumber { get; init; } = null!;
-        public string Error { get; init; } = null!;
+        public string? RejectReason { get; init; }
     }
 
     public class SetStatusESIANotApprovedCommandHandler : IRequestHandler<SetStatusESIANotApprovedCommand>
@@ -32,13 +32,13 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved
             if (person != null)
             {
                 _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' exists in database and not approved by ESIA");
-                _logger.LogError(request.Error);
+                _logger.LogInformation(request.RejectReason);
                 person.SetESIANotApproved();
             }
             else
             {
                 _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' doesn't exist in database and not approved by ESIA");
-                _logger.LogError(request.Error);
+                _logger.LogInformation(request.RejectReason);
                 var newPerson = new Person(request.PhoneNumber);
                 newPerson.SetESIANotApproved();
                 _dbContext.Persons.Add(newPerson);

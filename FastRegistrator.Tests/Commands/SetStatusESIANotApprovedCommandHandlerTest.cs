@@ -24,7 +24,7 @@ namespace FastRegistrator.Tests.Commands
             var command = new SetStatusESIANotApprovedCommand
             {
                 PhoneNumber = PERSON_PHONE_NUMBER,
-                Error = string.Empty
+                RejectReason = string.Empty
             };
 
             // Act
@@ -55,7 +55,7 @@ namespace FastRegistrator.Tests.Commands
             var command = new SetStatusESIANotApprovedCommand
             {
                 PhoneNumber = PERSON_PHONE_NUMBER,
-                Error = string.Empty
+                RejectReason = string.Empty
             };
 
             // Act
