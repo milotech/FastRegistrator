@@ -1,4 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.ApplicationCore.Exceptions;
+using FastRegistrator.ApplicationCore.Interfaces;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -11,12 +12,17 @@ namespace FastRegistrator.Infrastructure.EventBus
 
     internal class ConsumerChannel : IDisposable
     {
+        private const int DLQ_DELAY = 60000;
+
         private readonly RabbitMqConnection _connection;
         private readonly ILogger<ConsumerChannel> _logger;
         private readonly Type _eventType;
         private readonly string _exchangeName;
         private readonly string _routingKey;
         private readonly string _queueName;
+
+        private readonly string _deadLetterExchangeName;
+        private readonly string _deadLetterQueueName;
 
         private IModel? _channel;
         private AsyncEventingBasicConsumer? _consumer;
@@ -50,6 +56,9 @@ namespace FastRegistrator.Infrastructure.EventBus
             if (_queueName.EndsWith("Event"))
                 _queueName += "s";
 
+            _deadLetterExchangeName = _exchangeName + "_DLX";
+            _deadLetterQueueName = _exchangeName + "_DLQ";
+
             Name = $"Consumer ({_queueName})";
         }
 
@@ -68,9 +77,32 @@ namespace FastRegistrator.Infrastructure.EventBus
             try
             {
                 channel.BasicQos(0, 1, false);
+
                 channel.ExchangeDeclare(exchange: _exchangeName, type: ExchangeType.Direct, durable: true);
-                channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: false);
+                channel.ExchangeDeclare(exchange: _deadLetterExchangeName, type: ExchangeType.Fanout, durable: true);
+
+                channel.QueueDeclare(
+                    queue: _queueName,
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: new Dictionary<string, object> {
+                        { "x-dead-letter-exchange", _deadLetterExchangeName }
+                    }
+                );
+                channel.QueueDeclare(
+                    queue: _deadLetterQueueName,
+                    durable: true,
+                    autoDelete: false,
+                    exclusive: false,
+                    arguments: new Dictionary<string, object> {
+                        { "x-dead-letter-exchange", _queueName },
+                        { "x-message-ttl", DLQ_DELAY }
+                    }
+                );
+
                 channel.QueueBind(queue: _queueName, exchange: _exchangeName, routingKey: _routingKey);
+                channel.QueueBind(queue: _deadLetterQueueName, exchange: _deadLetterExchangeName, routingKey: "");
 
                 consumer = new AsyncEventingBasicConsumer(channel);
 
@@ -148,6 +180,8 @@ namespace FastRegistrator.Infrastructure.EventBus
                     }
                     else
                     {
+                        var retryCount = GetRetryCount(eventArgs.BasicProperties);
+
                         await OnNewEvent(integrationEvent);
                     }
                 }
@@ -157,6 +191,11 @@ namespace FastRegistrator.Infrastructure.EventBus
             catch(JsonException ex)
             {
                 _logger.LogError(ex, $"Can't deserialize message to '{_eventType.Name}'. Message: {message}");
+            }
+            catch(RetryRequiredException ex)
+            {
+                _logger.LogError(ex, "Retry required. Send message to dead letter queue.");
+                _channel!.BasicNack(eventArgs.DeliveryTag, false, false);
             }
             catch (Exception ex)
             {
@@ -172,6 +211,21 @@ namespace FastRegistrator.Infrastructure.EventBus
             _disposed = true;
 
             Close();
+        }
+
+        private long? GetRetryCount(IBasicProperties properties)
+        {
+            if (properties.Headers?.ContainsKey("x-death") == true)
+            {
+                var xDeaths = (List<object>)properties.Headers["x-death"];
+                var xDeath = (Dictionary<string, object>)xDeaths[0];
+                var count = xDeath["count"];
+                return (long)count;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
