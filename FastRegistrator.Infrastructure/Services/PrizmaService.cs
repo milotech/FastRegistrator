@@ -7,7 +7,7 @@ namespace FastRegistrator.Infrastructure.Services;
 public class PrizmaService : IPrizmaService
 {
     private readonly HttpClient _httpClient;
-    private const string PERSON_CHECK_PATH = "PersonCheck/Check";
+    private const string PERSON_CHECK_PATH = "PersonCheck";
     public PrizmaService(HttpClient httpClient)
     {
         _httpClient = httpClient;

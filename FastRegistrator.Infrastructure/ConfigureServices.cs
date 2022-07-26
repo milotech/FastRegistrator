@@ -14,7 +14,7 @@ namespace FastRegistrator.Infrastructure
         {
             services.AddHttpClient<IPrizmaService, PrizmaService>(options =>
             {
-                var url = configuration.GetSection(PrizmaServiceUrl).Value;
+                var url = configuration[PrizmaServiceUrl];
                 options.BaseAddress = new Uri(url);
             });
             services.RegisterEventBus(configuration);
