@@ -1,16 +1,7 @@
-﻿using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Interfaces;
-using FastRegistrator.Infrastructure.Interfaces;
+﻿using FastRegistrator.ApplicationCore.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace FastRegistrator.Infrastructure.EventBus
 {
@@ -78,12 +69,12 @@ namespace FastRegistrator.Infrastructure.EventBus
             publisher.Publish(eventConfig.ExchangeName, eventConfig.RoutingKey, message);
         }
 
-        public void Subscribe<T, TH>()
-            where T : IIntegrationEvent
-            where TH : IIntegrationEventHandler<T>
+        public void Subscribe<TEvent, THandler>()
+            where TEvent : IIntegrationEvent
+            where THandler : IIntegrationEventHandler<TEvent>
         {
-            Type eventType = typeof(T);
-            Type handlerType = typeof(TH);
+            Type eventType = typeof(TEvent);
+            Type handlerType = typeof(THandler);
 
             if(!_eventConfigurations.ContainsKey(eventType))
                 throw new ArgumentException($"Event Type {eventType.Name} not configured");

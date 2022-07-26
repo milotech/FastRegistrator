@@ -1,7 +1,6 @@
 ﻿using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
 using FastRegistrator.ApplicationCore.Interfaces;
 using FastRegistrator.Infrastructure.EventBus;
-using FastRegistrator.Infrastructure.Interfaces;
 using FastRegistrator.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,7 +39,6 @@ namespace FastRegistrator.Infrastructure
                 eventBus.ConfigureRabbitMqEvents();
                 return eventBus;
             });
-            services.AddSingleton<IIntegrationEventsService>(sp => sp.GetRequiredService<IEventBus>());
         }
 
         private static void ConfigureRabbitMqEvents(this RabbitMqEventBus rabbitMq)
