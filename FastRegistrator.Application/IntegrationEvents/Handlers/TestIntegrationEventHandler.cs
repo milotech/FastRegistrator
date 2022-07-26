@@ -1,11 +1,6 @@
 ﻿using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
 using FastRegistrator.ApplicationCore.Interfaces;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FastRegistrator.ApplicationCore.IntegrationEvents.Handlers
 {
