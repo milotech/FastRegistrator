@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.Infrastructure.DTOs.PrizmaServiceDTOs;
+﻿namespace FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
 
 [Flags]
 public enum RejectionReason
@@ -16,5 +16,5 @@ public class PersonCheckResult
         get => RejectionReason == RejectionReason.None;
     }
     public RejectionReason RejectionReason { get; set; }
-    public string Response { get; set; } = null!;
+    public string PrizmaJsonResponse { get; set; } = null!;
 }

@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.Infrastructure.DTOs.PrizmaServiceDTOs
+﻿namespace FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs
 {
     public class PersonCheckCommonResponse
     {
