@@ -18,10 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FastRegistrator.Application\FastRegistrator.ApplicationCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\FastRegistrator.Application\FastRegistrator.ApplicationCore.csproj" />
     <ProjectReference Include="..\FastRegistrator.Infrastructure\FastRegistrator.Infrastructure.csproj" />
   </ItemGroup>
 
