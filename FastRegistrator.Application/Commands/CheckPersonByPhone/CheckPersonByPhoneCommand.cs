@@ -49,12 +49,12 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPersonByPhone
             {
                 if (checkResult.PrizmaRejected || checkResult.LastStatus?.Status == PersonStatus.AccountOpened)
                 {
-                    _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' can be registered");
+                    _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' can't be registered");
                     return false;
                 }
             }
 
-            _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' can't be registered");
+            _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' can be registered");
             return true;
         }
     }

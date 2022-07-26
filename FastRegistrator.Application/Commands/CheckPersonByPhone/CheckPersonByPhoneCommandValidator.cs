@@ -5,11 +5,14 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPersonByPhone
 {
     public class CheckPersonByPhoneCommandValidator : AbstractValidator<CheckPersonByPhoneCommand>
     {
+        public const string MobilePhoneIsEmpty = "Mobile phone is empty.";
+        public const string MobilePhoneHasWrongFormat = "Mobile phone has wrong format.";
+
         public CheckPersonByPhoneCommandValidator() 
         {
             Transform(x => x.PhoneNumber, RemoveAllRedundantSymbols)
-                .NotEmpty().WithMessage("Mobile phone is empty.")
-                .Matches(@"(7|8)\d{10}").WithMessage("Mobile phone has wrong format.");
+                .NotEmpty().WithMessage(MobilePhoneIsEmpty)
+                .Matches(@"^(7|8)\d{10}$").WithMessage(MobilePhoneHasWrongFormat);
         }
 
         private string RemoveAllRedundantSymbols(string value)
