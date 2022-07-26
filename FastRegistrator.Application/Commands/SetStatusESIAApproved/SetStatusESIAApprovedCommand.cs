@@ -20,7 +20,6 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         public string IssueId { get; init; } = null!;
         public string Citizenship { get; init; } = null!;
         public string Snils { get; init; } = null!;
-        public string? ApprovedInfo { get; init; }
     }
 
     public class SetStatusESIAApprovedCommandHandler : IRequestHandler<SetStatusESIAApprovedCommand>
@@ -40,22 +39,15 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
 
             var person = await query.FirstOrDefaultAsync(cancellationToken);
 
-            if (person != null)
-            {
-                _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' exists in database and approved by ESIA");
-                var personData = ConstructPersonData(request);
-                person.SetESIAApproved(personData);
-            }
-            else 
+            if (person == null) 
             {
                 _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' doesn't exist in database and approved by ESIA");
-                var newPerson = new Person(request.PhoneNumber);
-                var personData = ConstructPersonData(request);
-                newPerson.SetESIAApproved(personData);
-                _dbContext.Persons.Add(newPerson);
+                person = new Person(request.PhoneNumber);
+                _dbContext.Persons.Add(person);
             }
 
-            _logger.LogInformation(request.ApprovedInfo);
+            var personData = ConstructPersonData(request);
+            person.SetESIAApproved(personData);
 
             await _dbContext.SaveChangesAsync();
 

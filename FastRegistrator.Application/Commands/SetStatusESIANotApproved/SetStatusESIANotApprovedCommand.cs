@@ -29,20 +29,15 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved
 
             var person = await query.FirstOrDefaultAsync(cancellationToken);
 
-            if (person != null)
-            {
-                _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' exists in database and not approved by ESIA");
-                _logger.LogInformation(request.RejectReason);
-                person.SetESIANotApproved();
-            }
-            else
+            if (person == null)
             {
                 _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' doesn't exist in database and not approved by ESIA");
-                _logger.LogInformation(request.RejectReason);
-                var newPerson = new Person(request.PhoneNumber);
-                newPerson.SetESIANotApproved();
-                _dbContext.Persons.Add(newPerson);
+                person = new Person(request.PhoneNumber);
+                _dbContext.Persons.Add(person);
             }
+
+            _logger.LogInformation(request.RejectReason);
+            person.SetESIANotApproved();
 
             await _dbContext.SaveChangesAsync();
 
