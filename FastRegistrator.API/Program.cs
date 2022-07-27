@@ -1,4 +1,5 @@
 using FastRegistrator.ApplicationCore;
+using FastRegistrator.ApplicationCore.Interfaces;
 using FastRegistrator.Infrastructure;
 using Serilog;
 
@@ -41,7 +42,8 @@ try
 
     app.MapControllers();
 
-    app.UseEventBus();
+    var eventBus = app.Services.GetRequiredService<IEventBus>();
+    eventBus.StartApplicationSubscriptions();
 
     app.Run();
 }

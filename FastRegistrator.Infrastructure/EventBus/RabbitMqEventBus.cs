@@ -1,5 +1,4 @@
 ﻿using FastRegistrator.ApplicationCore.Interfaces;
-using FastRegistrator.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
@@ -18,16 +17,18 @@ namespace FastRegistrator.Infrastructure.EventBus
         private readonly RabbitMqConnection _connection;
         private readonly ILogger<RabbitMqEventBus> _logger;
         private readonly IServiceProvider _serviceProvider;
+        private readonly CancellationToken _cancelToken;
 
         private Dictionary<Type, EventConfiguration> _eventConfigurations = new();
         private Dictionary<Type, Subscription> _subscriptions = new();
 
         public RabbitMqEventBus(RabbitMqConnection connection, ILogger<RabbitMqEventBus> logger,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider, CancellationToken cancelToken)
         {
             _connection = connection;
             _logger = logger;
             _serviceProvider = serviceProvider;
+            _cancelToken = cancelToken;
         }
 
         /// <summary>
@@ -70,12 +71,12 @@ namespace FastRegistrator.Infrastructure.EventBus
             publisher.Publish(eventConfig.ExchangeName, eventConfig.RoutingKey, message);
         }
 
-        public void Subscribe<T, TH>()
-            where T : IIntegrationEvent
-            where TH : IIntegrationEventHandler<T>
+        public void Subscribe<TEvent, THandler>()
+            where TEvent : IIntegrationEvent
+            where THandler : IIntegrationEventHandler<TEvent>
         {
-            Type eventType = typeof(T);
-            Type handlerType = typeof(TH);
+            Type eventType = typeof(TEvent);
+            Type handlerType = typeof(THandler);
 
             if (!_eventConfigurations.ContainsKey(eventType))
                 throw new ArgumentException($"Event Type {eventType.Name} not configured");
@@ -117,7 +118,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                         var handler = ActivatorUtilities.CreateInstance(scope.ServiceProvider, handlerType);
                         var handleMethod = handlerType.GetMethod("Handle");
                         await Task.Yield();
-                        await (Task)handleMethod!.Invoke(handler, new object[] { integrationEvent })!;
+                        await (Task)handleMethod!.Invoke(handler, new object[] { integrationEvent, _cancelToken })!;
                     }
                 }
             }

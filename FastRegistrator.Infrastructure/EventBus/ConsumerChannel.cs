@@ -1,4 +1,6 @@
-﻿using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.ApplicationCore.Attributes;
+using FastRegistrator.ApplicationCore.Exceptions;
+using FastRegistrator.ApplicationCore.Interfaces;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -11,12 +13,19 @@ namespace FastRegistrator.Infrastructure.EventBus
 
     internal class ConsumerChannel : IDisposable
     {
+        private const int DLQ_DELAY = 60000;
+
         private readonly RabbitMqConnection _connection;
         private readonly ILogger<ConsumerChannel> _logger;
         private readonly Type _eventType;
         private readonly string _exchangeName;
         private readonly string _routingKey;
         private readonly string _queueName;
+
+        private readonly string _deadLetterExchangeName;
+        private readonly string _deadLetterQueueName;
+
+        private readonly int _maxRetriesCount;
 
         private IModel? _channel;
         private AsyncEventingBasicConsumer? _consumer;
@@ -50,6 +59,13 @@ namespace FastRegistrator.Infrastructure.EventBus
             if (_queueName.EndsWith("Event"))
                 _queueName += "s";
 
+            _deadLetterExchangeName = _exchangeName + "_DLX";
+            _deadLetterQueueName = _exchangeName + "_DLQ";
+
+            var retry = eventType.GetCustomAttributes(typeof(RetryAttribute), false).FirstOrDefault();
+            if (retry != null)
+                _maxRetriesCount = ((RetryAttribute)retry).MaxRetries;
+
             Name = $"Consumer ({_queueName})";
         }
 
@@ -68,9 +84,32 @@ namespace FastRegistrator.Infrastructure.EventBus
             try
             {
                 channel.BasicQos(0, 1, false);
+
                 channel.ExchangeDeclare(exchange: _exchangeName, type: ExchangeType.Direct, durable: true);
-                channel.QueueDeclare(queue: _queueName, durable: true, exclusive: false, autoDelete: false);
+                channel.ExchangeDeclare(exchange: _deadLetterExchangeName, type: ExchangeType.Fanout, durable: true);
+
+                channel.QueueDeclare(
+                    queue: _queueName,
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: new Dictionary<string, object> {
+                        { "x-dead-letter-exchange", _deadLetterExchangeName }
+                    }
+                );
+                channel.QueueDeclare(
+                    queue: _deadLetterQueueName,
+                    durable: true,
+                    autoDelete: false,
+                    exclusive: false,
+                    arguments: new Dictionary<string, object> {
+                        { "x-dead-letter-exchange", _queueName },
+                        { "x-message-ttl", DLQ_DELAY }
+                    }
+                );
+
                 channel.QueueBind(queue: _queueName, exchange: _exchangeName, routingKey: _routingKey);
+                channel.QueueBind(queue: _deadLetterQueueName, exchange: _deadLetterExchangeName, routingKey: "");
 
                 consumer = new AsyncEventingBasicConsumer(channel);
 
@@ -136,6 +175,7 @@ namespace FastRegistrator.Infrastructure.EventBus
         {
             var routingKey = eventArgs.RoutingKey;
             var message = Encoding.UTF8.GetString(eventArgs.Body.Span);
+            var retryNumber = GetRetriesCount(eventArgs.BasicProperties) ?? 0;
 
             try
             {
@@ -147,7 +187,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                         _logger.LogWarning($"{Name}: Received message that can't be deserialized to {_eventType.Name}. Message: {message}");
                     }
                     else
-                    {
+                    { 
                         await OnNewEvent(integrationEvent);
                     }
                 }
@@ -156,7 +196,17 @@ namespace FastRegistrator.Infrastructure.EventBus
             }
             catch (JsonException ex)
             {
-                _logger.LogError(ex, $"Can't deserialize message to '{_eventType.Name}'. Message: {message}");
+                _logger.LogError(ex, $"{Name}: Can't deserialize message to '{_eventType.Name}'. Message: {message}");
+            }
+            catch(RetryRequiredException ex)
+            {
+                if (retryNumber < _maxRetriesCount)
+                {
+                    _logger.LogError(ex, $"{Name}: Retry required ({retryNumber}/{_maxRetriesCount}). Send message to dead letter queue.");
+                    _channel!.BasicNack(eventArgs.DeliveryTag, false, false);
+                }
+                else
+                    _logger.LogWarning($"{Name}: Max retries count ({_maxRetriesCount}) reached.");
             }
             catch (Exception ex)
             {
@@ -172,6 +222,21 @@ namespace FastRegistrator.Infrastructure.EventBus
             _disposed = true;
 
             Close();
+        }
+
+        private long? GetRetriesCount(IBasicProperties properties)
+        {
+            if (properties.Headers?.ContainsKey("x-death") == true)
+            {
+                var xDeaths = (List<object>)properties.Headers["x-death"];
+                var xDeath = (Dictionary<string, object>)xDeaths[0];
+                var count = xDeath["count"];
+                return (long)count;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

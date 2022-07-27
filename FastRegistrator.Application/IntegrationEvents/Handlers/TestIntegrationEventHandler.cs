@@ -13,7 +13,7 @@ namespace FastRegistrator.ApplicationCore.IntegrationEvents.Handlers
             _logger = logger;
         }
 
-        public async Task Handle(TestIntegrationEvent @event)
+        public async Task Handle(TestIntegrationEvent @event, CancellationToken cancel)
         {
             _logger.LogInformation($"Test event! Value: {@event.Value}, Description: {@event.Description}");
             _logger.LogInformation("Started imitation of some work...");
