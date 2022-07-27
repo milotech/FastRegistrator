@@ -1,17 +1,8 @@
 ﻿using FastRegistrator.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Polly;
-using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitMQ.Client.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FastRegistrator.Infrastructure.EventBus
 {
@@ -56,7 +47,7 @@ namespace FastRegistrator.Infrastructure.EventBus
             lock (_sync)
             {
                 if (!IsConnected)
-                {                    
+                {
                     _logger.LogInformation("RabbitMQ Client trying to connect...");
 
                     try
@@ -72,7 +63,7 @@ namespace FastRegistrator.Infrastructure.EventBus
 
                         _logger.LogInformation("RabbitMQ Client acquired a connection to '{HostName}'", _connection.Endpoint.HostName);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to open RabbitMQ connection. ");
                         throw;
@@ -146,7 +137,7 @@ namespace FastRegistrator.Infrastructure.EventBus
             if (settings.Ssl)
                 factory.Ssl = new SslOption() { Enabled = true, CertificateValidationCallback = (sender, cert, chain, errors) => true };
 
-            if(!string.IsNullOrEmpty(settings.VirtualHost))
+            if (!string.IsNullOrEmpty(settings.VirtualHost))
             {
                 factory.VirtualHost = settings.VirtualHost;
             }

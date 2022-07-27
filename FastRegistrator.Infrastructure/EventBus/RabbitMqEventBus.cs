@@ -1,16 +1,8 @@
-﻿using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.ApplicationCore.Interfaces;
 using FastRegistrator.Infrastructure.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace FastRegistrator.Infrastructure.EventBus
 {
@@ -85,7 +77,7 @@ namespace FastRegistrator.Infrastructure.EventBus
             Type eventType = typeof(T);
             Type handlerType = typeof(TH);
 
-            if(!_eventConfigurations.ContainsKey(eventType))
+            if (!_eventConfigurations.ContainsKey(eventType))
                 throw new ArgumentException($"Event Type {eventType.Name} not configured");
 
             if (!_connection.IsConnected)
@@ -101,7 +93,7 @@ namespace FastRegistrator.Infrastructure.EventBus
 
                 consumerChannel.OnNewEvent += OnNewMessage;
 
-                consumerChannel.Open();                
+                consumerChannel.Open();
 
                 var subscription = new Subscription(consumerChannel, handlerType);
                 _subscriptions.Add(eventType, subscription);
@@ -116,7 +108,7 @@ namespace FastRegistrator.Infrastructure.EventBus
         {
             Type eventType = integrationEvent.GetType();
 
-            if(_subscriptions.TryGetValue(eventType, out Subscription? subscription))
+            if (_subscriptions.TryGetValue(eventType, out Subscription? subscription))
             {
                 using (var scope = _serviceProvider.CreateScope())
                 {
@@ -142,7 +134,7 @@ namespace FastRegistrator.Infrastructure.EventBus
             Type eventType = typeof(T);
             Type handlerType = typeof(TH);
 
-            if(_subscriptions.ContainsKey(eventType))
+            if (_subscriptions.ContainsKey(eventType))
             {
                 _subscriptions[eventType].HandlerTypes.Remove(handlerType);
                 if (_subscriptions[eventType].HandlerTypes.Count == 0)
@@ -150,7 +142,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                     _subscriptions[eventType].Consumer.Dispose();
                     _subscriptions.Remove(eventType);
                 }
-            }           
+            }
         }
 
         public void Dispose()

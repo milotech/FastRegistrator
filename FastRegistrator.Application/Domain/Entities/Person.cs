@@ -2,9 +2,9 @@
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class Person: BaseEntity
+    public class Person : BaseEntity
     {
-        private List<StatusHistoryItem> _history = new ();
+        private List<StatusHistoryItem> _history = new();
 
         public string PhoneNumber { get; private set; }
         public PersonData? PersonData { get; private set; }
@@ -46,7 +46,6 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         public void SetPrizmaCheckInProgress()
             => AddStatusToHistory(PersonStatus.PrizmaCheckInProgress);
 
-
         public void SetPrizmaCheckResult(PrizmaCheckResult checkResult)
         {
             var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckResult(checkResult);
@@ -56,7 +55,6 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         public void SetClientReadyForRegistration()
             => AddStatusToHistory(PersonStatus.ClientReadyForRegistration);
         
-
         public void SetAccountOpened()
             => AddStatusToHistory(PersonStatus.AccountOpened);
         

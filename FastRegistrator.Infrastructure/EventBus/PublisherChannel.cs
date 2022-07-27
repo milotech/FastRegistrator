@@ -1,11 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FastRegistrator.Infrastructure.EventBus
 {
@@ -49,7 +43,7 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         public void Publish(string exchangeName, string routingKey, byte[] message)
         {
-            if(_channel == null)
+            if (_channel == null)
                 throw new InvalidOperationException("Publisher Channel is not open");
 
             var properties = _channel.CreateBasicProperties();

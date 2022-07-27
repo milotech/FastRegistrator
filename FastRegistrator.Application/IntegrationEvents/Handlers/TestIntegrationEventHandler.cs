@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.IntegrationEvents.Handlers
 {
-    public class TestIntegrationEventHandler: IIntegrationEventHandler<TestIntegrationEvent>
+    public class TestIntegrationEventHandler : IIntegrationEventHandler<TestIntegrationEvent>
     {
         private ILogger<TestIntegrationEventHandler> _logger;
 
