@@ -1,10 +1,10 @@
 ﻿using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
 using FastRegistrator.ApplicationCore.Interfaces;
 using FastRegistrator.Infrastructure.EventBus;
-using FastRegistrator.Infrastructure.Interfaces;
 using FastRegistrator.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.Infrastructure
@@ -35,12 +35,12 @@ namespace FastRegistrator.Infrastructure
             {
                 var connection = sp.GetRequiredService<RabbitMqConnection>();
                 var logger = sp.GetRequiredService<ILogger<RabbitMqEventBus>>();
+                var appLifeTyime = sp.GetRequiredService<IHostApplicationLifetime>();
 
-                var eventBus = new RabbitMqEventBus(connection, logger, sp);
+                var eventBus = new RabbitMqEventBus(connection, logger, sp, appLifeTyime.ApplicationStopping);
                 eventBus.ConfigureRabbitMqEvents();
                 return eventBus;
             });
-            services.AddSingleton<IIntegrationEventsService>(sp => sp.GetRequiredService<IEventBus>());
         }
 
         private static void ConfigureRabbitMqEvents(this RabbitMqEventBus rabbitMq)
