@@ -45,7 +45,13 @@ namespace FastRegistrator.Infrastructure
 
         private static void ConfigureRabbitMqEvents(this RabbitMqEventBus rabbitMq)
         {
+            // incoming messages configuration
             rabbitMq.ConfigureEvent<TestIntegrationEvent>(RabbitMqConstants.Exchanges.FastRegistrator);
+            rabbitMq.ConfigureEvent<PersonCheckRequestedEvent>(RabbitMqConstants.Exchanges.FastRegistrator);
+            rabbitMq.ConfigureEvent<ESIANotApprovedEvent>(RabbitMqConstants.Exchanges.FastRegistrator);
+
+            // outcoming messages configuration
+            // ...
         }
     }
 }
