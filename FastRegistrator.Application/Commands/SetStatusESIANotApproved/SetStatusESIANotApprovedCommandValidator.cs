@@ -1,19 +1,21 @@
-﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved;
-using FluentValidation;
+﻿using FluentValidation;
 using System.Text.RegularExpressions;
 
-public class SetStatusESIANotApprovedCommandValidator : AbstractValidator<SetStatusESIANotApprovedCommand>
+namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved
 {
-    public const string MobilePhoneIsEmpty = "Mobile phone is empty.";
-    public const string MobilePhoneHasWrongFormat = "Mobile phone has wrong format.";
-
-    public SetStatusESIANotApprovedCommandValidator()
+    public class SetStatusESIANotApprovedCommandValidator : AbstractValidator<SetStatusESIANotApprovedCommand>
     {
-        Transform(command => command.PhoneNumber, RemoveAllRedundantSymbols)
-            .NotEmpty().WithMessage(MobilePhoneIsEmpty)
-            .Matches(@"^(7|8)\d{10}$").WithMessage(MobilePhoneHasWrongFormat);
-    }
+        public const string MobilePhoneIsEmpty = "Mobile phone is empty.";
+        public const string MobilePhoneHasWrongFormat = "Mobile phone has wrong format.";
 
-    private string RemoveAllRedundantSymbols(string value)
-        => Regex.Replace(value, @"[+()\s\-]", string.Empty);
+        public SetStatusESIANotApprovedCommandValidator()
+        {
+            Transform(command => command.PhoneNumber, RemoveAllRedundantSymbols)
+                .NotEmpty().WithMessage(MobilePhoneIsEmpty)
+                .Matches(@"^(7|8)\d{10}$").WithMessage(MobilePhoneHasWrongFormat);
+        }
+
+        private string RemoveAllRedundantSymbols(string value)
+            => Regex.Replace(value, @"[+()\s\-]", string.Empty);
+    }
 }
