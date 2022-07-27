@@ -4,6 +4,7 @@ using FastRegistrator.Infrastructure.EventBus;
 using FastRegistrator.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.Infrastructure
@@ -34,8 +35,9 @@ namespace FastRegistrator.Infrastructure
             {
                 var connection = sp.GetRequiredService<RabbitMqConnection>();
                 var logger = sp.GetRequiredService<ILogger<RabbitMqEventBus>>();
+                var appLifeTyime = sp.GetRequiredService<IHostApplicationLifetime>();
 
-                var eventBus = new RabbitMqEventBus(connection, logger, sp);
+                var eventBus = new RabbitMqEventBus(connection, logger, sp, appLifeTyime.ApplicationStopping);
                 eventBus.ConfigureRabbitMqEvents();
                 return eventBus;
             });

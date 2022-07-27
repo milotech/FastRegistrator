@@ -17,16 +17,18 @@ namespace FastRegistrator.Infrastructure.EventBus
         private readonly RabbitMqConnection _connection;
         private readonly ILogger<RabbitMqEventBus> _logger;
         private readonly IServiceProvider _serviceProvider;
+        private readonly CancellationToken _cancelToken;
 
         private Dictionary<Type, EventConfiguration> _eventConfigurations = new();
         private Dictionary<Type, Subscription> _subscriptions = new();
 
         public RabbitMqEventBus(RabbitMqConnection connection, ILogger<RabbitMqEventBus> logger,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider, CancellationToken cancelToken)
         {
             _connection = connection;
             _logger = logger;
             _serviceProvider = serviceProvider;
+            _cancelToken = cancelToken;
         }
 
         /// <summary>
@@ -116,7 +118,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                         var handler = ActivatorUtilities.CreateInstance(scope.ServiceProvider, handlerType);
                         var handleMethod = handlerType.GetMethod("Handle");
                         await Task.Yield();
-                        await (Task)handleMethod!.Invoke(handler, new object[] { integrationEvent })!;
+                        await (Task)handleMethod!.Invoke(handler, new object[] { integrationEvent, _cancelToken })!;
                     }
                 }
             }
