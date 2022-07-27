@@ -9,17 +9,17 @@ namespace FastRegistrator.Tests.Commands
 {
     public class SetStatusESIAApprovedCommandHandlerTest : TestWithDbContext
     {
-        private const string PERSON_PHONE_NUMBER = "+79999999999";
-        private const string FIRST_NAME = "Ivan";
-        private const string LAST_NAME = "Ivanov";
-        private const string MIDDLE_NAME = "Ivanovich";
-        private const string SERIES = "1111";
-        private const string NUMBER = "111111";
-        private const string ISSUED_BY = "Department of the Federal Migration Service of Russia";
-        private static readonly DateTime ISSUE_DATE = DateTime.MinValue;
-        private const string ISSUE_ID = "111-111";
-        private const string CITIZENSHIP = "Russia";
-        private const string SNILS = "111-111-111 11";
+        public const string PERSON_PHONE_NUMBER = "+79999999999";
+        public const string FIRST_NAME = "Ivan";
+        public const string LAST_NAME = "Ivanov";
+        public const string MIDDLE_NAME = "Ivanovich";
+        public const string SERIES = "1111";
+        public const string NUMBER = "111111";
+        public const string ISSUED_BY = "Department of the Federal Migration Service of Russia";
+        public static readonly DateTime ISSUE_DATE = DateTime.MinValue;
+        public const string ISSUE_ID = "111-111";
+        public const string CITIZENSHIP = "Russia";
+        public const string SNILS = "111-111-111 11";
 
         [Fact]
         [Description("Arrange Person doesn't exist in database" +
