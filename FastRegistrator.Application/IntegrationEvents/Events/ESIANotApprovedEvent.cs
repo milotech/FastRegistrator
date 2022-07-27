@@ -2,8 +2,9 @@
 
 namespace FastRegistrator.ApplicationCore.IntegrationEvents.Events
 {
-    public class PersonCheckRequestedIntegrationEvent : IIntegrationEvent
+    public class ESIANotApprovedEvent : IIntegrationEvent
     {
         public string PhoneNumber { get; init; } = null!;
+        public string? Message { get; init; }
     }
 }
