@@ -1,4 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Exceptions;
+﻿using FastRegistrator.ApplicationCore.Attributes;
+using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -23,6 +24,8 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         private readonly string _deadLetterExchangeName;
         private readonly string _deadLetterQueueName;
+
+        private readonly int _maxRetriesCount;
 
         private IModel? _channel;
         private AsyncEventingBasicConsumer? _consumer;
@@ -58,6 +61,10 @@ namespace FastRegistrator.Infrastructure.EventBus
 
             _deadLetterExchangeName = _exchangeName + "_DLX";
             _deadLetterQueueName = _exchangeName + "_DLQ";
+
+            var retry = eventType.GetCustomAttributes(typeof(RetryAttribute), false).FirstOrDefault();
+            if (retry != null)
+                _maxRetriesCount = ((RetryAttribute)retry).MaxRetries;
 
             Name = $"Consumer ({_queueName})";
         }
@@ -168,6 +175,7 @@ namespace FastRegistrator.Infrastructure.EventBus
         {
             var routingKey = eventArgs.RoutingKey;
             var message = Encoding.UTF8.GetString(eventArgs.Body.Span);
+            var retryNumber = GetRetriesCount(eventArgs.BasicProperties) ?? 0;
 
             try
             {
@@ -179,9 +187,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                         _logger.LogWarning($"{Name}: Received message that can't be deserialized to {_eventType.Name}. Message: {message}");
                     }
                     else
-                    {
-                        var retryCount = GetRetryCount(eventArgs.BasicProperties);
-
+                    { 
                         await OnNewEvent(integrationEvent);
                     }
                 }
@@ -190,12 +196,17 @@ namespace FastRegistrator.Infrastructure.EventBus
             }
             catch(JsonException ex)
             {
-                _logger.LogError(ex, $"Can't deserialize message to '{_eventType.Name}'. Message: {message}");
+                _logger.LogError(ex, $"{Name}: Can't deserialize message to '{_eventType.Name}'. Message: {message}");
             }
             catch(RetryRequiredException ex)
             {
-                _logger.LogError(ex, "Retry required. Send message to dead letter queue.");
-                _channel!.BasicNack(eventArgs.DeliveryTag, false, false);
+                if (retryNumber < _maxRetriesCount)
+                {
+                    _logger.LogError(ex, $"{Name}: Retry required ({retryNumber}/{_maxRetriesCount}). Send message to dead letter queue.");
+                    _channel!.BasicNack(eventArgs.DeliveryTag, false, false);
+                }
+                else
+                    _logger.LogWarning($"{Name}: Max retries count ({_maxRetriesCount}) reached.");
             }
             catch (Exception ex)
             {
@@ -213,7 +224,7 @@ namespace FastRegistrator.Infrastructure.EventBus
             Close();
         }
 
-        private long? GetRetryCount(IBasicProperties properties)
+        private long? GetRetriesCount(IBasicProperties properties)
         {
             if (properties.Headers?.ContainsKey("x-death") == true)
             {
