@@ -25,18 +25,19 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved
 
         public async Task<Unit> Handle(SetStatusESIANotApprovedCommand request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' not approved by ESIA: {request.RejectReason}.");
+
             var query = _dbContext.Persons.Where(p => p.PhoneNumber == request.PhoneNumber);
 
             var person = await query.FirstOrDefaultAsync(cancellationToken);
 
             if (person == null)
             {
-                _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' doesn't exist in database and not approved by ESIA");
+                _logger.LogInformation($"Person doesn't exist in database.");
                 person = new Person(request.PhoneNumber);
                 _dbContext.Persons.Add(person);
             }
 
-            _logger.LogInformation(request.RejectReason);
             person.SetESIANotApproved();
 
             await _dbContext.SaveChangesAsync();

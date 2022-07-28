@@ -35,13 +35,15 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
 
         public async Task<Unit> Handle(SetStatusESIAApprovedCommand request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' approved by ESIA.");
+
             var query = _dbContext.Persons.Where(p => p.PhoneNumber == request.PhoneNumber);
 
             var person = await query.FirstOrDefaultAsync(cancellationToken);
 
             if (person == null) 
             {
-                _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' doesn't exist in database and approved by ESIA");
+                _logger.LogInformation($"Person doesn't exist in database.");
                 person = new Person(request.PhoneNumber);
                 _dbContext.Persons.Add(person);
             }
