@@ -1,6 +1,7 @@
 ﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved;
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.ComponentModel;
@@ -31,8 +32,12 @@ namespace FastRegistrator.Tests.Commands
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.Contains(context.Persons.Local, p => p.PhoneNumber == PERSON_PHONE_NUMBER &&
-                p.StatusHistory?.OrderByDescending(shi => shi.StatusDT).FirstOrDefault()?.Status == PersonStatus.ESIANotApproved);
+            var assertPerson = await context.Persons
+                .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
+                .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
+
+            Assert.NotNull(assertPerson);
+            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == PersonStatus.ESIANotApproved);
         }
 
         [Fact]
@@ -60,8 +65,12 @@ namespace FastRegistrator.Tests.Commands
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.Contains(context.Persons.Local, p => p.PhoneNumber == PERSON_PHONE_NUMBER &&
-                p.StatusHistory?.OrderByDescending(shi => shi.StatusDT).FirstOrDefault()?.Status == PersonStatus.ESIANotApproved);
+            var assertPerson = await context.Persons
+                .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
+                .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
+
+            Assert.NotNull(assertPerson);
+            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == PersonStatus.ESIANotApproved);
         }
     }
 }
