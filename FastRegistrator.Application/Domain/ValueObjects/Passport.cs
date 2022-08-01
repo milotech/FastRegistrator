@@ -2,20 +2,20 @@
 {
     public class Passport
     {
-        public string Serial { get; private set; }
+        public string Series { get; private set; }
         public string Number { get; private set; }
         public string IssuedBy { get; private set; }
-        public DateTime IssuedDate { get; private set; }
-        public string IssuerNumber { get; private set; }
+        public DateTime IssueDate { get; private set; }
+        public string IssueId { get; private set; }
         public string Citizenship { get; private set; }
 
-        public Passport(string serial, string number, string issuedBy, DateTime issuedDate, string issuerNumber, string citizenship)
+        public Passport(string series, string number, string issuedBy, DateTime issueDate, string issueId, string citizenship)
         {
-            Serial = serial;
+            Series = series;
             Number = number;
             IssuedBy = issuedBy;
-            IssuedDate = issuedDate;
-            IssuerNumber = issuerNumber;
+            IssueDate = issueDate;
+            IssueId = issueId;
             Citizenship = citizenship;
         }
     }

@@ -78,7 +78,7 @@ namespace FastRegistrator.Infrastructure.EventBus
             Type eventType = typeof(TEvent);
             Type handlerType = typeof(THandler);
 
-            if(!_eventConfigurations.ContainsKey(eventType))
+            if (!_eventConfigurations.ContainsKey(eventType))
                 throw new ArgumentException($"Event Type {eventType.Name} not configured");
 
             if (!_connection.IsConnected)
@@ -94,7 +94,7 @@ namespace FastRegistrator.Infrastructure.EventBus
 
                 consumerChannel.OnNewEvent += OnNewMessage;
 
-                consumerChannel.Open();                
+                consumerChannel.Open();
 
                 var subscription = new Subscription(consumerChannel, handlerType);
                 _subscriptions.Add(eventType, subscription);
@@ -109,7 +109,7 @@ namespace FastRegistrator.Infrastructure.EventBus
         {
             Type eventType = integrationEvent.GetType();
 
-            if(_subscriptions.TryGetValue(eventType, out Subscription? subscription))
+            if (_subscriptions.TryGetValue(eventType, out Subscription? subscription))
             {
                 using (var scope = _serviceProvider.CreateScope())
                 {
@@ -135,7 +135,7 @@ namespace FastRegistrator.Infrastructure.EventBus
             Type eventType = typeof(T);
             Type handlerType = typeof(TH);
 
-            if(_subscriptions.ContainsKey(eventType))
+            if (_subscriptions.ContainsKey(eventType))
             {
                 _subscriptions[eventType].HandlerTypes.Remove(handlerType);
                 if (_subscriptions[eventType].HandlerTypes.Count == 0)
@@ -143,7 +143,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                     _subscriptions[eventType].Consumer.Dispose();
                     _subscriptions.Remove(eventType);
                 }
-            }           
+            }
         }
 
         public void Dispose()

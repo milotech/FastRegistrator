@@ -1,10 +1,7 @@
-﻿using System;
-using System.Data.Common;
-using System.Linq;
+﻿using FastRegistrator.Infrastructure.Persistence;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using FastRegistrator.Infrastructure.Persistence;
+using System.Data.Common;
 
 namespace FastRegistrator.Tests
 {

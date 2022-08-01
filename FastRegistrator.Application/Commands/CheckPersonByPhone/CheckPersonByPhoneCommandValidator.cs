@@ -10,7 +10,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPersonByPhone
 
         public CheckPersonByPhoneCommandValidator() 
         {
-            Transform(x => x.PhoneNumber, RemoveAllRedundantSymbols)
+            Transform(command => command.PhoneNumber, RemoveAllRedundantSymbols)
                 .NotEmpty().WithMessage(MobilePhoneIsEmpty)
                 .Matches(@"^(7|8)\d{10}$").WithMessage(MobilePhoneHasWrongFormat);
         }

@@ -23,7 +23,7 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         public string? CountryOfTaxResidence { get; private set; }
         public string? Tin { get; private set; }
         public string? ReasonOfAbsenceTin { get; private set; }
-        public string? OffshoreDetail { get; private set;}
+        public string? OffshoreDetail { get; private set; }
         public USASectionDetails? UsaSectionDetails { get; private set; }
     }
 }

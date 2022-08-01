@@ -150,7 +150,7 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         public void Close()
         {
-            if(_channel != null)
+            if (_channel != null)
             {
                 try
                 {
@@ -164,7 +164,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                     _channel.Dispose();
                     _channel = null;                    
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     _logger.LogError(ex, $"{Name}: Error on closing channel");
                 }
@@ -194,7 +194,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                 else
                     _logger.LogWarning($"{Name}: OnNewEvent event handler is not set, message will be lost");
             }
-            catch(JsonException ex)
+            catch (JsonException ex)
             {
                 _logger.LogError(ex, $"{Name}: Can't deserialize message to '{_eventType.Name}'. Message: {message}");
             }

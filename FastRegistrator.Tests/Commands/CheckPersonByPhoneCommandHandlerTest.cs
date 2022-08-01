@@ -2,8 +2,8 @@
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
 using FastRegistrator.ApplicationCore.Interfaces;
-using Moq;
 using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace FastRegistrator.Tests.Commands
 {

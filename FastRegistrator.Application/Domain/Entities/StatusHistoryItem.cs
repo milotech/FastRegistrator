@@ -2,7 +2,7 @@
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class StatusHistoryItem: BaseEntity
+    public class StatusHistoryItem : BaseEntity
     {
         public PersonStatus Status { get; private set; }
         public DateTime StatusDT { get; private set; }        

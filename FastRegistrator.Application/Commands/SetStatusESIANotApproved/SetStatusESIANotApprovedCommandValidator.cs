@@ -1,5 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved;
-using FluentValidation;
+﻿using FluentValidation;
 using System.Text.RegularExpressions;
 
 namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved
@@ -11,7 +10,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved
 
         public SetStatusESIANotApprovedCommandValidator()
         {
-            Transform(x => x.PhoneNumber, RemoveAllRedundantSymbols)
+            Transform(command => command.PhoneNumber, RemoveAllRedundantSymbols)
                 .NotEmpty().WithMessage(MobilePhoneIsEmpty)
                 .Matches(@"^(7|8)\d{10}$").WithMessage(MobilePhoneHasWrongFormat);
         }

@@ -1,6 +1,7 @@
 ﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved;
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.ComponentModel;
@@ -9,14 +10,14 @@ namespace FastRegistrator.Tests.Commands
 {
     public class SetStatusESIANotApprovedCommandHandlerTest : TestWithDbContext
     {
+        const string PERSON_PHONE_NUMBER = "+79999999999";
+
         [Fact]
         [Description("Arrange Person doesn't exist in database" +
-                     "Act Person phone number isn't approved by ESIA check" +
+                     "Act Person isn't approved by ESIA check" +
                      "Assert Add new person to database")]
-        public async Task Handle_PersonDoesntExistInDatabase() 
+        public async Task Handle_PersonDoesntExistInDatabase_PersonWasAddedToDatabase()
         {
-            const string PERSON_PHONE_NUMBER = "+79999999999";
-
             // Arrange
             var logger = new Mock<ILogger<SetStatusESIANotApprovedCommandHandler>>();
             using var context = CreateDbContext();
@@ -31,18 +32,20 @@ namespace FastRegistrator.Tests.Commands
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.Contains(context.Persons.Local, p => p.PhoneNumber == PERSON_PHONE_NUMBER &&
-                p.StatusHistory?.OrderByDescending(shi => shi.StatusDT).FirstOrDefault()?.Status == PersonStatus.ESIANotApproved);
+            var assertPerson = await context.Persons
+                .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
+                .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
+
+            Assert.NotNull(assertPerson);
+            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == PersonStatus.ESIANotApproved);
         }
 
         [Fact]
         [Description("Arrange Person exists in database, but passed check from Prizma more then 6 month ago" +
-                     "Act Person phone number isn't approved by ESIA check" +
+                     "Act Person isn't approved by ESIA check" +
                      "Assert Update exist person in database")]
-        public async Task Handle_PersonExistsInDatabase()
+        public async Task Handle_PersonExistsInDatabase_PersonWasUpdatedInDatabase()
         {
-            const string PERSON_PHONE_NUMBER = "+79999999999";
-
             // Arrange
             var logger = new Mock<ILogger<SetStatusESIANotApprovedCommandHandler>>();
             using var context = CreateDbContext();
@@ -62,8 +65,12 @@ namespace FastRegistrator.Tests.Commands
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.Contains(context.Persons.Local, p => p.PhoneNumber == PERSON_PHONE_NUMBER &&
-                p.StatusHistory?.OrderByDescending(shi => shi.StatusDT).FirstOrDefault()?.Status == PersonStatus.ESIANotApproved);
+            var assertPerson = await context.Persons
+                .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
+                .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
+
+            Assert.NotNull(assertPerson);
+            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == PersonStatus.ESIANotApproved);
         }
     }
 }
