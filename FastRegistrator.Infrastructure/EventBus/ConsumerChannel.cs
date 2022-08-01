@@ -103,7 +103,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                     autoDelete: false,
                     exclusive: false,
                     arguments: new Dictionary<string, object> {
-                        { "x-dead-letter-exchange", _queueName },
+                        { "x-dead-letter-exchange", _exchangeName },
                         { "x-message-ttl", DLQ_DELAY }
                     }
                 );

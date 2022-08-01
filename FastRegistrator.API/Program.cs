@@ -1,5 +1,5 @@
+using FastRegistrator.API;
 using FastRegistrator.ApplicationCore;
-using FastRegistrator.ApplicationCore.Interfaces;
 using FastRegistrator.Infrastructure;
 using Serilog;
 
@@ -29,7 +29,6 @@ try
     });
 
     var app = builder.Build();
-
     // Configure the HTTP request pipeline. 
 
     app.UseSwagger();
@@ -42,13 +41,25 @@ try
 
     app.MapControllers();
 
-    var eventBus = app.Services.GetRequiredService<IEventBus>();
-    eventBus.StartApplicationSubscriptions();
-
-    app.Run();
+    await app.InitialiseAsync();
+    await app.RunAsync();
 }
 catch (Exception ex)
 {
+    #region ignore ef migrations StopTheHostException
+
+    /* EF migrations tool throws StopTheHostException to stop the service, don't log the exception.
+     * For .Net 7 the exception renamed to HostAbortedException.     * 
+     * https://stackoverflow.com/questions/70247187/microsoft-extensions-hosting-hostfactoryresolverhostinglistenerstopthehostexce
+    */
+    string type = ex.GetType().Name;
+    if (type.Equals("StopTheHostException") || type.Equals("HostAbortedException"))
+    {
+        throw;
+    }
+
+    #endregion
+
     Log.Fatal(ex, "Unhandled exception");
 }
 finally
