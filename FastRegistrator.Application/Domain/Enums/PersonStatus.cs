@@ -2,12 +2,8 @@
 {
     public enum PersonStatus
     {
-        // Не подтверждена учетная запись ЕСИА
-        ESIANotApproved,
         // Подтверждена учетная запись ЕСИА
         ESIAApproved,
-        // Отказ клиента от регистрации
-        PersonRejected,
         // Потенциальный клиент – Заполнил заявление
         ClientFilledApplication,
         // Потенциальный клиент – Отправлен на проверку

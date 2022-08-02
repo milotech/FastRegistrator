@@ -14,7 +14,7 @@ namespace FastRegistrator.Infrastructure.Persistence
             : base(options)
         { }
 
-        public DbSet<Person> Persons => Set<Person>();
+        public DbSet<Registration> Persons => Set<Registration>();
         public DbSet<PersonData> PersonData => Set<PersonData>();
         public DbSet<StatusHistoryItem> StatusHistory => Set<StatusHistoryItem>();
         public DbSet<PrizmaCheckResult> PrizmaChecks => Set<PrizmaCheckResult>();

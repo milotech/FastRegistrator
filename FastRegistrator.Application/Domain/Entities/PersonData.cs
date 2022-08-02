@@ -2,7 +2,7 @@
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class PersonData : BaseEntity
+    public class PersonData : BaseEntity<Guid>
     {
         public PersonName Name { get; private set; } = null!;
         public Passport Passport { get; private set; } = null!;

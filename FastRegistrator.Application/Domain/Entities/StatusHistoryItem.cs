@@ -2,11 +2,11 @@
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class StatusHistoryItem : BaseEntity
+    public class StatusHistoryItem : BaseEntity<Guid>
     {
         public PersonStatus Status { get; private set; }
-        public DateTime StatusDT { get; private set; }        
-        public PrizmaCheckResult? PrizmaCheck { get; private set; }
+        public DateTime StatusDT { get; private set; } 
+        public PrizmaCheckResponse? PrizmaCheckResponse { get; private set; }
 
         public StatusHistoryItem(PersonStatus status)
         {
@@ -22,7 +22,7 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
 
             return new StatusHistoryItem(status)
             {
-                PrizmaCheck = checkResult
+                PrizmaCheckResponse = new PrizmaCheckResponse(checkResult, null)
             };
         }
     }

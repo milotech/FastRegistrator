@@ -106,7 +106,7 @@ namespace FastRegistrator.Tests.Commands
             var logger = new Mock<ILogger<SetStatusESIAApprovedCommandHandler>>();
             using var context = CreateDbContext();
 
-            var person = new Person(PERSON_PHONE_NUMBER);
+            var person = new Registration(PERSON_PHONE_NUMBER);
             context.Persons.Add(person);
             await context.SaveChangesAsync();
 
@@ -148,7 +148,7 @@ namespace FastRegistrator.Tests.Commands
             var logger = new Mock<ILogger<SetStatusESIAApprovedCommandHandler>>();
             using var context = CreateDbContext();
 
-            var person = new Person(PERSON_PHONE_NUMBER);
+            var person = new Registration(PERSON_PHONE_NUMBER);
             context.Persons.Add(person);
             await context.SaveChangesAsync();
 

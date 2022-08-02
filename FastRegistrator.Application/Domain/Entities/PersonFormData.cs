@@ -2,7 +2,7 @@
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class PersonFormData : BaseEntity
+    public class PersonFormData : BaseEntity<Guid>
     {
         private List<BankDetail> _bankDetails = new();
         public IReadOnlyCollection<BankDetail> BankDetails => _bankDetails;

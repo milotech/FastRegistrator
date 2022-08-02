@@ -1,7 +1,7 @@
 ﻿namespace FastRegistrator.ApplicationCore.Domain
 {
-    public abstract class BaseEntity
+    public abstract class BaseEntity<T>
     {
-        public int Id { get; protected set; }
+        public T Id { get; protected set; } = default(T)!;
     }
 }

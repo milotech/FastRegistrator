@@ -2,7 +2,7 @@
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class Person : BaseEntity
+    public class Registration : BaseEntity<Guid>
     {
         private List<StatusHistoryItem> _history = new();
 
@@ -12,14 +12,9 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
 
         public IReadOnlyCollection<StatusHistoryItem> StatusHistory => _history;
 
-        public Person(string phoneNumber)
+        public Registration(string phoneNumber)
         {
             PhoneNumber = phoneNumber;
-        }
-
-        public void SetESIANotApproved()
-        {
-            AddStatusToHistory(PersonStatus.ESIANotApproved);
         }
 
         public void SetESIAApproved(PersonData data)
@@ -27,13 +22,6 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
             PersonData = data;
 
             AddStatusToHistory(PersonStatus.ESIAApproved);
-        }
-
-        public void SetPersonRejected(PersonFormData personFormData)
-        {
-            PersonFormData = personFormData;
-
-            AddStatusToHistory(PersonStatus.PersonRejected);
         }
 
         public void SetClientFilledApplication(PersonFormData personFormData) 

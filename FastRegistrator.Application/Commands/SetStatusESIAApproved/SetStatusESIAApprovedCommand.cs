@@ -44,7 +44,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
             if (person == null) 
             {
                 _logger.LogInformation($"Person doesn't exist in database.");
-                person = new Person(request.PhoneNumber);
+                person = new Registration(request.PhoneNumber);
                 _dbContext.Persons.Add(person);
             }
 
