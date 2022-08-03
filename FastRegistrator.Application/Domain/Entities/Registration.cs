@@ -8,7 +8,6 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
 
         public string PhoneNumber { get; private set; }
         public PersonData? PersonData { get; private set; }
-        public PersonFormData? PersonFormData { get; private set; }
 
         public IReadOnlyCollection<StatusHistoryItem> StatusHistory => _history;
 
@@ -17,16 +16,9 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
             PhoneNumber = phoneNumber;
         }
 
-        public void SetESIAApproved(PersonData data)
+        public void SetClientFilledApplication(PersonData personData) 
         {
-            PersonData = data;
-
-            AddStatusToHistory(PersonStatus.ESIAApproved);
-        }
-
-        public void SetClientFilledApplication(PersonFormData personFormData) 
-        {
-            PersonFormData = personFormData;
+            PersonData = personData;
 
             AddStatusToHistory(PersonStatus.ClientFilledApplication);
         }

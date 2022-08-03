@@ -20,6 +20,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         public string IssueId { get; init; } = null!;
         public string Citizenship { get; init; } = null!;
         public string Snils { get; init; } = null!;
+        public string FormData { get; init; } = null!;
     }
 
     public class SetStatusESIAApprovedCommandHandler : IRequestHandler<SetStatusESIAApprovedCommand>
@@ -49,7 +50,6 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
             }
 
             var personData = ConstructPersonData(request);
-            person.SetESIAApproved(personData);
 
             await _dbContext.SaveChangesAsync();
 
@@ -60,7 +60,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         {
             var personName = new PersonName(request.FirstName, request.MiddleName, request.LastName);
             var passport = new Passport(request.Series, request.Number, request.IssuedBy, request.IssueDate, request.IssueId, request.Citizenship);
-            var personData = new PersonData(personName, passport, request.Snils);
+            var personData = new PersonData(personName, passport, request.Snils, request.FormData);
 
             return personData;
         }

@@ -56,7 +56,6 @@ namespace FastRegistrator.Tests.Commands
                 .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
 
             Assert.NotNull(assertPerson);
-            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == PersonStatus.ESIAApproved);
         }
 
         [Fact]
@@ -135,7 +134,6 @@ namespace FastRegistrator.Tests.Commands
                 .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
 
             Assert.NotNull(assertPerson);
-            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == PersonStatus.ESIAApproved);
         }
 
         [Fact]

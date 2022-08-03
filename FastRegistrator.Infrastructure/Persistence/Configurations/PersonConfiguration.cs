@@ -15,8 +15,6 @@ namespace FastRegistrator.Infrastructure.Persistence.Configurations
             builder.HasMany(p => p.StatusHistory)
                    .WithOne()
                    .HasForeignKey("PersonId");
-
-            builder.Ignore(p => p.PersonFormData);
         }
     }
 }
