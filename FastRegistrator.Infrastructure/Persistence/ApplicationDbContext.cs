@@ -1,5 +1,6 @@
 ﻿using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Interfaces;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -7,12 +8,13 @@ namespace FastRegistrator.Infrastructure.Persistence
 {
     public partial class ApplicationDbContext : DbContext, IApplicationDbContext
     {
-        public ApplicationDbContext()
-        { }
+        private readonly IMediator _mediator;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IMediator mediator)
             : base(options)
-        { }
+        {
+            _mediator = mediator;
+        }
 
         public DbSet<Registration> Registrations => Set<Registration>();
         public DbSet<PersonData> PersonData => Set<PersonData>();
@@ -24,6 +26,17 @@ namespace FastRegistrator.Infrastructure.Persistence
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             base.OnModelCreating(builder);
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var domainEvents = await _mediator.DispatchDomainEvents(this);
+
+            var result = await base.SaveChangesAsync(cancellationToken);
+
+            await _mediator.DispatchCommittedDomainEvents(domainEvents);
+
+            return result;
         }
     }
 }

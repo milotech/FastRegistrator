@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FastRegistrator.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220727154248_Initial")]
+    [Migration("20220802125924_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -113,14 +113,14 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("IssuedBy")
+                            b1.Property<DateTime>("IssueDate")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("IssueId")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<DateTime>("IssuedDate")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("IssuerNumber")
+                            b1.Property<string>("IssuedBy")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
@@ -128,7 +128,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("Serial")
+                            b1.Property<string>("Series")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 

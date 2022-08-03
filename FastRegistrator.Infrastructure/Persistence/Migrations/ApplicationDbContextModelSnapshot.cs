@@ -111,14 +111,14 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("IssuedBy")
+                            b1.Property<DateTime>("IssueDate")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("IssueId")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<DateTime>("IssuedDate")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("IssuerNumber")
+                            b1.Property<string>("IssuedBy")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
@@ -126,7 +126,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("Serial")
+                            b1.Property<string>("Series")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
