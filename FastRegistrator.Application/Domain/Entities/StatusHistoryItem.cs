@@ -2,27 +2,36 @@
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class StatusHistoryItem : BaseEntity
+    public class StatusHistoryItem : BaseEntity<int>
     {
-        public PersonStatus Status { get; private set; }
-        public DateTime StatusDT { get; private set; }        
-        public PrizmaCheckResult? PrizmaCheck { get; private set; }
+        public RegistrationStatus Status { get; private set; }
+        public DateTime StatusDT { get; private set; } 
+        public PrizmaCheckResult? PrizmaCheckResult { get; private set; }
+        public PrizmaCheckError? PrizmaCheckError { get; private set; }
 
-        public StatusHistoryItem(PersonStatus status)
+        public StatusHistoryItem(RegistrationStatus status)
         {
             Status = status;
             StatusDT = DateTime.UtcNow;
         }
 
-        public static StatusHistoryItem FromPrizmaCheckResult(PrizmaCheckResult checkResult)
+        public static StatusHistoryItem FromPrizmaCheckResult(PrizmaCheckResult prizmaCheckResult)
         {
-            var status = checkResult.Result
-                ? PersonStatus.PrizmaCheckSuccessful
-                : PersonStatus.PrizmaCheckRejected;
+            var status = prizmaCheckResult.Result
+                ? RegistrationStatus.PrizmaCheckSuccessful
+                : RegistrationStatus.PrizmaCheckRejected;
 
             return new StatusHistoryItem(status)
             {
-                PrizmaCheck = checkResult
+                PrizmaCheckResult = prizmaCheckResult
+            };
+        }
+
+        public static StatusHistoryItem FromPrizmaCheckError(PrizmaCheckError prizmaCheckError)
+        {
+            return new StatusHistoryItem(RegistrationStatus.PrizmaCheckFailed)
+            {
+                PrizmaCheckError = prizmaCheckError
             };
         }
     }

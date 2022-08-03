@@ -1,5 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Commands.CheckPersonByPhone;
-using FastRegistrator.ApplicationCore.Commands.SetStatusESIANotApproved;
+﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
 using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
 using FastRegistrator.ApplicationCore.IntegrationEvents.Handlers;
 using FastRegistrator.ApplicationCore.Interfaces;
@@ -11,8 +10,7 @@ namespace FastRegistrator.ApplicationCore
     {
         public static void StartApplicationSubscriptions(this IEventBus eventBus)
         {
-            eventBus.SubscribeWithCommand<PersonCheckRequestedEvent, CheckPersonByPhoneCommand>();
-            eventBus.SubscribeWithCommand<ESIANotApprovedEvent, SetStatusESIANotApprovedCommand>();
+            eventBus.SubscribeWithCommand<ESIAApprovedEvent, SetStatusESIAApprovedCommand>();
 
             eventBus.Subscribe<TestIntegrationEvent, TestIntegrationEventHandler>();
         }

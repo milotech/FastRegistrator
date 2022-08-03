@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FastRegistrator.Infrastructure.Persistence.Configurations
 {
-    public class PersonConfiguration : IEntityTypeConfiguration<Person>
+    public class RegistrationConfiguration : IEntityTypeConfiguration<Registration>
     {
-        public void Configure(EntityTypeBuilder<Person> builder) 
+        public void Configure(EntityTypeBuilder<Registration> builder) 
         {
             builder.HasOne(p => p.PersonData)
                    .WithOne()
@@ -14,9 +14,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Configurations
 
             builder.HasMany(p => p.StatusHistory)
                    .WithOne()
-                   .HasForeignKey("PersonId");
-
-            builder.Ignore(p => p.PersonFormData);
+                   .HasForeignKey("RegistrationId");
         }
     }
 }

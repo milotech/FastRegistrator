@@ -47,8 +47,7 @@ namespace FastRegistrator.Infrastructure
         {
             // incoming messages configuration
             rabbitMq.ConfigureEvent<TestIntegrationEvent>(RabbitMqConstants.Exchanges.FastRegistrator);
-            rabbitMq.ConfigureEvent<PersonCheckRequestedEvent>(RabbitMqConstants.Exchanges.FastRegistrator);
-            rabbitMq.ConfigureEvent<ESIANotApprovedEvent>(RabbitMqConstants.Exchanges.FastRegistrator);
+            rabbitMq.ConfigureEvent<ESIAApprovedEvent>(RabbitMqConstants.Exchanges.FastRegistrator);
 
             // outcoming messages configuration
             // ...

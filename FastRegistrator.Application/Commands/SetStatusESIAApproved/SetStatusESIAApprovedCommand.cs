@@ -20,6 +20,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         public string IssueId { get; init; } = null!;
         public string Citizenship { get; init; } = null!;
         public string Snils { get; init; } = null!;
+        public string FormData { get; init; } = null!;
     }
 
     public class SetStatusESIAApprovedCommandHandler : IRequestHandler<SetStatusESIAApprovedCommand>
@@ -37,19 +38,18 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         {
             _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' approved by ESIA.");
 
-            var query = _dbContext.Persons.Where(p => p.PhoneNumber == request.PhoneNumber);
+            var query = _dbContext.Registrations.Where(p => p.PhoneNumber == request.PhoneNumber);
 
             var person = await query.FirstOrDefaultAsync(cancellationToken);
 
             if (person == null) 
             {
                 _logger.LogInformation($"Person doesn't exist in database.");
-                person = new Person(request.PhoneNumber);
-                _dbContext.Persons.Add(person);
+                person = new Registration(request.PhoneNumber, ConstructPersonData(request));
+                _dbContext.Registrations.Add(person);
             }
 
             var personData = ConstructPersonData(request);
-            person.SetESIAApproved(personData);
 
             await _dbContext.SaveChangesAsync();
 
@@ -60,7 +60,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         {
             var personName = new PersonName(request.FirstName, request.MiddleName, request.LastName);
             var passport = new Passport(request.Series, request.Number, request.IssuedBy, request.IssueDate, request.IssueId, request.Citizenship);
-            var personData = new PersonData(personName, passport, request.Snils);
+            var personData = new PersonData(personName, passport, request.Snils, request.FormData);
 
             return personData;
         }
