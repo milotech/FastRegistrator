@@ -6,42 +6,44 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
     {
         private List<StatusHistoryItem> _history = new();
 
-        public string PhoneNumber { get; private set; }
-        public PersonData? PersonData { get; private set; }
+        public string PhoneNumber { get; private set; } = null!;
+        public PersonData PersonData { get; private set; } = null!;
 
         public IReadOnlyCollection<StatusHistoryItem> StatusHistory => _history;
 
-        public Registration(string phoneNumber)
+        public Registration(string phoneNumber, PersonData personData)
         {
             PhoneNumber = phoneNumber;
-        }
-
-        public void SetClientFilledApplication(PersonData personData) 
-        {
             PersonData = personData;
 
-            AddStatusToHistory(PersonStatus.ClientFilledApplication);
+            AddStatusToHistory(RegistrationStatus.ClientFilledApplication);
         }
 
         public void SetPrizmaCheckInProgress()
-            => AddStatusToHistory(PersonStatus.PrizmaCheckInProgress);
+            => AddStatusToHistory(RegistrationStatus.PrizmaCheckInProgress);
 
-        public void SetPrizmaCheckResult(PrizmaCheckResult checkResult)
+        public void SetPrizmaCheckResult(PrizmaCheckResult prizmaCheckResult)
         {
-            var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckResult(checkResult);
+            var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckResult(prizmaCheckResult);
             _history.Add(statusHistoryItem);
         }
 
-        public void SetClientReadyForRegistration()
-            => AddStatusToHistory(PersonStatus.ClientReadyForRegistration);
+        public void SetPrizmaCheckError(PrizmaCheckError prizmaCheckError)
+        {
+            var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckError(prizmaCheckError);
+            _history.Add(statusHistoryItem);
+        }
+
+        public void SetClientSentForRegistrationToIC()
+            => AddStatusToHistory(RegistrationStatus.ClientSentForRegistrationToIC);
         
         public void SetAccountOpened()
-            => AddStatusToHistory(PersonStatus.AccountOpened);
+            => AddStatusToHistory(RegistrationStatus.AccountOpened);
         
         public void SetAccountClosed()
-            => AddStatusToHistory(PersonStatus.AccountClosed);
+            => AddStatusToHistory(RegistrationStatus.AccountClosed);
         
-        private void AddStatusToHistory(PersonStatus status) 
+        private void AddStatusToHistory(RegistrationStatus status) 
         {
             var statusHistoryItem = new StatusHistoryItem(status);
             _history.Add(statusHistoryItem);

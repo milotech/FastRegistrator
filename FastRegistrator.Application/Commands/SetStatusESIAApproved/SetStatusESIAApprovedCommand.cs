@@ -38,15 +38,15 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         {
             _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' approved by ESIA.");
 
-            var query = _dbContext.Persons.Where(p => p.PhoneNumber == request.PhoneNumber);
+            var query = _dbContext.Registrations.Where(p => p.PhoneNumber == request.PhoneNumber);
 
             var person = await query.FirstOrDefaultAsync(cancellationToken);
 
             if (person == null) 
             {
                 _logger.LogInformation($"Person doesn't exist in database.");
-                person = new Registration(request.PhoneNumber);
-                _dbContext.Persons.Add(person);
+                person = new Registration(request.PhoneNumber, ConstructPersonData(request));
+                _dbContext.Registrations.Add(person);
             }
 
             var personData = ConstructPersonData(request);

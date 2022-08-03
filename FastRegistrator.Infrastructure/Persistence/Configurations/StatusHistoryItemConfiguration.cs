@@ -6,13 +6,13 @@ namespace FastRegistrator.Infrastructure.Persistence.Configurations
 {
     public class StatusHistoryItemConfiguration : IEntityTypeConfiguration<StatusHistoryItem>
     {
-        public void Configure(EntityTypeBuilder<StatusHistoryItem> builder)
+        public void Configure(EntityTypeBuilder<StatusHistoryItem> builder) 
         {
-            builder.HasOne(item => item.PrizmaCheckResponse!.PrizmaCheckResult)
+            builder.HasOne(item => item.PrizmaCheckResult)
                    .WithOne()
                    .HasForeignKey<PrizmaCheckResult>(p => p.Id);
 
-            builder.HasOne(item => item.PrizmaCheckResponse!.PrizmaCheckError)
+            builder.HasOne(item => item.PrizmaCheckError)
                    .WithOne()
                    .HasForeignKey<PrizmaCheckError>(p => p.Id);
         }

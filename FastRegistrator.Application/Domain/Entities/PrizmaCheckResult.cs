@@ -2,7 +2,7 @@
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class PrizmaCheckResult : BaseEntity<Guid>
+    public class PrizmaCheckResult : BaseEntity<int>
     {
         public bool Result => RejectionReasonCode == RejectionReason.None;
 

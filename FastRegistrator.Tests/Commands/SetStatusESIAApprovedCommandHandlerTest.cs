@@ -1,6 +1,6 @@
 ﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
 using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.Enums;
+using FastRegistrator.ApplicationCore.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -21,6 +21,7 @@ namespace FastRegistrator.Tests.Commands
         public const string ISSUE_ID = "111-111";
         public const string CITIZENSHIP = "Russia";
         public const string SNILS = "111-111-111 11";
+        public const string FORM_DATA = "";
 
         [Fact]
         [Description("Arrange Person doesn't exist in database" +
@@ -51,7 +52,7 @@ namespace FastRegistrator.Tests.Commands
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            var assertPerson = await context.Persons
+            var assertPerson = await context.Registrations
                 .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
                 .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
 
@@ -87,7 +88,7 @@ namespace FastRegistrator.Tests.Commands
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            var assertPerson = await context.Persons
+            var assertPerson = await context.Registrations
                 .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
                 .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
 
@@ -105,8 +106,8 @@ namespace FastRegistrator.Tests.Commands
             var logger = new Mock<ILogger<SetStatusESIAApprovedCommandHandler>>();
             using var context = CreateDbContext();
 
-            var person = new Registration(PERSON_PHONE_NUMBER);
-            context.Persons.Add(person);
+            var person = new Registration(PERSON_PHONE_NUMBER, ConstructPersonData());
+            context.Registrations.Add(person);
             await context.SaveChangesAsync();
 
             var handler = new SetStatusESIAApprovedCommandHandler(context, logger.Object);
@@ -129,7 +130,7 @@ namespace FastRegistrator.Tests.Commands
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            var assertPerson = await context.Persons
+            var assertPerson = await context.Registrations
                 .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
                 .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
 
@@ -146,8 +147,8 @@ namespace FastRegistrator.Tests.Commands
             var logger = new Mock<ILogger<SetStatusESIAApprovedCommandHandler>>();
             using var context = CreateDbContext();
 
-            var person = new Registration(PERSON_PHONE_NUMBER);
-            context.Persons.Add(person);
+            var person = new Registration(PERSON_PHONE_NUMBER, ConstructPersonData());
+            context.Registrations.Add(person);
             await context.SaveChangesAsync();
 
             var handler = new SetStatusESIAApprovedCommandHandler(context, logger.Object);
@@ -170,12 +171,21 @@ namespace FastRegistrator.Tests.Commands
             var result = await handler.Handle(command, CancellationToken.None);
 
             // Assert
-            var assertPerson = await context.Persons
+            var assertPerson = await context.Registrations
                 .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
                 .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
 
             Assert.NotNull(assertPerson);
             Assert.NotNull(assertPerson!.PersonData);
+        }
+
+        private PersonData ConstructPersonData()
+        {
+            var personName = new PersonName(FIRST_NAME, MIDDLE_NAME, LAST_NAME);
+            var passport = new Passport(SERIES, NUMBER, ISSUED_BY, ISSUE_DATE, ISSUE_ID, CITIZENSHIP);
+            var personData = new PersonData(personName, passport, SNILS, FORM_DATA);
+
+            return personData;
         }
     }
 }

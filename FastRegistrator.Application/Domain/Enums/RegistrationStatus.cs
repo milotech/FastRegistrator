@@ -1,6 +1,6 @@
 ﻿namespace FastRegistrator.ApplicationCore.Domain.Enums
 {
-    public enum PersonStatus
+    public enum RegistrationStatus
     {
         // Потенциальный клиент – Заполнил заявление
         ClientFilledApplication,
@@ -10,8 +10,10 @@
         PrizmaCheckRejected,
         // Потенциальный клиент – Проверен
         PrizmaCheckSuccessful,
-        // Потенциальный клиент – Готов к регистрации в учетной системе
-        ClientReadyForRegistration,
+        // Потенциальный клиент – Ошибка со стороны Призмы
+        PrizmaCheckFailed,
+        // Отправлен на регистрацию в ИЦ
+        ClientSentForRegistrationToIC,
         // Клиент – Счет открыт
         AccountOpened,
         // Клиент – Счет закрыт

@@ -1,6 +1,6 @@
 ﻿namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
-    public class PrizmaCheckError : BaseEntity<Guid>
+    public class PrizmaCheckError : BaseEntity<int>
     {
         public string? ErrorMessage { get; private set; }
         public int PrizmaErrorCode { get; private set; }

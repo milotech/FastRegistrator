@@ -5,7 +5,7 @@ namespace FastRegistrator.ApplicationCore.Interfaces
 {
     public interface IApplicationDbContext
     {
-        DbSet<Registration> Persons { get; }
+        DbSet<Registration> Registrations { get; }
         DbSet<PersonData> PersonData { get; }
         DbSet<StatusHistoryItem> StatusHistory { get; }
         DbSet<PrizmaCheckResult> PrizmaChecks { get; }
