@@ -8,7 +8,8 @@ namespace FastRegistrator.API.Controllers
         [HttpGet]
         public async Task<ActionResult> Check(string name, int age)
         {
-            await Mediator.Send(new TestEventsCommand(name, age));
+            await Mediator.Send(new TestEventsCommand("89990000000", name, "Ivanov"));
+
             return Ok();
         }
     }

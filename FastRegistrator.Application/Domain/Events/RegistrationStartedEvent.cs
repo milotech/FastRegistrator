@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FastRegistrator.ApplicationCore.Domain.Entities;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,5 @@ using System.Threading.Tasks;
 
 namespace FastRegistrator.ApplicationCore.Domain.Events
 {
-    // TODO: Registration Entity with included PersonData here
-    public record RegistrationStartedEvent(Guid RegistrationId) : INotification;
+    public record RegistrationStartedEvent(Registration Registration) : INotification;
 }
