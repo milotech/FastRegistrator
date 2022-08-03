@@ -2,13 +2,15 @@
 {
     public class PrizmaCheckError : BaseEntity<int>
     {
-        public string ErrorMessage { get; private set; }
+        public string Message { get; private set; }
+        public string Errors { get; private set; }
         public int StatusCode { get; private set; }
         public int PrizmaErrorCode { get; private set; }
 
-        public PrizmaCheckError(string errorMessage, int statusCode, int prizmaErrorCode)
+        public PrizmaCheckError(string message, string errors, int statusCode, int prizmaErrorCode)
         {
-            ErrorMessage = errorMessage;
+            Message = message;
+            Errors = errors;
             StatusCode = statusCode;
             PrizmaErrorCode = prizmaErrorCode;
         }
