@@ -2,6 +2,11 @@
 
 namespace FastRegistrator.ApplicationCore.Domain
 {
+    public abstract class BaseEntity<T> : BaseEntity
+    {
+        public T Id { get; protected set; } = default(T)!;
+    }
+
     public abstract class BaseEntity
     {
         private List<INotification>? _domainEvents;
@@ -22,11 +27,5 @@ namespace FastRegistrator.ApplicationCore.Domain
         {
             _domainEvents?.Clear();
         }
-    }
-
-    public abstract class BaseEntity<T> : BaseEntity
-    {
-        public T Id { get; protected set; } = default(T)!;
-
     }
 }
