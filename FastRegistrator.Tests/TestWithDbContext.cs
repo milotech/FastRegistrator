@@ -1,6 +1,8 @@
 ﻿using FastRegistrator.Infrastructure.Persistence;
+using MediatR;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using System.Data.Common;
 
 namespace FastRegistrator.Tests
@@ -22,12 +24,14 @@ namespace FastRegistrator.Tests
                 .UseSqlite(_connection)
                 .Options;
 
+            var mediator = new Mock<IMediator>().Object;
+
             // Create the schema
-            using var context = new ApplicationDbContext(_contextOptions);
+            using var context = new ApplicationDbContext(_contextOptions, mediator);
             context.Database.EnsureCreated();
         }
 
-        protected ApplicationDbContext CreateDbContext() => new ApplicationDbContext(_contextOptions);
+        protected ApplicationDbContext CreateDbContext() => new ApplicationDbContext(_contextOptions, new Mock<IMediator>().Object);
 
         public void Dispose() => _connection.Dispose();
     }

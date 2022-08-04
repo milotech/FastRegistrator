@@ -10,41 +10,41 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Persons",
+                name: "Registrations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Persons", x => x.Id);
+                    table.PrimaryKey("PK_Registrations", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "PersonData",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name_FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name_MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Name_LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Passport_Serial = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Passport_Series = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Passport_Number = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Passport_IssuedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Passport_IssuedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Passport_IssuerNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Passport_IssueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Passport_IssueId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Passport_Citizenship = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Snils = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Snils = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FormData = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PersonData", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PersonData_Persons_Id",
+                        name: "FK_PersonData_Registrations_Id",
                         column: x => x.Id,
-                        principalTable: "Persons",
+                        principalTable: "Registrations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -57,16 +57,37 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Status = table.Column<int>(type: "int", nullable: false),
                     StatusDT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PersonId = table.Column<int>(type: "int", nullable: true)
+                    RegistrationId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StatusHistory", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StatusHistory_Persons_PersonId",
-                        column: x => x.PersonId,
-                        principalTable: "Persons",
+                        name: "FK_StatusHistory_Registrations_RegistrationId",
+                        column: x => x.RegistrationId,
+                        principalTable: "Registrations",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PrizmaCheckError",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Errors = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StatusCode = table.Column<int>(type: "int", nullable: false),
+                    PrizmaErrorCode = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PrizmaCheckError", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PrizmaCheckError_StatusHistory_Id",
+                        column: x => x.Id,
+                        principalTable: "StatusHistory",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,9 +110,9 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_StatusHistory_PersonId",
+                name: "IX_StatusHistory_RegistrationId",
                 table: "StatusHistory",
-                column: "PersonId");
+                column: "RegistrationId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -100,13 +121,16 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                 name: "PersonData");
 
             migrationBuilder.DropTable(
+                name: "PrizmaCheckError");
+
+            migrationBuilder.DropTable(
                 name: "PrizmaChecks");
 
             migrationBuilder.DropTable(
                 name: "StatusHistory");
 
             migrationBuilder.DropTable(
-                name: "Persons");
+                name: "Registrations");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FastRegistrator.ApplicationCore.Domain.Enums;
+using FastRegistrator.ApplicationCore.Domain.Events;
 
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
@@ -11,12 +12,15 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
 
         public IReadOnlyCollection<StatusHistoryItem> StatusHistory => _history;
 
+        private Registration() { /* For EF */ }
+
         public Registration(string phoneNumber, PersonData personData)
         {
             PhoneNumber = phoneNumber;
             PersonData = personData;
 
             AddStatusToHistory(RegistrationStatus.ClientFilledApplication);
+            AddDomainEvent(new RegistrationStartedEvent(this));
         }
 
         public void SetPrizmaCheckInProgress()

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FastRegistrator.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220727154248_Initial")]
+    [Migration("20220803160344_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,27 +24,14 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Person", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Persons");
-                });
-
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PersonData", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("FormData")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Snils")
                         .IsRequired()
@@ -53,6 +40,30 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PersonData");
+                });
+
+            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckError", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Errors")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PrizmaErrorCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatusCode")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PrizmaCheckError");
                 });
 
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckResult", b =>
@@ -72,6 +83,21 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     b.ToTable("PrizmaChecks");
                 });
 
+            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Registration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Registrations");
+                });
+
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", b =>
                 {
                     b.Property<int>("Id")
@@ -80,8 +106,8 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("PersonId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("RegistrationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -91,14 +117,14 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonId");
+                    b.HasIndex("RegistrationId");
 
                     b.ToTable("StatusHistory");
                 });
 
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PersonData", b =>
                 {
-                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Person", null)
+                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Registration", null)
                         .WithOne("PersonData")
                         .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.PersonData", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -106,10 +132,17 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
 
                     b.OwnsOne("FastRegistrator.ApplicationCore.Domain.ValueObjects.Passport", "Passport", b1 =>
                         {
-                            b1.Property<int>("PersonDataId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("PersonDataId")
+                                .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("Citizenship")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<DateTime>("IssueDate")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("IssueId")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
@@ -117,18 +150,11 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<DateTime>("IssuedDate")
-                                .HasColumnType("datetime2");
-
-                            b1.Property<string>("IssuerNumber")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
                             b1.Property<string>("Number")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("Serial")
+                            b1.Property<string>("Series")
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
@@ -142,8 +168,8 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
 
                     b.OwnsOne("FastRegistrator.ApplicationCore.Domain.ValueObjects.PersonName", "Name", b1 =>
                         {
-                            b1.Property<int>("PersonDataId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("PersonDataId")
+                                .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("FirstName")
                                 .IsRequired()
@@ -171,10 +197,19 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckError", b =>
+                {
+                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", null)
+                        .WithOne("PrizmaCheckError")
+                        .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckError", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckResult", b =>
                 {
                     b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", null)
-                        .WithOne("PrizmaCheck")
+                        .WithOne("PrizmaCheckResult")
                         .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckResult", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -182,21 +217,24 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", b =>
                 {
-                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Person", null)
+                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Registration", null)
                         .WithMany("StatusHistory")
-                        .HasForeignKey("PersonId");
+                        .HasForeignKey("RegistrationId");
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Person", b =>
+            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Registration", b =>
                 {
-                    b.Navigation("PersonData");
+                    b.Navigation("PersonData")
+                        .IsRequired();
 
                     b.Navigation("StatusHistory");
                 });
 
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", b =>
                 {
-                    b.Navigation("PrizmaCheck");
+                    b.Navigation("PrizmaCheckError");
+
+                    b.Navigation("PrizmaCheckResult");
                 });
 #pragma warning restore 612, 618
         }
