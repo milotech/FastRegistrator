@@ -6,9 +6,9 @@ namespace FastRegistrator.API.Controllers
     public class TestController : ApiControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult> Check(string name, CancellationToken cancel)
+        public async Task<ActionResult> Check(Guid id, string name, CancellationToken cancel)
         {
-            await ExecuteCommand(new TestEventsCommand("89990000000", name, "Ivanov"), cancel);
+            await ExecuteCommand(new TestEventsCommand(id, "89990000000", name, "Ivanov"), cancel);
 
             return Ok();
         }

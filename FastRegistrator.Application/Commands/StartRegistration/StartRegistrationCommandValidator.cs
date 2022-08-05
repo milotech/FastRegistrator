@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
 {
-    public class SetStatusESIAApprovedCommandValidator : AbstractValidator<SetStatusESIAApprovedCommand>
+    public class StartRegistrationCommandValidator : AbstractValidator<StartRegistrationCommand>
     {
         public const string MobilePhoneIsEmpty = "Mobile phone is empty.";
         public const string MobilePhoneHasWrongFormat = "Mobile phone has wrong format.";
@@ -19,8 +19,9 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         public const string CitizenshipIsEmpty = "Citizenship is empty.";
         public const string SnilsIsEmpty = "Snils is empty.";
         public const string SnilsHasWrongFormat = "Snils has wrong format.";
+        public const string FormDataIsEmpty = "FormData is empty.";
 
-        public SetStatusESIAApprovedCommandValidator()
+        public StartRegistrationCommandValidator()
         {
             Transform(command => command.PhoneNumber, RemoveAllRedundantSymbols)
                 .NotEmpty().WithMessage(MobilePhoneIsEmpty)
@@ -53,9 +54,14 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
             Transform(command => command.Snils, RemoveAllRedundantSymbols)
                 .NotEmpty().WithMessage(SnilsIsEmpty)
                 .Matches(@"^\d{11}$").WithMessage(SnilsHasWrongFormat);
+
+            RuleFor(command => command.FormData)
+                .NotEmpty().WithMessage(FormDataIsEmpty);
         }
 
-        private string RemoveAllRedundantSymbols(string value)
-            => Regex.Replace(value, @"[+()\s\-]", string.Empty);
+        private string RemoveAllRedundantSymbols(string? value)
+            => value is null
+                    ? string.Empty
+                    : Regex.Replace(value, @"[+()\s\-]", string.Empty);
     }
 }

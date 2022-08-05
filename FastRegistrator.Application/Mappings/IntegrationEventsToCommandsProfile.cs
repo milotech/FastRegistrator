@@ -8,7 +8,7 @@ namespace FastRegistrator.ApplicationCore.Mappings
     {
         public IntegrationEventsToCommandsProfile()
         {
-            CreateMap<ESIAApprovedEvent, SetStatusESIAApprovedCommand>();
+            CreateMap<ESIAApprovedEvent, StartRegistrationCommand>();
         }
     }
 }
