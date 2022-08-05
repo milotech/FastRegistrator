@@ -15,8 +15,9 @@ namespace FastRegistrator.API
                 await initialiser.SeedAsync();
             }
 
-            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            eventBus.StartApplicationSubscriptions();
+            var eventBus = app.ApplicationServices.GetService<IEventBus>();
+            if(eventBus != null)
+                eventBus.StartApplicationSubscriptions();
         }
     }
 }
