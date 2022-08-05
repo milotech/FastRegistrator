@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.Commands.Tests
 {
-    public record TestEventsCommand(string PhoneNumber, string FirstName, string LastName) : IRequest;
+    public record TestEventsCommand(Guid Id, string PhoneNumber, string FirstName, string LastName) : IRequest;
 
     public class TestEventsCommandHandler: AsyncRequestHandler<TestEventsCommand>
     {
@@ -26,7 +26,7 @@ namespace FastRegistrator.ApplicationCore.Commands.Tests
             var name = new PersonName(request.FirstName, null, request.LastName);
             var passport = new Passport("0000", "000000", "test", new DateTime(1900, 01, 01), "test", "RUS");
             var personData = new PersonData(name, passport, "123456789", "{}");
-            var registration = new Registration(request.PhoneNumber, personData);
+            var registration = new Registration(request.Id, request.PhoneNumber, personData);
 
             _logger.LogInformation("New Registration created: " + registration.Id);
 

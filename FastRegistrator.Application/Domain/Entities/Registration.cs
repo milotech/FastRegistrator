@@ -14,8 +14,9 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
 
         private Registration() { /* For EF */ }
 
-        public Registration(string phoneNumber, PersonData personData)
+        public Registration(Guid id, string phoneNumber, PersonData personData)
         {
+            Id = id;
             PhoneNumber = phoneNumber;
             PersonData = personData;
 

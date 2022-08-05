@@ -10,7 +10,7 @@ namespace FastRegistrator.ApplicationCore
     {
         public static void StartApplicationSubscriptions(this IEventBus eventBus)
         {
-            eventBus.SubscribeWithCommand<ESIAApprovedEvent, SetStatusESIAApprovedCommand>();
+            eventBus.SubscribeWithCommand<ESIAApprovedEvent, StartRegistrationCommand>();
 
             eventBus.Subscribe<TestIntegrationEvent, TestIntegrationEventHandler>();
         }

@@ -2,13 +2,13 @@
 using FastRegistrator.ApplicationCore.Domain.ValueObjects;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
 {
-    public record class SetStatusESIAApprovedCommand : IRequest
+    public record class StartRegistrationCommand : IRequest
     {
+        public Guid Guid { get; init; }
         public string PhoneNumber { get; init; } = null!;
         public string FirstName { get; init; } = null!;
         public string? MiddleName { get; init; }
@@ -23,40 +23,30 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         public string FormData { get; init; } = null!;
     }
 
-    public class SetStatusESIAApprovedCommandHandler : IRequestHandler<SetStatusESIAApprovedCommand>
+    public class StartRegistrationCommandHandler : IRequestHandler<StartRegistrationCommand>
     {
         private readonly IApplicationDbContext _dbContext;
-        private readonly ILogger<SetStatusESIAApprovedCommandHandler> _logger;
+        private readonly ILogger<StartRegistrationCommandHandler> _logger;
 
-        public SetStatusESIAApprovedCommandHandler(IApplicationDbContext dbContext, ILogger<SetStatusESIAApprovedCommandHandler> logger)
+        public StartRegistrationCommandHandler(IApplicationDbContext dbContext, ILogger<StartRegistrationCommandHandler> logger)
         {
             _dbContext = dbContext;
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(SetStatusESIAApprovedCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(StartRegistrationCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Person with phone number '{request.PhoneNumber}' approved by ESIA.");
+            _logger.LogInformation($"Registration for person with phone number '{request.PhoneNumber}' is begun.");
 
-            var query = _dbContext.Registrations.Where(p => p.PhoneNumber == request.PhoneNumber);
-
-            var person = await query.FirstOrDefaultAsync(cancellationToken);
-
-            if (person == null) 
-            {
-                _logger.LogInformation($"Person doesn't exist in database.");
-                person = new Registration(request.PhoneNumber, ConstructPersonData(request));
-                _dbContext.Registrations.Add(person);
-            }
-
-            var personData = ConstructPersonData(request);
+            var registration = new Registration(request.Guid, request.PhoneNumber, ConstructPersonData(request));
+            _dbContext.Registrations.Add(registration);
 
             await _dbContext.SaveChangesAsync();
 
             return Unit.Value;
         }
 
-        private PersonData ConstructPersonData(SetStatusESIAApprovedCommand request) 
+        private PersonData ConstructPersonData(StartRegistrationCommand request) 
         {
             var personName = new PersonName(request.FirstName, request.MiddleName, request.LastName);
             var passport = new Passport(request.Series, request.Number, request.IssuedBy, request.IssueDate, request.IssueId, request.Citizenship);
