@@ -1,4 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
+﻿using FastRegistrator.ApplicationCore.Attributes;
+using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.ValueObjects;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.Commands.Tests
 {
+    [Command(CommandExecutionMode.InPlace)]
     public record TestEventsCommand(string PhoneNumber, string FirstName, string LastName) : IRequest;
 
     public class TestEventsCommandHandler: AsyncRequestHandler<TestEventsCommand>
@@ -13,7 +15,7 @@ namespace FastRegistrator.ApplicationCore.Commands.Tests
         private readonly IApplicationDbContext _dbContext;
         private readonly ILogger _logger;
 
-        public TestEventsCommandHandler(IApplicationDbContext dbContext, ILogger<TestEventsCommandHandler> logger, IPublisher publisher)
+        public TestEventsCommandHandler(IApplicationDbContext dbContext, ILogger<TestEventsCommandHandler> logger)
         {
             _dbContext = dbContext;
             _logger = logger;

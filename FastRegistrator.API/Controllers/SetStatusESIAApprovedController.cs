@@ -7,9 +7,10 @@ namespace FastRegistrator.API.Controllers
     public class SetStatusESIAApprovedController : ApiControllerBase
     {
         [HttpPost]
-        public async Task<ActionResult<Unit>> SetStatus(SetStatusESIAApprovedCommand command) 
+        public async Task<ActionResult> SetStatus(SetStatusESIAApprovedCommand command, CancellationToken cancel) 
         {
-            return await Mediator.Send(command);
+            await ExecuteCommand(command, cancel);
+            return Ok();
         }
     }
 }

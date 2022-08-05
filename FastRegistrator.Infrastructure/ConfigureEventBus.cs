@@ -29,15 +29,18 @@ namespace FastRegistrator.Infrastructure
     {
         public static void RegisterEventBus(this IServiceCollection services, IConfiguration configuration)
         {
+            if (!configuration.GetSection("EventBus").GetValue<bool>("Enabled"))
+                return;
+
             services.Configure<EventBusConnectionSettings>(configuration.GetSection("EventBus"));
             services.AddSingleton<RabbitMqConnection>();
             services.AddSingleton<IEventBus, RabbitMqEventBus>((sp) =>
             {
                 var connection = sp.GetRequiredService<RabbitMqConnection>();
                 var logger = sp.GetRequiredService<ILogger<RabbitMqEventBus>>();
-                var appLifeTyime = sp.GetRequiredService<IHostApplicationLifetime>();
+                var appLifeTime = sp.GetRequiredService<IHostApplicationLifetime>();
 
-                var eventBus = new RabbitMqEventBus(connection, logger, sp, appLifeTyime.ApplicationStopping);
+                var eventBus = new RabbitMqEventBus(connection, logger, sp, appLifeTime.ApplicationStopping);
                 eventBus.ConfigureRabbitMqEvents();
                 return eventBus;
             });
