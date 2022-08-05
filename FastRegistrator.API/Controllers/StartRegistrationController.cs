@@ -1,5 +1,4 @@
 ﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FastRegistrator.API.Controllers
@@ -7,9 +6,10 @@ namespace FastRegistrator.API.Controllers
     public class StartRegistrationController : ApiControllerBase
     {
         [HttpPost]
-        public async Task<ActionResult<Unit>> SetStatus(StartRegistrationCommand command) 
+        public async Task<ActionResult> StartRegistration(StartRegistrationCommand command, CancellationToken cancel) 
         {
-            return await Mediator.Send(command);
+            await ExecuteCommand(command, cancel);
+            return Ok();
         }
     }
 }

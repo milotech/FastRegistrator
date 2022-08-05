@@ -1,4 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
+﻿using FastRegistrator.ApplicationCore.Attributes;
+using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.ValueObjects;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
 {
+    [Command(CommandExecutionMode.InPlace)]
     public record class StartRegistrationCommand : IRequest
     {
         public Guid Guid { get; init; }
