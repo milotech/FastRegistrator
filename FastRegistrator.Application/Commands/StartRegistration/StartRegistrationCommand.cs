@@ -25,7 +25,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         public string FormData { get; init; } = null!;
     }
 
-    public class StartRegistrationCommandHandler : IRequestHandler<StartRegistrationCommand>
+    public class StartRegistrationCommandHandler : AsyncRequestHandler<StartRegistrationCommand>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly ILogger<StartRegistrationCommandHandler> _logger;
@@ -36,7 +36,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(StartRegistrationCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(StartRegistrationCommand request, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Registration for person with phone number '{request.PhoneNumber}' is begun.");
 
@@ -44,8 +44,6 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
             _dbContext.Registrations.Add(registration);
 
             await _dbContext.SaveChangesAsync();
-
-            return Unit.Value;
         }
 
         private PersonData ConstructPersonData(StartRegistrationCommand request) 
