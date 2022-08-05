@@ -1,4 +1,5 @@
 ﻿using FastRegistrator.ApplicationCore.Domain.Events;
+using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -27,15 +28,21 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
     public class RegistrationStartedCommittedEventHandler : INotificationHandler<RegistrationStartedEvent>
     {
         private readonly ILogger _logger;
+        private readonly ICommandExecutor _cmdExecutor;
 
-        public RegistrationStartedCommittedEventHandler(ILogger<RegistrationStartedCommittedEventHandler> logger)
+        public RegistrationStartedCommittedEventHandler(
+            ICommandExecutor cmdExecutor,
+            ILogger<RegistrationStartedCommittedEventHandler> logger            
+        )
         {
-            _logger = logger;
+            _cmdExecutor = cmdExecutor;
+            _logger = logger;            
         }
 
         public Task Handle(RegistrationStartedEvent @event, CancellationToken cancellationToken)
         {
-            // send registration data to PrizmaCheckQueue
+            //var command = new CheckPrizmaCommand(...) {  ... }
+            //_cmdExecutor.Execute(command);
 
             _logger.LogInformation($"Registration '{@event.Registration.Id}' sent to KonturPrizma check queue.");
 

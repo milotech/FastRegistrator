@@ -1,15 +1,10 @@
 ﻿using FastRegistrator.ApplicationCore.Attributes;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FastRegistrator.ApplicationCore.Commands.Tests
 {
-    [Command(CommandExecutionMode.ExecutionQueue, ExecutionQueueParallelDegree = 5)]
+    [Command(CommandExecutionMode.ExecutionQueue)]
     public record TestRunFromQueueCommand(string FIO) : IRequest;
 
     public class TestRunFromQueueCommandHandler : AsyncRequestHandler<TestRunFromQueueCommand>
