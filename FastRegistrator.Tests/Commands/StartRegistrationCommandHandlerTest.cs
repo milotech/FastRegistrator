@@ -1,5 +1,6 @@
 ﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
 using FastRegistrator.ApplicationCore.Domain.Enums;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -32,7 +33,7 @@ namespace FastRegistrator.Tests.Commands
             // Arrange
             var logger = new Mock<ILogger<StartRegistrationCommandHandler>>();
             using var context = CreateDbContext();
-            var handler = new StartRegistrationCommandHandler(context, logger.Object);
+            IRequestHandler<StartRegistrationCommand> handler = new StartRegistrationCommandHandler(context, logger.Object);
             var command = new StartRegistrationCommand
             {
                 Guid = GUID,
@@ -71,7 +72,7 @@ namespace FastRegistrator.Tests.Commands
             // Arrange
             var logger = new Mock<ILogger<StartRegistrationCommandHandler>>();
             using var context = CreateDbContext();
-            var handler = new StartRegistrationCommandHandler(context, logger.Object);
+            IRequestHandler<StartRegistrationCommand> handler = new StartRegistrationCommandHandler(context, logger.Object);
             var command = new StartRegistrationCommand
             {
                 Guid = GUID,
