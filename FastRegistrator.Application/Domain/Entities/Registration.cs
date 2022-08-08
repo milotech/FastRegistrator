@@ -9,6 +9,7 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
 
         public string PhoneNumber { get; private set; } = null!;
         public PersonData PersonData { get; private set; } = null!;
+        public bool Completed { get; private set; }
 
         public IReadOnlyCollection<StatusHistoryItem> StatusHistory => _history;
 
@@ -25,29 +26,71 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         }
 
         public void SetPrizmaCheckInProgress()
-            => AddStatusToHistory(RegistrationStatus.PrizmaCheckInProgress);
+        {
+            ValidateCompletion();
+            AddStatusToHistory(RegistrationStatus.PrizmaCheckInProgress);
+        }
 
         public void SetPrizmaCheckResult(PrizmaCheckResult prizmaCheckResult)
         {
+            ValidateCompletion();
+
+            if(!prizmaCheckResult.Result)
+            {
+                SetCompleted();
+            }
+            else
+            {
+                AddDomainEvent(new PrizmaCheckPassedEvent(this));
+            }
+
             var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckResult(prizmaCheckResult);
             _history.Add(statusHistoryItem);
         }
 
         public void SetPrizmaCheckError(PrizmaCheckError prizmaCheckError)
         {
+            ValidateCompletion();
+            SetCompleted();
+
             var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckError(prizmaCheckError);
             _history.Add(statusHistoryItem);
         }
 
         public void SetClientSentForRegistrationToIC()
-            => AddStatusToHistory(RegistrationStatus.ClientSentForRegistrationToIC);
-        
+        {
+            ValidateCompletion();
+            AddStatusToHistory(RegistrationStatus.ClientSentForRegistrationToIC);
+        }
+
         public void SetAccountOpened()
-            => AddStatusToHistory(RegistrationStatus.AccountOpened);
-        
-        public void SetAccountClosed()
-            => AddStatusToHistory(RegistrationStatus.AccountClosed);
-        
+        {
+            ValidateCompletion();
+            SetCompleted();
+            AddStatusToHistory(RegistrationStatus.AccountOpened);
+        }
+
+        public void SetICRegistrationError()
+        {
+            ValidateCompletion();
+            SetCompleted();
+            AddStatusToHistory(RegistrationStatus.ICRegistrationFailed);
+        }
+
+        private void ValidateCompletion()
+        {
+            if (Completed)
+            {
+                throw new InvalidOperationException("Registration is completed");
+            }
+        }
+
+        private void SetCompleted()
+        {
+            Completed = true;
+            AddDomainEvent(new RegistrationCompletedEvent(this));
+        }
+
         private void AddStatusToHistory(RegistrationStatus status) 
         {
             var statusHistoryItem = new StatusHistoryItem(status);

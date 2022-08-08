@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.DomainEventHandlers
-{
+{    
     public class RegistrationStartedEventHandler : INotificationHandler<RegistrationStartedEvent>
     {
         private readonly ILogger _logger;
@@ -41,6 +41,8 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
 
         public Task Handle(RegistrationStartedEvent @event, CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"Registration '{@event.Registration.Id}' started.");
+
             //var command = new CheckPrizmaCommand(...) {  ... }
             //_cmdExecutor.Execute(command);
 
