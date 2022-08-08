@@ -14,9 +14,10 @@
         PrizmaCheckFailed,
         // Отправлен на регистрацию в ИЦ
         ClientSentForRegistrationToIC,
+        // Ошибка регистрации в ИЦ
+        ICRegistrationFailed,
         // Клиент – Счет открыт
         AccountOpened,
-        // Клиент – Счет закрыт
-        AccountClosed
+        
     }
 }
