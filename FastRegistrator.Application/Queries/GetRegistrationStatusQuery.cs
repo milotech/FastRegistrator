@@ -5,28 +5,34 @@ using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace FastRegistrator.ApplicationCore.Queries.GetStatus
 {
-    public record class GetStatusQuery(Guid Id) : IRequest<RegistrationStatusResponse>;
+    public record class GetRegistrationStatusQuery(Guid Id) : IRequest<RegistrationStatusResponse>;
 
-    public class GetStatusQueryHandler : IRequestHandler<GetStatusQuery, RegistrationStatusResponse>
+    public class GetREgistrationStatusQueryHandler : IRequestHandler<GetRegistrationStatusQuery, RegistrationStatusResponse>
     {
         private readonly IApplicationDbContext _context;
-        private readonly ILogger<GetStatusQueryHandler> _logger;
+        private readonly ILogger<GetREgistrationStatusQueryHandler> _logger;
 
-        public GetStatusQueryHandler(IApplicationDbContext context, ILogger<GetStatusQueryHandler> logger)
+        public GetREgistrationStatusQueryHandler(IApplicationDbContext context, ILogger<GetREgistrationStatusQueryHandler> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        public async Task<RegistrationStatusResponse> Handle(GetStatusQuery request, CancellationToken cancellationToken)
+        public async Task<RegistrationStatusResponse> Handle(GetRegistrationStatusQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Trying to fetch a registration with Guid: {request.Id}");
 
+            Expression<Func<Registration, IEnumerable<StatusHistoryItem>>> lastStatus =
+                reg => reg.StatusHistory.OrderByDescending(s => s.StatusDT).Take(1);
+
             var registration = await _context.Registrations.Where(reg => reg.Id == request.Id)
-                                                           .Include(reg => reg.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
+                                                           .Include(lastStatus).ThenInclude(shi => shi.PrizmaCheckResult)
+                                                           .Include(lastStatus).ThenInclude(shi => shi.PrizmaCheckError)
+                                                           .AsNoTracking()
                                                            .FirstOrDefaultAsync(cancellationToken);
 
             if (registration is null)
@@ -58,7 +64,7 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
 
                 if (statusHistoryItem.PrizmaCheckError.Errors is not null)
                 {
-                    message = statusHistoryItem.PrizmaCheckError.Message + statusHistoryItem.PrizmaCheckError.Errors;
+                    message = statusHistoryItem.PrizmaCheckError.Message + "\n" + statusHistoryItem.PrizmaCheckError.Errors;
                 }
 
                 error = new Error(message, errorSource);

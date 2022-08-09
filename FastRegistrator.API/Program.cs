@@ -1,4 +1,5 @@
 using FastRegistrator.API;
+using FastRegistrator.API.Filters;
 using FastRegistrator.ApplicationCore;
 using FastRegistrator.Infrastructure;
 using Serilog;
@@ -23,6 +24,9 @@ try
     builder.Services.AddControllers();
     builder.Services.AddApplicationServices();
     builder.Services.AddInfrastructureServices(builder.Configuration);
+
+    builder.Services.AddControllersWithViews(options =>
+            options.Filters.Add<ApiExceptionFilterAttribute>());
 
     builder.Services.AddSwaggerGen(x => {
         x.CustomSchemaIds(i => i.FullName);
