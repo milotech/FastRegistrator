@@ -16,8 +16,7 @@ namespace FastRegistrator.API.Filters
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
             {
                 { typeof(ValidationException), HandleValidationException },
-                { typeof(NotFoundException), HandleNotFoundException },
-                { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException }
+                { typeof(NotFoundException), HandleNotFoundException }
             };
         }
 
@@ -82,23 +81,6 @@ namespace FastRegistrator.API.Filters
             };
 
             context.Result = new NotFoundObjectResult(details);
-
-            context.ExceptionHandled = true;
-        }
-
-        private void HandleUnauthorizedAccessException(ExceptionContext context)
-        {
-            var details = new ProblemDetails
-            {
-                Status = StatusCodes.Status401Unauthorized,
-                Title = "Unauthorized",
-                Type = "https://tools.ietf.org/html/rfc7235#section-3.1"
-            };
-
-            context.Result = new ObjectResult(details)
-            {
-                StatusCode = StatusCodes.Status401Unauthorized
-            };
 
             context.ExceptionHandled = true;
         }
