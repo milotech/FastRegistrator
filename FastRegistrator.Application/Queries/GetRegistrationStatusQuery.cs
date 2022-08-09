@@ -43,7 +43,7 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
 
             var statusHistoryItem = registration.StatusHistory.First();
             
-            var prizmaRejectionReason = statusHistoryItem!.PrizmaCheckResult?.RejectionReasonCode ?? RejectionReason.None;
+            var prizmaRejectionReason = statusHistoryItem!.PrizmaCheckResult?.RejectionReasonCode;
 
             var error = ConstructError(statusHistoryItem);
 
