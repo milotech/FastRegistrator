@@ -1,5 +1,5 @@
-﻿using FastRegistrator.ApplicationCore;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.ApplicationCore.Interfaces;
+using FastRegistrator.ApplicationCore.Startup;
 using FastRegistrator.Infrastructure.Persistence;
 
 namespace FastRegistrator.API
@@ -8,6 +8,7 @@ namespace FastRegistrator.API
     {
         public static async Task InitialiseAsync(this IApplicationBuilder app)
         {
+            // Database
             using (var scope = app.ApplicationServices.CreateScope())
             {
                 var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
@@ -15,9 +16,15 @@ namespace FastRegistrator.API
                 await initialiser.SeedAsync();
             }
 
+            // EventBus
             var eventBus = app.ApplicationServices.GetService<IEventBus>();
             if(eventBus != null)
                 eventBus.StartApplicationSubscriptions();
+
+            // Incompleted registrations
+            var registrationsRecoverer = app.ApplicationServices.GetRequiredService<RegistrationsRecoverer>();
+            var appHostLifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+            await registrationsRecoverer.RecoverIncompletedRegistrations(appHostLifetime.ApplicationStopping);
         }
     }
 }

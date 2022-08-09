@@ -1,4 +1,5 @@
 ﻿using FastRegistrator.ApplicationCore.Behaviours;
+using FastRegistrator.ApplicationCore.Startup;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ namespace FastRegistrator.ApplicationCore
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            services.AddTransient<RegistrationsRecoverer>();
 
             return services;
         }

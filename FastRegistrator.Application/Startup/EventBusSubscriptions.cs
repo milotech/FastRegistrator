@@ -4,7 +4,7 @@ using FastRegistrator.ApplicationCore.IntegrationEvents.Handlers;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 
-namespace FastRegistrator.ApplicationCore
+namespace FastRegistrator.ApplicationCore.Startup
 {
     public static class EventBusSubscriptions
     {
