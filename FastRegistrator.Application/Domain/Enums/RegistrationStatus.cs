@@ -17,7 +17,6 @@
         // Ошибка регистрации в ИЦ
         ICRegistrationFailed,
         // Клиент – Счет открыт
-        AccountOpened,
-        
+        AccountOpened
     }
 }

@@ -35,7 +35,7 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         {
             ValidateCompletion();
 
-            if(!prizmaCheckResult.Result)
+            if (!prizmaCheckResult.Result)
             {
                 SetCompleted();
             }
