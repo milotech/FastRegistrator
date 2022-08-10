@@ -3,20 +3,18 @@
     public enum RegistrationStatus
     {
         // Потенциальный клиент – Заполнил заявление
-        ClientFilledApplication,
+        PersonDataReceived,
         // Потенциальный клиент – Отправлен на проверку
         PrizmaCheckInProgress,
         // Потенциальный клиент – Проверку не прошел
         PrizmaCheckRejected,
         // Потенциальный клиент – Проверен
         PrizmaCheckSuccessful,
-        // Потенциальный клиент – Ошибка со стороны Призмы
-        PrizmaCheckFailed,
         // Отправлен на регистрацию в ИЦ
-        ClientSentForRegistrationToIC,
-        // Ошибка регистрации в ИЦ
-        ICRegistrationFailed,
+        PersonDataSentToIC,
         // Клиент – Счет открыт
-        AccountOpened
+        AccountOpened,
+        // Регистрация завершена ошибкой
+        Error
     }
 }

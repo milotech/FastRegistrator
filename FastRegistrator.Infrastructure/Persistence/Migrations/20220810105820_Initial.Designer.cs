@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FastRegistrator.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220808141751_Initial")]
+    [Migration("20220810105820_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,36 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.AccountData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountData");
+                });
+
+            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Error", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Error");
+                });
 
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PersonData", b =>
                 {
@@ -42,34 +72,10 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     b.ToTable("PersonData");
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckError", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Errors")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PrizmaErrorCode")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StatusCode")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PrizmaCheckError");
-                });
-
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckResult", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PrizmaResponse")
                         .IsRequired()
@@ -123,6 +129,24 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     b.HasIndex("RegistrationId");
 
                     b.ToTable("StatusHistory");
+                });
+
+            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.AccountData", b =>
+                {
+                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Registration", null)
+                        .WithOne("AccountData")
+                        .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.AccountData", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Error", b =>
+                {
+                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Registration", null)
+                        .WithOne("Error")
+                        .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.Error", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PersonData", b =>
@@ -200,18 +224,9 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckError", b =>
-                {
-                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", null)
-                        .WithOne("PrizmaCheckError")
-                        .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckError", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckResult", b =>
                 {
-                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", null)
+                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Registration", null)
                         .WithOne("PrizmaCheckResult")
                         .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckResult", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -227,17 +242,16 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Registration", b =>
                 {
+                    b.Navigation("AccountData");
+
+                    b.Navigation("Error");
+
                     b.Navigation("PersonData")
                         .IsRequired();
 
-                    b.Navigation("StatusHistory");
-                });
-
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", b =>
-                {
-                    b.Navigation("PrizmaCheckError");
-
                     b.Navigation("PrizmaCheckResult");
+
+                    b.Navigation("StatusHistory");
                 });
 #pragma warning restore 612, 618
         }
