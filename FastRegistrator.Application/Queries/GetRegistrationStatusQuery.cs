@@ -1,12 +1,10 @@
 ﻿using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.Enums;
 using FastRegistrator.ApplicationCore.DTOs.GetStatusDTOs;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Linq.Expressions;
 
 namespace FastRegistrator.ApplicationCore.Queries.GetStatus
 {
@@ -23,16 +21,12 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
             _logger = logger;
         }
 
-        public async Task<RegistrationStatusResponse> Handle(GetRegistrationStatusQuery request, CancellationToken cancellationToken)
+        public async Task<RegistrationStatusResponse> Handle(GetRegistrationStatusQuery query, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Trying to fetch a registration with Guid: {request.Id}");
+            _logger.LogInformation($"Trying to fetch a registration with Guid: {query.Id}");
 
-            Expression<Func<Registration, IEnumerable<StatusHistoryItem>>> lastStatus =
-                reg => reg.StatusHistory.OrderByDescending(s => s.StatusDT).Take(1);
-
-            var registration = await _context.Registrations.Where(reg => reg.Id == request.Id)
-                                                           .Include(lastStatus).ThenInclude(shi => shi.PrizmaCheckResult)
-                                                           .Include(lastStatus).ThenInclude(shi => shi.PrizmaCheckError)
+            var registration = await _context.Registrations.Where(reg => reg.Id == query.Id)
+                                                           .Include(reg => reg.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
                                                            .AsNoTracking()
                                                            .FirstOrDefaultAsync(cancellationToken);
 
@@ -41,35 +35,32 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
                 throw new NotFoundException("There is no registration with Guid: {request.Id}");
             }
 
-            var statusHistoryItem = registration.StatusHistory.First();
+            var registrationStatus = registration.StatusHistory.First()!.Status;
             
-            var prizmaRejectionReason = statusHistoryItem!.PrizmaCheckResult?.RejectionReasonCode;
+            var prizmaRejectionReason = registration.PrizmaCheckResult?.RejectionReasonCode;
 
-            var error = ConstructError(statusHistoryItem);
+            var registrationError = ConstructRegistrationError(registration);
 
-            return new RegistrationStatusResponse(registration.Id, registration.Completed, statusHistoryItem.Status, prizmaRejectionReason, null, error);
+            return new RegistrationStatusResponse(registration.Id, registration.Completed, registrationStatus, prizmaRejectionReason, null, registrationError);
         }
 
-        private Error? ConstructError(StatusHistoryItem statusHistoryItem) 
+        private RegistrationError? ConstructRegistrationError(Registration registration) 
         {
-            Error? error = null;
-
-            if (statusHistoryItem.PrizmaCheckError is not null)
+            RegistrationError? registrationError = null;
+            
+            if (registration!.Error is Error error)
             {
-                var message = string.Empty;
-                var errorSource = statusHistoryItem.PrizmaCheckError.PrizmaErrorCode > 0
-                                        ? ErrorSource.KonturPrizma
-                                        : ErrorSource.PrizmaService;
+                var message = error.Message;
 
-                if (statusHistoryItem.PrizmaCheckError.Errors is not null)
+                if (error.Details is not null)
                 {
-                    message = statusHistoryItem.PrizmaCheckError.Message + "\n" + statusHistoryItem.PrizmaCheckError.Errors;
+                    message += "\n" + error.Details;
                 }
 
-                error = new Error(message, errorSource);
+                registrationError = new RegistrationError(message, error.Source);
             }
 
-            return error;
+            return registrationError;  
         }
     }
 }
