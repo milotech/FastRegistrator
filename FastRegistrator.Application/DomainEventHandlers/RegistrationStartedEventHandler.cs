@@ -1,4 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Events;
+﻿using FastRegistrator.ApplicationCore.Commands.CheckPerson;
+using FastRegistrator.ApplicationCore.Domain.Events;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -43,8 +44,13 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
         {
             _logger.LogInformation($"Registration '{@event.Registration.Id}' started.");
 
-            //var command = new CheckPrizmaCommand(...) {  ... }
-            //_cmdExecutor.Execute(command);
+            var command = new CheckPersonCommand(
+                Name: @event.Registration.PersonData.Name,
+                PassportNumber: @event.Registration.PersonData.Passport,
+                INN: null,
+                BirthDt: null
+                );
+            _cmdExecutor.Execute(command);
 
             _logger.LogInformation($"Registration '{@event.Registration.Id}' sent to KonturPrizma check queue.");
 

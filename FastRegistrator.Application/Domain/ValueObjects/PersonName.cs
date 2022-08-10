@@ -12,5 +12,15 @@
             MiddleName = middleName;
             LastName = lastName;
         }
+
+        public override string ToString()
+        {
+            return $"{LastName} {FirstName} {MiddleName}";
+        }
+
+        public static implicit operator string(PersonName name)
+        {
+            return name.ToString();
+        }
     }
 }

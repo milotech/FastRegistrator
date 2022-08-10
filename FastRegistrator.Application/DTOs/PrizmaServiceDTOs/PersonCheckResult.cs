@@ -1,13 +1,6 @@
-﻿namespace FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
+﻿using FastRegistrator.ApplicationCore.Domain.Enums;
 
-[Flags]
-public enum RejectionReason
-{
-    None = 0,
-    BlackListed = 1,
-    BankruptcyRejected = 2,
-    PassportRejected = 4
-}
+namespace FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
 
 public class PersonCheckResult
 {
