@@ -2,6 +2,7 @@
 using FastRegistrator.Tests.Commands;
 using FluentValidation.TestHelper;
 using System.ComponentModel;
+using static FastRegistrator.Tests.Constants;
 
 namespace FastRegistrator.Tests.Validators
 {
@@ -180,7 +181,7 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator();
             var command = new StartRegistrationCommand
             {
-                FirstName = StartRegistrationCommandHandlerTest.FIRST_NAME
+                FirstName = FIRST_NAME
             };
 
             // Act
@@ -221,7 +222,7 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator();
             var command = new StartRegistrationCommand
             {
-                LastName = StartRegistrationCommandHandlerTest.LAST_NAME
+                LastName = LAST_NAME
             };
 
             // Act
@@ -262,7 +263,7 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator();
             var command = new StartRegistrationCommand
             {
-                Series = StartRegistrationCommandHandlerTest.SERIES
+                Series = SERIES
             };
 
             // Act
@@ -344,7 +345,7 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator();
             var command = new StartRegistrationCommand
             {
-                Number = StartRegistrationCommandHandlerTest.NUMBER
+                Number = NUMBER
             };
 
             // Act
@@ -426,7 +427,7 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator();
             var command = new StartRegistrationCommand
             {
-                IssuedBy = StartRegistrationCommandHandlerTest.ISSUED_BY
+                IssuedBy = ISSUED_BY
             };
 
             // Act
@@ -467,7 +468,7 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator();
             var command = new StartRegistrationCommand
             {
-                IssueId = StartRegistrationCommandHandlerTest.ISSUE_ID
+                IssueId = ISSUE_ID
             };
 
             // Act
@@ -549,7 +550,7 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator();
             var command = new StartRegistrationCommand
             {
-                Citizenship = StartRegistrationCommandHandlerTest.CITIZENSHIP
+                Citizenship = CITIZENSHIP
             };
 
             // Act
@@ -590,7 +591,7 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator();
             var command = new StartRegistrationCommand
             {
-                Snils = StartRegistrationCommandHandlerTest.SNILS
+                Snils = SNILS
             };
 
             // Act
@@ -672,7 +673,7 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator();
             var command = new StartRegistrationCommand
             {
-                FormData = StartRegistrationCommandHandlerTest.FORM_DATA
+                FormData = FORM_DATA
             };
 
             // Act

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FastRegistrator.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public abstract class ApiControllerBase : ControllerBase
     {
         private ICommandExecutor? _commandExecutor;

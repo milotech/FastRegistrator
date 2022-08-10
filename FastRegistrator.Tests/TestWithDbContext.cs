@@ -9,20 +9,30 @@ namespace FastRegistrator.Tests
 {
     public abstract class TestWithDbContext : IDisposable
     {
-        private readonly DbConnection _connection;
+        private readonly DbConnection? _connection;
         private readonly DbContextOptions<ApplicationDbContext> _contextOptions;
 
-        public TestWithDbContext()
+        public TestWithDbContext(bool useSqlite = false)
         {
-            // Create and open a connection. This creates the SQLite in-memory database, which will persist until the connection is closed
-            // at the end of the test (see Dispose below).
-            _connection = new SqliteConnection("Filename=:memory:");
-            _connection.Open();
+            if (useSqlite)
+            {
+                // Create and open a connection. This creates the SQLite in-memory database, which will persist until the connection is closed
+                // at the end of the test (see Dispose below).
+                _connection = new SqliteConnection("Filename=:memory:");
+                _connection.Open();
 
-            // These options will be used by the context instances in this test suite, including the connection opened above.
-            _contextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseSqlite(_connection)
-                .Options;
+                // These options will be used by the context instances in this test suite, including the connection opened above.
+                _contextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+                    .UseSqlite(_connection)
+                    .Options;
+            }
+            else 
+            {
+                // These options will be used by the context instances in this test suite, including the connection opened above.
+                _contextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+                    .UseInMemoryDatabase("InMemory")
+                    .Options;
+            }
 
             var mediator = new Mock<IMediator>().Object;
 
@@ -33,6 +43,6 @@ namespace FastRegistrator.Tests
 
         protected ApplicationDbContext CreateDbContext() => new ApplicationDbContext(_contextOptions, new Mock<IMediator>().Object);
 
-        public void Dispose() => _connection.Dispose();
+        public void Dispose() => _connection?.Dispose();
     }
 }
