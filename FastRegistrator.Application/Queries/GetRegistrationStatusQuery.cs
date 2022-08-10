@@ -38,7 +38,7 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
 
             if (registration is null)
             {
-                throw new NotFoundException("There is no registration with such GUID.");
+                throw new NotFoundException("There is no registration with Guid: {request.Id}");
             }
 
             var statusHistoryItem = registration.StatusHistory.First();
@@ -50,7 +50,7 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
             return new RegistrationStatusResponse(registration.Id, registration.Completed, statusHistoryItem.Status, prizmaRejectionReason, null, error);
         }
 
-        private Error ConstructError(StatusHistoryItem statusHistoryItem) 
+        private Error? ConstructError(StatusHistoryItem statusHistoryItem) 
         {
             Error? error = null;
 
