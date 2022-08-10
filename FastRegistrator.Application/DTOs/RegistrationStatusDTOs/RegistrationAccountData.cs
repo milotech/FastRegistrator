@@ -1,8 +1,8 @@
 ﻿namespace FastRegistrator.ApplicationCore.DTOs.GetStatusDTOs
 {
-    public class ICResult
+    public class RegistrationAccountData
     {
-        public ICResult()
+        public RegistrationAccountData()
         { }
     }
 }

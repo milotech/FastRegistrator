@@ -8,17 +8,17 @@ namespace FastRegistrator.ApplicationCore.DTOs.GetStatusDTOs
         public bool Completed { get; private set; }
         public RegistrationStatus Status { get; private set; }
         public RejectionReason? PrizmaRejectionReason { get; private set; }
-        public ICResult? ICResult { get; private set; }
-        public Error? Error { get; private set; }
+        public RegistrationAccountData? RegistrationAccountData { get; private set; }
+        public RegistrationError? RegistrationError { get; private set; }
 
-        public RegistrationStatusResponse(Guid registrationId, bool completed, RegistrationStatus status, RejectionReason? prizmaRejectionReason, ICResult? icResult, Error? error)
+        public RegistrationStatusResponse(Guid registrationId, bool completed, RegistrationStatus status, RejectionReason? prizmaRejectionReason, RegistrationAccountData? registrationAccountData, RegistrationError? registrationError)
         {
             RegistrationId = registrationId;
             Completed = completed;
             Status = status;
             PrizmaRejectionReason = prizmaRejectionReason;
-            ICResult = icResult;
-            Error = error;
+            RegistrationAccountData = registrationAccountData;
+            RegistrationError = registrationError;
         }
     }
 }
