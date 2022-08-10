@@ -12,9 +12,9 @@ namespace FastRegistrator.Tests
         private readonly DbConnection? _connection;
         private readonly DbContextOptions<ApplicationDbContext> _contextOptions;
 
-        public TestWithDbContext(bool useSqlLite = false)
+        public TestWithDbContext(bool useSqlite = false)
         {
-            if (useSqlLite)
+            if (useSqlite)
             {
                 // Create and open a connection. This creates the SQLite in-memory database, which will persist until the connection is closed
                 // at the end of the test (see Dispose below).

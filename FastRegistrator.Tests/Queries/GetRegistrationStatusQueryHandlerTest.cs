@@ -14,8 +14,8 @@ namespace FastRegistrator.Tests.Queries
         [Fact]
         [Description("Arrange GetStatus action trying to get status of registration that exists" +
                      "Act Handler for GetRegistrationStatusQuery is called" +
-                     "Assert Handler returns RegistrationStatusResponse")]
-        public async Task Handle_GetStatusForExsistingRegistration_ReturnRegistrationStatusResponse()
+                     "Assert Handler doesn't throw exception")]
+        public async Task Handle_GetStatusForExsistingRegistration_DoesntThrowException()
         {
             // Arrange
             var logger = new Mock<ILogger<GetRegistrationStatusQueryHandler>>();
@@ -24,17 +24,17 @@ namespace FastRegistrator.Tests.Queries
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PERSON_PHONE_NUMBER, personData);
 
-            context.Registrations.Add(registration);
+            var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
             var handler = new GetRegistrationStatusQueryHandler(context, logger.Object);
-            var query = new GetRegistrationStatusQuery(GUID);
+            var query = new GetRegistrationStatusQuery(entityEntry.Entity.Id);
 
-            // Act 
-            var resgistrationStatusResponse = await handler.Handle(query, CancellationToken.None);
+            // Act
+            var exception = await Record.ExceptionAsync(() => handler.Handle(query, CancellationToken.None));
 
             // Assert
-
+            Assert.Null(exception);
         }
 
         [Fact]

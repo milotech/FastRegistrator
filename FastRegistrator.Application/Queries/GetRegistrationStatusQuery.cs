@@ -27,6 +27,9 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
 
             var registration = await _context.Registrations.Where(reg => reg.Id == query.Id)
                                                            .Include(reg => reg.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
+                                                           .Include(reg => reg.PrizmaCheckResult)
+                                                           .Include(reg => reg.AccountData)
+                                                           .Include(reg => reg.Error)
                                                            .AsNoTracking()
                                                            .FirstOrDefaultAsync(cancellationToken);
 
@@ -44,23 +47,9 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
             return new RegistrationStatusResponse(registration.Id, registration.Completed, registrationStatus, prizmaRejectionReason, null, registrationError);
         }
 
-        private RegistrationError? ConstructRegistrationError(Registration registration) 
-        {
-            RegistrationError? registrationError = null;
-            
-            if (registration!.Error is Error error)
-            {
-                var message = error.Message;
-
-                if (error.Details is not null)
-                {
-                    message += "\n" + error.Details;
-                }
-
-                registrationError = new RegistrationError(message, error.Source);
-            }
-
-            return registrationError;  
-        }
+        private RegistrationError? ConstructRegistrationError(Registration registration)
+            => registration.Error is null
+                            ? null
+                            : new RegistrationError(registration.Error.Source, registration.Error.Message, registration.Error.Details);
     }
 }

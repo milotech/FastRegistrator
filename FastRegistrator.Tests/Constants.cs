@@ -2,7 +2,7 @@
 {
     public static class Constants
     {
-        public static readonly Guid GUID = new Guid("00000000-0000-0000-0000-000000000000");
+        public static readonly Guid GUID = Guid.NewGuid();
         public const string PERSON_PHONE_NUMBER = "+79999999999";
         public const string FIRST_NAME = "Ivan";
         public const string LAST_NAME = "Ivanov";

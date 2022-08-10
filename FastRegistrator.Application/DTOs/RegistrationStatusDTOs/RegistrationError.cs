@@ -4,13 +4,15 @@ namespace FastRegistrator.ApplicationCore.DTOs.GetStatusDTOs
 {
     public class RegistrationError
     {
-        public string Message { get; set; } = null!;
         public ErrorSource Source { get; set; }
+        public string Message { get; set; } = null!;
+        public string? Details { get; set; }
 
-        public RegistrationError(string message, ErrorSource source)
+        public RegistrationError(ErrorSource source, string message, string? details)
         {
-            Message = message;
             Source = source;
+            Message = message;
+            Details = details;
         }
     }
 }
