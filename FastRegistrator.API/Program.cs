@@ -21,12 +21,9 @@ try
             .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}")
         );
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers(options => options.Filters.Add(new ApiExceptionFilterAttribute()));
     builder.Services.AddApplicationServices();
     builder.Services.AddInfrastructureServices(builder.Configuration);
-
-    builder.Services.AddControllersWithViews(options =>
-            options.Filters.Add<ApiExceptionFilterAttribute>());
 
     builder.Services.AddSwaggerGen(x => {
         x.CustomSchemaIds(i => i.FullName);
