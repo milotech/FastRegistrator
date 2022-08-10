@@ -60,7 +60,7 @@ namespace FastRegistrator.Tests.Commands
                 .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
 
             Assert.NotNull(assertPerson);
-            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == RegistrationStatus.ClientFilledApplication);
+            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == RegistrationStatus.PersonDataReceived);
         }
 
         [Fact]

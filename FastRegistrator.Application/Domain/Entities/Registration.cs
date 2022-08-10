@@ -8,7 +8,10 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         private List<StatusHistoryItem> _history = new();
 
         public string PhoneNumber { get; private set; } = null!;
-        public PersonData PersonData { get; private set; } = null!;
+        public PersonData PersonData { get; private set; } = null!;  
+        public PrizmaCheckResult? PrizmaCheckResult { get; private set; }
+        public AccountData? AccountData { get; private set; }
+        public Error? Error { get; private set; }
         public bool Completed { get; private set; }
 
         public IReadOnlyCollection<StatusHistoryItem> StatusHistory => _history;
@@ -21,7 +24,7 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
             PhoneNumber = phoneNumber;
             PersonData = personData;
 
-            AddStatusToHistory(RegistrationStatus.ClientFilledApplication);
+            AddStatusToHistory(RegistrationStatus.PersonDataReceived);
             AddDomainEvent(new RegistrationStartedEvent(this));
         }
 
@@ -35,46 +38,44 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         {
             ValidateCompletion();
 
-            if(!prizmaCheckResult.Result)
+            PrizmaCheckResult = prizmaCheckResult;
+
+            if (!prizmaCheckResult.Result)
             {
                 SetCompleted();
+                AddStatusToHistory(RegistrationStatus.PrizmaCheckRejected);
             }
             else
             {
                 AddDomainEvent(new PrizmaCheckPassedEvent(this));
+                AddStatusToHistory(RegistrationStatus.PrizmaCheckSuccessful);
             }
-
-            var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckResult(prizmaCheckResult);
-            _history.Add(statusHistoryItem);
         }
 
-        public void SetPrizmaCheckError(PrizmaCheckError prizmaCheckError)
+        public void SetError(Error error)
         {
             ValidateCompletion();
             SetCompleted();
 
-            var statusHistoryItem = StatusHistoryItem.FromPrizmaCheckError(prizmaCheckError);
-            _history.Add(statusHistoryItem);
+            Error = error;
+
+            AddStatusToHistory(RegistrationStatus.Error);
         }
 
-        public void SetClientSentForRegistrationToIC()
+        public void SetPersonDataSentToIC()
         {
             ValidateCompletion();
-            AddStatusToHistory(RegistrationStatus.ClientSentForRegistrationToIC);
+            AddStatusToHistory(RegistrationStatus.PersonDataSentToIC);
         }
 
-        public void SetAccountOpened()
+        public void SetAccountOpened(/* some account data */)
         {
             ValidateCompletion();
             SetCompleted();
+
+            AccountData = new AccountData();
+
             AddStatusToHistory(RegistrationStatus.AccountOpened);
-        }
-
-        public void SetICRegistrationError()
-        {
-            ValidateCompletion();
-            SetCompleted();
-            AddStatusToHistory(RegistrationStatus.ICRegistrationFailed);
         }
 
         private void ValidateCompletion()
