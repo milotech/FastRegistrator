@@ -12,12 +12,12 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
 {
     public record class GetRegistrationStatusQuery(Guid Id) : IRequest<RegistrationStatusResponse>;
 
-    public class GetREgistrationStatusQueryHandler : IRequestHandler<GetRegistrationStatusQuery, RegistrationStatusResponse>
+    public class GetRegistrationStatusQueryHandler : IRequestHandler<GetRegistrationStatusQuery, RegistrationStatusResponse>
     {
         private readonly IApplicationDbContext _context;
-        private readonly ILogger<GetREgistrationStatusQueryHandler> _logger;
+        private readonly ILogger<GetRegistrationStatusQueryHandler> _logger;
 
-        public GetREgistrationStatusQueryHandler(IApplicationDbContext context, ILogger<GetREgistrationStatusQueryHandler> logger)
+        public GetRegistrationStatusQueryHandler(IApplicationDbContext context, ILogger<GetRegistrationStatusQueryHandler> logger)
         {
             _context = context;
             _logger = logger;
