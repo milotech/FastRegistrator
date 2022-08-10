@@ -38,6 +38,8 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         {
             ValidateCompletion();
 
+            PrizmaCheckResult = prizmaCheckResult;
+
             if (!prizmaCheckResult.Result)
             {
                 SetCompleted();
@@ -54,6 +56,9 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         {
             ValidateCompletion();
             SetCompleted();
+
+            Error = error;
+
             AddStatusToHistory(RegistrationStatus.Error);
         }
 
@@ -67,7 +72,9 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         {
             ValidateCompletion();
             SetCompleted();
+
             AccountData = new AccountData();
+
             AddStatusToHistory(RegistrationStatus.AccountOpened);
         }
 
