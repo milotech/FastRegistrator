@@ -17,7 +17,9 @@ namespace FastRegistrator.Infrastructure
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IDateTime, DateTimeService>();
-            
+
+            services.AddTransient<IICService, ICService>();
+
             services.AddHttpClient<IPrizmaService, PrizmaService>(options =>
             {
                 var url = configuration[PrizmaServiceUrl];

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
 {
     [Command(CommandExecutionMode.Parallel)]
-    public record class SendDataToICCommand(Guid Id) : IRequest;
+    public record class SendDataToICCommand(Guid RegistrationId) : IRequest;
 
     public class SendDataToICCommandHandler : AsyncRequestHandler<SendDataToICCommand>
     {
@@ -29,16 +29,16 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
 
         protected override async Task Handle(SendDataToICCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Trying to fetch a registration with Guid: {request.Id} for sending to IC");
+            _logger.LogInformation($"Trying to fetch a registration with Guid: {request.RegistrationId} for sending to IC");
 
-            var registration = await _dbContext.Registrations.Where(reg => reg.Id == request.Id)
+            var registration = await _dbContext.Registrations.Where(reg => reg.Id == request.RegistrationId)
                                                              .Include(reg => reg.PersonData)
                                                              .AsNoTracking()
                                                              .FirstOrDefaultAsync(cancellationToken);
             
             if (registration is null)
             {
-                throw new NotFoundException(nameof(registration), request.Id);
+                throw new NotFoundException(nameof(registration), request.RegistrationId);
             }
 
             var icRegistrationData = ConstructICRegistrationData(registration);
@@ -65,7 +65,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
                 return;
             }
 
-            if (icRegistrationResponse.StatusCode == 200)
+            if (icRegistrationResponse.ErrorMessage is null)
             {
                 registration.SetPersonDataSentToIC();
 
