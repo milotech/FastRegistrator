@@ -141,7 +141,7 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
             var requestInterface = typeof(IRequest<>);
 
             return commandsAssembly.GetTypes()
-                .Where(t => t.GetInterfaces().Contains(requestInterface))
+                .Where(t => t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == requestInterface))
                 .Where(t => t.GetCustomAttributes<CommandAttribute>().Any())
                 .ToDictionary(
                     t => t,
@@ -151,11 +151,16 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                         ICommandsQueue? queue = null;
                         if (attribute.ExecutionMode == CommandExecutionMode.ExecutionQueue)
                         {
-                            var responseType = t.GetGenericArguments()[0];
+                            var responseType = t.GetInterfaces()
+                                .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == requestInterface)
+                                .GetGenericArguments()[0];
                             var queueType = typeof(CommandsQueue<>).MakeGenericType(responseType);
                             var queueItemType = typeof(CommandsQueueItem<>).MakeGenericType(responseType);
-                            var funcType = typeof(Func<,>).MakeGenericType(queueItemType, typeof(CancellationToken), typeof(Task));
-                            var func = Delegate.CreateDelegate(funcType, this.GetType().GetMethod("ExecuteFromQueue")!);
+                            var funcType = typeof(Func<,,>).MakeGenericType(queueItemType, typeof(CancellationToken), typeof(Task));
+                            var executeMethod = this.GetType()
+                                .GetMethod("ExecuteFromQueue", BindingFlags.NonPublic | BindingFlags.Instance)!
+                                .MakeGenericMethod(responseType);
+                            var func = Delegate.CreateDelegate(funcType, this, executeMethod);
                             queue = Activator.CreateInstance(queueType, attribute.ExecutionQueueParallelDegree, func, _cancel) as ICommandsQueue;
                         }
 
