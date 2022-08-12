@@ -22,8 +22,8 @@ namespace FastRegistrator.API.Controllers
                 var cmd = new TestRunFromQueueCommand($"{name} # {i}");
                 _ = ExecuteCommand(cmd, cancel);
             }
-            var checkCommand = new TestRunFromQueueCommand($"{name} # CHECK COMMAND");
-            await ExecuteCommand(checkCommand, cancel);
+            //var checkCommand = new TestRunFromQueueCommand($"{name} # CHECK COMMAND");
+            //await ExecuteCommand(checkCommand, cancel);
 
             return Ok();
         }

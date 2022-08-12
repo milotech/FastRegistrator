@@ -52,7 +52,7 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                 case CommandExecutionMode.ExecutionQueue:                    
                     var queue = (_commandTypes[type].Queue as CommandsQueue<TResponse>)!;
                     var taskCompletion = new TaskCompletionSource<TResponse>();
-                    var item = new CommandsQueueItem<TResponse>(command, taskCompletion);
+                    var item = new CommandsQueueItem<TResponse>(command, taskCompletion, cancel.Value);
                     queue.Enqueue(item);
                     return taskCompletion.Task;
                 default:
@@ -113,11 +113,11 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
             });            
         }
 
-        private async Task ExecuteFromQueue<TResponse>(CommandsQueueItem<TResponse> queueItem, CancellationToken cancel)
+        private async Task ExecuteFromQueue<TResponse>(CommandsQueueItem<TResponse> queueItem)
         {
             try
             {
-                var response = await ExecuteInScope(queueItem.Command, cancel);
+                var response = await ExecuteInScope(queueItem.Command, queueItem.Cancel);
                 queueItem.TaskCompletion.SetResult(response);
             }
             catch(RetryRequiredException)
@@ -156,7 +156,7 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                                 .GetGenericArguments()[0];
                             var queueType = typeof(CommandsQueue<>).MakeGenericType(responseType);
                             var queueItemType = typeof(CommandsQueueItem<>).MakeGenericType(responseType);
-                            var funcType = typeof(Func<,,>).MakeGenericType(queueItemType, typeof(CancellationToken), typeof(Task));
+                            var funcType = typeof(Func<,>).MakeGenericType(queueItemType, typeof(Task));
                             var executeMethod = this.GetType()
                                 .GetMethod("ExecuteFromQueue", BindingFlags.NonPublic | BindingFlags.Instance)!
                                 .MakeGenericMethod(responseType);

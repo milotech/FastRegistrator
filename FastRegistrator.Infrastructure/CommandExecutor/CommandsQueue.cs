@@ -11,21 +11,23 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
     {
         public IRequest<TResponse> Command { get; set; }
         public TaskCompletionSource<TResponse> TaskCompletion { get; set; }
+        public CancellationToken Cancel { get; set; }
 
-        public CommandsQueueItem(IRequest<TResponse> command, TaskCompletionSource<TResponse> taskCompletion)
+        public CommandsQueueItem(IRequest<TResponse> command, TaskCompletionSource<TResponse> taskCompletion, CancellationToken cancel)
         {
             TaskCompletion = taskCompletion;
             Command = command;
+            Cancel = cancel;
         }
     }
 
     internal class CommandsQueue<TResponse> : ICommandsQueue
     {
         private readonly Channel<CommandsQueueItem<TResponse>> _queue;
-        private readonly Func<CommandsQueueItem<TResponse>, CancellationToken, Task> _executeAction;
+        private readonly Func<CommandsQueueItem<TResponse>, Task> _executeAction;
         private readonly CancellationToken _cancel;
 
-        public CommandsQueue(int maxParallelExecutions, Func<CommandsQueueItem<TResponse>, CancellationToken, Task> executeAction, CancellationToken cancel)
+        public CommandsQueue(int maxParallelExecutions, Func<CommandsQueueItem<TResponse>, Task> executeAction, CancellationToken cancel)
         {
             if(maxParallelExecutions <= 0) 
                 throw new ArgumentException(nameof(maxParallelExecutions));
@@ -62,7 +64,7 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                 {
                     while (_queue.Reader.TryRead(out CommandsQueueItem<TResponse>? item))
                     {
-                        await _executeAction(item, _cancel);
+                        await _executeAction(item);
                     }
                 }
             }

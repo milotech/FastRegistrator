@@ -14,12 +14,12 @@ namespace FastRegistrator.API.Controllers
         private ICommandExecutor CommandExecutor => _commandExecutor ??= HttpContext.RequestServices.GetRequiredService<ICommandExecutor>();
         private ISender QueryExecutor => _queryExecutor ??= HttpContext.RequestServices.GetRequiredService<ISender>();
 
-        protected Task<TResponse> ExecuteCommand<TResponse>(IRequest<TResponse> command, CancellationToken cancel)
+        protected Task<TResponse> ExecuteCommand<TResponse>(IRequest<TResponse> command, CancellationToken? cancel = null)
         {
             return CommandExecutor.Execute(command, cancel);
         }
 
-        protected Task ExecuteCommand(IRequest command, CancellationToken cancel)
+        protected Task ExecuteCommand(IRequest command, CancellationToken? cancel = null)
         {
             return CommandExecutor.Execute(command, cancel);
         }
