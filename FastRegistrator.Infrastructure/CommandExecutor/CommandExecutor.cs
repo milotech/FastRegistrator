@@ -113,6 +113,8 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
             });            
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members",
+            Justification = "Method is called via reflection")]
         private async Task ExecuteFromQueue<TResponse>(CommandsQueueItem<TResponse> queueItem)
         {
             try
