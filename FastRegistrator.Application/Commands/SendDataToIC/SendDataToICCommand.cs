@@ -1,6 +1,7 @@
 ﻿using FastRegistrator.ApplicationCore.Attributes;
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
+using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
 using FastRegistrator.ApplicationCore.DTOs.RegistrationDTOs;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
 {
-    [Command(CommandExecutionMode.InPlace)]
+    [Command(CommandExecutionMode.Parallel)]
     public record class SendDataToICCommand(Guid Id) : IRequest;
 
     public class SendDataToICCommandHandler : AsyncRequestHandler<SendDataToICCommand>
@@ -30,41 +31,52 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
         {
             _logger.LogInformation($"Trying to fetch a registration with Guid: {request.Id} for sending to IC");
 
+            var registration = await _dbContext.Registrations.Where(reg => reg.Id == request.Id)
+                                                             .Include(reg => reg.PersonData)
+                                                             .AsNoTracking()
+                                                             .FirstOrDefaultAsync(cancellationToken);
+            
+            if (registration is null)
+            {
+                throw new NotFoundException(nameof(registration), request.Id);
+            }
+
+            var icRegistrationData = ConstructICRegistrationData(registration);
+
+            await SendDataToICAsync(registration, icRegistrationData, cancellationToken);
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task SendDataToICAsync(Registration registration, ICRegistrationData icRegistrationData, CancellationToken cancellationToken) 
+        {
+            ICRegistrationResponse? icRegistrationResponse;
             try
             {
-                var registration = await _dbContext.Registrations.Where(reg => reg.Id == request.Id)
-                                                                 .Include(reg => reg.PersonData)
-                                                                 .AsNoTracking()
-                                                                 .FirstOrDefaultAsync(cancellationToken);
-
-                if (registration is null)
-                {
-                    throw new NotFoundException($"There is no registration with Guid: {request.Id}");
-                }
-
-                var icRegistrationData = ConstructICRegistrationData(registration);
-
-                var icRegistrationResponse = await _icService.SendData(icRegistrationData, cancellationToken);
-
-                if (icRegistrationResponse.StatusCode == 200)
-                {
-                    registration.SetPersonDataSentToIC();
-
-                    _logger.LogInformation("Person Data was sent to IC");
-                }
-                else
-                {
-                    var error = new Error(ErrorSource.IC, icRegistrationResponse.ErrorMessage!, null);
-                    registration.SetError(error);
-
-                    _logger.LogInformation(icRegistrationResponse.ErrorMessage);
-                }
-
-                await _dbContext.SaveChangesAsync();
+                icRegistrationResponse = await _icService.SendData(icRegistrationData, cancellationToken);
             }
             catch (Exception ex)
             {
-                
+                _logger.LogInformation($"Failed to send person data with Giud: {registration.Id} to IC.");
+
+                var error = new Error(ErrorSource.FastRegistrator, ex.Message, null);
+                registration.SetError(error);
+
+                return;
+            }
+
+            if (icRegistrationResponse.StatusCode == 200)
+            {
+                registration.SetPersonDataSentToIC();
+
+                _logger.LogInformation("Person Data was sent to IC");
+            }
+            else
+            {
+                var error = new Error(ErrorSource.IC, icRegistrationResponse.ErrorMessage!, null);
+                registration.SetError(error);
+
+                _logger.LogInformation(icRegistrationResponse.ErrorMessage);
             }
         }
 
