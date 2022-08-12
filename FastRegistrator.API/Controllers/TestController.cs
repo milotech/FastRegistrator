@@ -14,14 +14,16 @@ namespace FastRegistrator.API.Controllers
         }
 
         [HttpGet("/queue")]
-        public ActionResult TestQueuedCommands(string name, CancellationToken cancel)
+        public async Task<ActionResult> TestQueuedCommands(string name, CancellationToken cancel)
         {
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 40; i++)
             {
                 var cmd = new TestRunFromQueueCommand($"{name} # {i}");
                 _ = ExecuteCommand(cmd, cancel);
             }
+            //var checkCommand = new TestRunFromQueueCommand($"{name} # CHECK COMMAND");
+            //await ExecuteCommand(checkCommand, cancel);
 
             return Ok();
         }

@@ -22,9 +22,12 @@ namespace FastRegistrator.API
                 eventBus.StartApplicationSubscriptions();
 
             // Incompleted registrations
-            var registrationsRecoverer = app.ApplicationServices.GetRequiredService<RegistrationsRecoverer>();
-            var appHostLifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
-            await registrationsRecoverer.RecoverIncompletedRegistrations(appHostLifetime.ApplicationStopping);
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var registrationsRecoverer = scope.ServiceProvider.GetRequiredService<RegistrationsRecoverer>();
+                var appHostLifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+                await registrationsRecoverer.RecoverIncompletedRegistrations(appHostLifetime.ApplicationStopping);
+            }
         }
     }
 }

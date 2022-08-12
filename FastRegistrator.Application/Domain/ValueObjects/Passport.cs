@@ -18,5 +18,15 @@
             IssueId = issueId;
             Citizenship = citizenship;
         }
+
+        public override string ToString()
+        {
+            return Series + Number;
+        }
+
+        public static implicit operator string(Passport passport)
+        {
+            return passport.ToString();
+        }
     }
 }

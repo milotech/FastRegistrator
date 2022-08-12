@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.Commands.Tests
 {
-    [Command(CommandExecutionMode.ExecutionQueue)]
+    [Command(CommandExecutionMode.ExecutionQueue, ExecutionQueueParallelDegree = 4)]
     public record TestRunFromQueueCommand(string FIO) : IRequest;
 
     public class TestRunFromQueueCommandHandler : AsyncRequestHandler<TestRunFromQueueCommand>
