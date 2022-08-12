@@ -2,6 +2,7 @@
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace FastRegistrator.ApplicationCore.DomainEventHandlers
 {
@@ -15,8 +16,12 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
         }
 
         public Task Handle(RegistrationCompletedEvent @event, CancellationToken cancellationToken)
-        {          
-            _logger.LogInformation($"Registration '{@event.Registration.Id}' completed with status '{@event.Registration.StatusHistory.Last().Status}'");
+        {
+            string logMessage = $"Registration '{@event.Registration.Id}' completed with status '{@event.Registration.StatusHistory.Last().Status}'";
+            if (@event.Registration.Error != null)
+                logMessage += Environment.NewLine + $"Error from {@event.Registration.Error.Source}: {@event.Registration.Error.Message}";
+
+            _logger.LogInformation(logMessage);
 
             return Task.CompletedTask;
         }

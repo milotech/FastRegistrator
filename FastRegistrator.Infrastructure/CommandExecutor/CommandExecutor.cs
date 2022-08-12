@@ -1,4 +1,5 @@
 ﻿using FastRegistrator.ApplicationCore.Attributes;
+using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +10,9 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
 {
     public class CommandExecutor : ICommandExecutor
     {
-        private record class CommandExecutionOptions(CommandExecutionMode Mode, CommandsQueue? Queue);
+        private readonly TimeSpan RetryDelay = TimeSpan.FromMinutes(1);
+
+        private record class CommandExecutionOptions(CommandExecutionMode Mode, ICommandsQueue? Queue);
 
         private readonly Dictionary<Type, CommandExecutionOptions> _commandTypes;
         private readonly IMediator _mediator;
@@ -45,10 +48,13 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                 case CommandExecutionMode.InPlace:
                     return _mediator.Send(command, cancel.Value);
                 case CommandExecutionMode.Parallel:
-                    return Task.Run(() => ExecuteCommand(command, cancel.Value));
-                case CommandExecutionMode.ExecutionQueue:
-                    _commandTypes[type].Queue!.Enqueue(command);
-                    return Task.FromResult(default(TResponse)!);
+                    return ExecuteParallel(command, cancel.Value);
+                case CommandExecutionMode.ExecutionQueue:                    
+                    var queue = (_commandTypes[type].Queue as CommandsQueue<TResponse>)!;
+                    var taskCompletion = new TaskCompletionSource<TResponse>();
+                    var item = new CommandsQueueItem<TResponse>(command, taskCompletion);
+                    queue.Enqueue(item);
+                    return taskCompletion.Task;
                 default:
                     throw new NotSupportedException(_commandTypes[type].Mode + " execution mode is not supported");
             };
@@ -59,42 +65,80 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
             return Execute<Unit>(command, cancel);
         }
 
-        private async Task<TResponse> ExecuteCommand<TResponse>(IRequest<TResponse> request, CancellationToken cancel)
-        {
-            try
-            {
-                using(var scope = _scopeFactory.CreateScope())
-                {
-                    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                    return await mediator.Send(request, cancel);
-                }
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, "Unhandled command exception");
-                throw;
-            }
-        }
-
-        private async Task ExecuteCommand(IBaseRequest request, CancellationToken cancel)
+        private async Task<TResponse> ExecuteInScope<TResponse>(IRequest<TResponse> request, CancellationToken cancel)
         {
             try
             {
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                    await mediator.Send(request, cancel);
+                    var response = await mediator.Send(request, cancel);
+                    return response;
                 }
+            }
+            catch(RetryRequiredException ex)
+            {
+                _logger.LogWarning($"Retry required for command {request.GetType().Name}: " + ex.Message);
+                throw;
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation($"Executing command {request.GetType().Name} was cancelled");
+                throw;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled command exception");
+                throw;
+            }
+        }
+
+        private Task<TResponse> ExecuteParallel<TResponse>(IRequest<TResponse> request, CancellationToken cancel)
+        {
+            return Task.Run(async () =>
+            {
+                while (true)
+                {
+                    cancel.ThrowIfCancellationRequested();
+
+                    try
+                    {
+                        return await ExecuteInScope(request, cancel);
+                    }
+                    catch (RetryRequiredException)
+                    {
+                        await Task.Delay(RetryDelay, cancel);
+                    }                    
+                }
+            });            
+        }
+
+        private async Task ExecuteFromQueue<TResponse>(CommandsQueueItem<TResponse> queueItem, CancellationToken cancel)
+        {
+            try
+            {
+                var response = await ExecuteInScope(queueItem.Command, cancel);
+                queueItem.TaskCompletion.SetResult(response);
+            }
+            catch(RetryRequiredException)
+            {
+                var type = queueItem.Command.GetType();
+                var queue = (_commandTypes[type].Queue as CommandsQueue<TResponse>)!;
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(RetryDelay, _cancel);
+                    queue.Enqueue(queueItem);
+                });
+            }
+            catch(Exception ex)
+            {
+                queueItem.TaskCompletion.SetException(ex);
             }
         }
 
         private Dictionary<Type, CommandExecutionOptions> LoadCommandTypes(Assembly commandsAssembly)
         {
-            var requestInterface = typeof(IBaseRequest);
+            var requestInterface = typeof(IRequest<>);
 
             return commandsAssembly.GetTypes()
                 .Where(t => t.GetInterfaces().Contains(requestInterface))
@@ -104,12 +148,21 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                     t =>
                     {
                         var attribute = t.GetCustomAttributes<CommandAttribute>().First();
+                        ICommandsQueue? queue = null;
+                        if (attribute.ExecutionMode == CommandExecutionMode.ExecutionQueue)
+                        {
+                            var responseType = t.GetGenericArguments()[0];
+                            var queueType = typeof(CommandsQueue<>).MakeGenericType(responseType);
+                            var queueItemType = typeof(CommandsQueueItem<>).MakeGenericType(responseType);
+                            var funcType = typeof(Func<,>).MakeGenericType(queueItemType, typeof(CancellationToken), typeof(Task));
+                            var func = Delegate.CreateDelegate(funcType, this.GetType().GetMethod("ExecuteFromQueue")!);
+                            queue = Activator.CreateInstance(queueType, attribute.ExecutionQueueParallelDegree, func, _cancel) as ICommandsQueue;
+                        }
+
                         return new CommandExecutionOptions
                         (
                             Mode: attribute.ExecutionMode,
-                            Queue: attribute.ExecutionMode == CommandExecutionMode.ExecutionQueue
-                                ? new CommandsQueue(attribute.ExecutionQueueParallelDegree, ExecuteCommand, _cancel)
-                                : null
+                            Queue: queue
                         );
                     });
         }

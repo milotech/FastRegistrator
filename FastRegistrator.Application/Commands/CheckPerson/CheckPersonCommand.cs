@@ -1,15 +1,13 @@
 ﻿using FastRegistrator.ApplicationCore.Attributes;
 using FastRegistrator.ApplicationCore.Domain.Entities;
+using FastRegistrator.ApplicationCore.Domain.Enums;
 using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 {
@@ -41,6 +39,8 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 
         protected override async Task Handle(CheckPersonCommand command, CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"Check Person '{command.Name}' for Registration '{command.RegistrationId}'");
+
             var prizmaRequest = new PersonCheckRequest
             {
                 Fio = command.Name,
@@ -49,33 +49,86 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
                 Inn = command.INN
             };
 
+            var registration = await _dbContext.Registrations
+                .Where(r => r.Id == command.RegistrationId)
+                .Include(r => r.StatusHistory.OrderByDescending(i => i.StatusDT).Take(1))
+                .FirstOrDefaultAsync();
+
+            if (registration is null)
+                throw new NotFoundException(nameof(Registration), command.RegistrationId);
+
+            await TryCheckPerson(prizmaRequest, registration, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task TryCheckPerson(PersonCheckRequest request, Registration registration, CancellationToken cancellationToken)
+        {
+            PersonCheckCommonResponse? prizmaResponse;
             try
             {
-                var registration = await _dbContext.Registrations.FindAsync(command.RegistrationId);
+                prizmaResponse = await _prizmaService.PersonCheck(request, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to check Person for Registration '{registration.Id}'");
 
-                if (registration is null)
-                    throw new NotFoundException(nameof(Registration), command.RegistrationId);
+                var error = new Error(ErrorSource.FastRegistrator, ex.Message);
+                registration.SetError(error);
 
-                var prizmaResponse = await _prizmaService.PersonCheck(prizmaRequest, cancellationToken);
+                return;
+            }
 
-                if (prizmaResponse.PersonCheckResult != null)
+            if (prizmaResponse.PersonCheckResult != null)
+            {
+                var checkResultEntity = new PrizmaCheckResult(
+                    rejectionReasonCode: prizmaResponse.PersonCheckResult.RejectionReason,
+                    prizmaResponse: prizmaResponse.PersonCheckResult.PrizmaJsonResponse
+                );
+
+                registration.SetPrizmaCheckResult(checkResultEntity);
+            }
+            else
+            {
+                var errorResponse = prizmaResponse.ErrorResponse;
+
+                if (errorResponse is null)
                 {
-                    var checkResultEntity = new PrizmaCheckResult(
-                        rejectionReasonCode: prizmaResponse.PersonCheckResult.RejectionReason,
-                        prizmaResponse: prizmaResponse.PersonCheckResult.PrizmaJsonResponse
-                    );
-
-                    registration.SetPrizmaCheckResult(checkResultEntity);
+                    Error error = new Error(ErrorSource.PrizmaService, "Invalid response from PrizmaService");
+                    registration.SetError(error);
                 }
                 else
                 {
-                    // analyze prizmaResponse.ErrorResponse
+                    if (IsRetryNeeded(errorResponse, registration))
+                    {
+                        throw new RetryRequiredException(errorResponse.Message);
+                    }
+
+                    Error error = ConstructErrorEntity(errorResponse, prizmaResponse.HttpStatusCode);
+                    registration.SetError(error);
                 }
             }
-            catch(Exception ex)
+        }
+
+        private bool IsRetryNeeded(ErrorResponse errorResponse, Registration registration)
+        {
+            return false;
+        }
+
+        private Error ConstructErrorEntity(ErrorResponse errorResponse, int httpResponseStatusCode)
+        {
+            var source = errorResponse.PrizmaErrorCode > 0
+                ? ErrorSource.KonturPrizmaAPI
+                : ErrorSource.PrizmaService;
+
+            var message = errorResponse.Message;
+            var details = new
             {
-                // later...
-            }
+                HttpStatusCode = httpResponseStatusCode,
+                PrizmaErrorCode = errorResponse.PrizmaErrorCode,
+                Errors = errorResponse.Errors
+            };
+
+            return new Error(source, message, JsonSerializer.Serialize(details));
         }
     }
 }

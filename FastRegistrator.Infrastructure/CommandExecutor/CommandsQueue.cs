@@ -3,18 +3,34 @@ using System.Threading.Channels;
 
 namespace FastRegistrator.Infrastructure.CommandExecutor
 {
-    internal class CommandsQueue
+    internal interface ICommandsQueue
     {
-        private readonly Channel<IBaseRequest> _queue;
-        private readonly Func<IBaseRequest, CancellationToken, Task> _executeAction;
+    }
+
+    internal class CommandsQueueItem<TResponse>
+    {
+        public IRequest<TResponse> Command { get; set; }
+        public TaskCompletionSource<TResponse> TaskCompletion { get; set; }
+
+        public CommandsQueueItem(IRequest<TResponse> command, TaskCompletionSource<TResponse> taskCompletion)
+        {
+            TaskCompletion = taskCompletion;
+            Command = command;
+        }
+    }
+
+    internal class CommandsQueue<TResponse> : ICommandsQueue
+    {
+        private readonly Channel<CommandsQueueItem<TResponse>> _queue;
+        private readonly Func<IRequest<TResponse>, CancellationToken, Task> _executeAction;
         private readonly CancellationToken _cancel;
 
-        public CommandsQueue(int maxParallelExecutions, Func<IBaseRequest, CancellationToken, Task> executeAction, CancellationToken cancel)
+        public CommandsQueue(int maxParallelExecutions, Func<IRequest<TResponse>, CancellationToken, Task> executeAction, CancellationToken cancel)
         {
             if(maxParallelExecutions <= 0) 
                 throw new ArgumentException(nameof(maxParallelExecutions));
 
-            _queue = Channel.CreateUnbounded<IBaseRequest>(new UnboundedChannelOptions
+            _queue = Channel.CreateUnbounded<CommandsQueueItem<TResponse>>(new UnboundedChannelOptions
             {
                 SingleWriter = false,
                 SingleReader = (maxParallelExecutions == 1)
@@ -25,9 +41,9 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
             StartQueueConsumers(maxParallelExecutions);
         }
 
-        public void Enqueue(IBaseRequest request)
+        public void Enqueue(CommandsQueueItem<TResponse> queueItem)
         {
-            _queue.Writer.WriteAsync(request, _cancel);
+            _queue.Writer.WriteAsync(queueItem, _cancel);
         }
 
         private void StartQueueConsumers(int consumersCount)
@@ -44,9 +60,9 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
             {
                 while (await _queue.Reader.WaitToReadAsync(_cancel))
                 {
-                    while (_queue.Reader.TryRead(out IBaseRequest? request))
+                    while (_queue.Reader.TryRead(out CommandsQueueItem<TResponse>? item))
                     {
-                        await _executeAction(request, _cancel);
+                        await _executeAction(item.Command, _cancel);
                     }
                 }
             }

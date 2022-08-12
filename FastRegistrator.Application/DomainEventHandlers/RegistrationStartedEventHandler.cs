@@ -45,6 +45,7 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
             _logger.LogInformation($"Registration '{@event.Registration.Id}' started.");
 
             var command = new CheckPersonCommand(
+                RegistrationId: @event.Registration.Id,
                 Name: @event.Registration.PersonData.Name,
                 PassportNumber: @event.Registration.PersonData.Passport,
                 INN: null,
