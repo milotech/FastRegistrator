@@ -1,5 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Commands.SendDataToIC;
-using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
+﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
 using FastRegistrator.ApplicationCore.DTOs.GetStatusDTOs;
 using FastRegistrator.ApplicationCore.Queries.GetStatus;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +16,6 @@ namespace FastRegistrator.API.Controllers
 
         [HttpPost("start")]
         public async Task<ActionResult> StartRegistration(StartRegistrationCommand command, CancellationToken cancel) 
-        {
-            await ExecuteCommand(command, cancel);
-            return Ok();
-        }
-
-        [HttpPost("complete")]
-        public async Task<ActionResult> SendDataToIC(SendDataToICCommand command, CancellationToken cancel)
         {
             await ExecuteCommand(command, cancel);
             return Ok();
