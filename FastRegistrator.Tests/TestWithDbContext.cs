@@ -30,7 +30,7 @@ namespace FastRegistrator.Tests
             {
                 // These options will be used by the context instances in this test suite, including the connection opened above.
                 _contextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                    .UseInMemoryDatabase("InMemory")
+                    .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                     .Options;
             }
 
