@@ -33,7 +33,6 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
 
             var registration = await _dbContext.Registrations.Where(reg => reg.Id == request.RegistrationId)
                                                              .Include(reg => reg.PersonData)
-                                                             .AsNoTracking()
                                                              .FirstOrDefaultAsync(cancellationToken);
             
             if (registration is null)
