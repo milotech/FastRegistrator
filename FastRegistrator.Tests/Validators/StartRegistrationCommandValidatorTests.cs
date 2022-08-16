@@ -1,5 +1,4 @@
 ﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
-using FastRegistrator.Tests.Commands;
 using FluentValidation.TestHelper;
 using System.ComponentModel;
 using static FastRegistrator.Tests.Constants;

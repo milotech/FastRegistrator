@@ -2,23 +2,23 @@
 
 namespace FastRegistrator.ApplicationCore.DTOs.GetStatusDTOs
 {
-    public class RegistrationStatusResponse
+    public record class RegistrationStatusResponse
     {
-        public Guid RegistrationId { get; private set; }
-        public bool Completed { get; private set; }
-        public RegistrationStatus Status { get; private set; }
-        public RejectionReason? PrizmaRejectionReason { get; private set; }
-        public RegistrationAccountData? RegistrationAccountData { get; private set; }
-        public RegistrationError? RegistrationError { get; private set; }
+        public Guid RegistrationId { get; init; }
+        public bool Completed { get; init; }
+        public RegistrationStatus Status { get; init; }
+        public RejectionReason? PrizmaRejectionReason { get; init; }
+        public RegistrationAccountData? AccountData { get; init; }
+        public RegistrationError? Error { get; init; }
 
-        public RegistrationStatusResponse(Guid registrationId, bool completed, RegistrationStatus status, RejectionReason? prizmaRejectionReason, RegistrationAccountData? registrationAccountData, RegistrationError? registrationError)
+        public RegistrationStatusResponse(Guid registrationId, bool completed, RegistrationStatus status, RejectionReason? prizmaRejectionReason, RegistrationAccountData? accountData, RegistrationError? error)
         {
             RegistrationId = registrationId;
             Completed = completed;
             Status = status;
             PrizmaRejectionReason = prizmaRejectionReason;
-            RegistrationAccountData = registrationAccountData;
-            RegistrationError = registrationError;
+            AccountData = accountData;
+            Error = error;
         }
     }
 }

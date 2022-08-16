@@ -1,6 +1,6 @@
 ﻿namespace FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs
 {
-    public class PersonCheckRequest
+    public record class PersonCheckRequest
     {
         public string Fio { get; init; } = null!;
         public string PassportNumber { get; init; } = null!;

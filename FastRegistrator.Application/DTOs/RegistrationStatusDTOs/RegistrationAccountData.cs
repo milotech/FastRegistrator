@@ -1,6 +1,6 @@
 ﻿namespace FastRegistrator.ApplicationCore.DTOs.GetStatusDTOs
 {
-    public class RegistrationAccountData
+    public record class RegistrationAccountData
     {
         public RegistrationAccountData()
         { }

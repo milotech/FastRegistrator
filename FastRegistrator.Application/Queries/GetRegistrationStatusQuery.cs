@@ -35,7 +35,7 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
 
             if (registration is null)
             {
-                throw new NotFoundException("There is no registration with Guid: {request.Id}");
+                throw new NotFoundException(nameof(registration), query.Id);
             }
 
             var registrationStatus = registration.StatusHistory.First()!.Status;
