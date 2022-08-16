@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FastRegistrator.ApplicationCore.DomainEventHandlers
 {
-    public class RegistrationCompletedCommittedEventHandler : INotificationHandler<RegistrationCompletedEvent>
+    public class RegistrationCompletedCommittedEventHandler : INotificationHandler<CommittedEvent<RegistrationCompletedEvent>>
     {
         private readonly ILogger _logger;
 
@@ -15,8 +15,10 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
             _logger = logger;            
         }
 
-        public Task Handle(RegistrationCompletedEvent @event, CancellationToken cancellationToken)
+        public Task Handle(CommittedEvent<RegistrationCompletedEvent> committedEvent, CancellationToken cancellationToken)
         {
+            var @event = committedEvent.Event;
+
             string logMessage = $"Registration '{@event.Registration.Id}' completed with status '{@event.Registration.StatusHistory.Last().Status}'";
             if (@event.Registration.Error != null)
                 logMessage += Environment.NewLine + $"Error from {@event.Registration.Error.Source}: {@event.Registration.Error.Message}";

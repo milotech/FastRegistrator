@@ -15,19 +15,16 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
         private record class CommandExecutionOptions(CommandExecutionMode Mode, ICommandsQueue? Queue);
 
         private readonly Dictionary<Type, CommandExecutionOptions> _commandTypes;
-        private readonly IMediator _mediator;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger _logger;
         private readonly CancellationToken _cancel;
 
         public CommandExecutor(
-            IMediator mediator,
             IServiceScopeFactory scopeFactory,
             Assembly commandsAssembly,
             ILogger<CommandExecutor> logger,
             CancellationToken cancel)
         {
-            _mediator = mediator;
             _scopeFactory = scopeFactory;
             _logger = logger;
             _cancel = cancel;
@@ -46,7 +43,7 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
             switch(_commandTypes[type].Mode)
             {
                 case CommandExecutionMode.InPlace:
-                    return _mediator.Send(command, cancel.Value);
+                    return ExecuteInScope(command, cancel.Value);
                 case CommandExecutionMode.Parallel:
                     return ExecuteParallel(command, cancel.Value);
                 case CommandExecutionMode.ExecutionQueue:                    
@@ -60,36 +57,13 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
             };
         }
 
-        public Task Execute(IRequest command, CancellationToken? cancel = null)
-        {
-            return Execute<Unit>(command, cancel);
-        }
-
         private async Task<TResponse> ExecuteInScope<TResponse>(IRequest<TResponse> request, CancellationToken cancel)
-        {
-            try
+        { 
+            using (var scope = _scopeFactory.CreateScope())
             {
-                using (var scope = _scopeFactory.CreateScope())
-                {
-                    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                    var response = await mediator.Send(request, cancel);
-                    return response;
-                }
-            }
-            catch(RetryRequiredException ex)
-            {
-                _logger.LogWarning($"Retry required for command {request.GetType().Name}: " + ex.Message);
-                throw;
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.LogInformation($"Executing command {request.GetType().Name} was cancelled");
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unhandled command exception");
-                throw;
+                var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                var response = await mediator.Send(request, cancel);
+                return response;
             }
         }
 

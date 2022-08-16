@@ -18,7 +18,13 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
         string PassportNumber,
         string? INN,
         DateTime? BirthDt
-    ) : IRequest;
+    ) : IRequest, IRegistrationStopOnErrorTrigger
+    {
+        public override string ToString()
+        {
+            return nameof(CheckPersonCommand) + $" {{ RegistrationId = {RegistrationId}, Name = {Name} }}";
+        }
+    }
 
     public class CheckPersonCommandHandler: AsyncRequestHandler<CheckPersonCommand>
     {

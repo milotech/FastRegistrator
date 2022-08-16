@@ -1,10 +1,16 @@
-﻿using FluentValidation;
+﻿using FastRegistrator.ApplicationCore.Interfaces;
+using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
-namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
+namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
 {
     public class StartRegistrationCommandValidator : AbstractValidator<StartRegistrationCommand>
     {
+        private readonly IApplicationDbContext _dbContext;
+
+        public const string IdIsEmpty = "Registration Identifier is empty.";
+        public const string RegistrationAlreadyExists = "Registration with specified Identifier already exists";
         public const string MobilePhoneIsEmpty = "Mobile phone is empty.";
         public const string MobilePhoneHasWrongFormat = "Mobile phone has wrong format.";
         public const string FirstNameIsEmpty = "First name is empty.";
@@ -21,8 +27,14 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         public const string SnilsHasWrongFormat = "Snils has wrong format.";
         public const string FormDataIsEmpty = "FormData is empty.";
 
-        public StartRegistrationCommandValidator()
+        public StartRegistrationCommandValidator(IApplicationDbContext applicationDbContext)
         {
+            _dbContext = applicationDbContext;
+
+            RuleFor(command => command.RegistrationId)
+                .NotEmpty().WithMessage(IdIsEmpty)
+                .MustAsync(BeUniqueId).WithMessage(RegistrationAlreadyExists);
+
             Transform(command => command.PhoneNumber, RemoveAllRedundantSymbols)
                 .NotEmpty().WithMessage(MobilePhoneIsEmpty)
                 .Matches(@"^(7|8)\d{10}$").WithMessage(MobilePhoneHasWrongFormat);
@@ -57,6 +69,11 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
 
             RuleFor(command => command.FormData)
                 .NotEmpty().WithMessage(FormDataIsEmpty);
+        }
+
+        public async Task<bool> BeUniqueId(Guid id, CancellationToken cancellationToken)
+        {
+            return !(await _dbContext.Registrations.AnyAsync(r => r.Id == id, cancellationToken));
         }
 
         private string RemoveAllRedundantSymbols(string? value)

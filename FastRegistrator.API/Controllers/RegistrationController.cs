@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
+﻿using FastRegistrator.ApplicationCore.Commands.StartRegistration;
 using FastRegistrator.ApplicationCore.DTOs.GetStatusDTOs;
 using FastRegistrator.ApplicationCore.Queries.GetStatus;
 using Microsoft.AspNetCore.Mvc;
