@@ -26,7 +26,10 @@ namespace FastRegistrator.Infrastructure
                 options.BaseAddress = new Uri(url);
             });
             
-            services.AddSqlServer<ApplicationDbContext>(configuration.GetConnectionString("FastRegConnection"));
+            services.AddSqlServer<ApplicationDbContext>(
+                configuration.GetConnectionString("FastRegConnection"),
+                opts => opts.EnableRetryOnFailure()
+            );
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             services.AddScoped<ApplicationDbContextInitialiser>();
             
@@ -36,11 +39,10 @@ namespace FastRegistrator.Infrastructure
             {
                 var commandsAssembly = Assembly.GetAssembly(typeof(ICommandExecutor))!;
                 var logger = sp.GetRequiredService<ILogger<CommandExecutor.CommandExecutor>>();
-                var mediator = sp.GetRequiredService<IMediator>();
                 var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
                 var appLifeTime = sp.GetRequiredService<IHostApplicationLifetime>();
 
-                return new CommandExecutor.CommandExecutor(mediator, scopeFactory, commandsAssembly, logger, appLifeTime.ApplicationStopping);
+                return new CommandExecutor.CommandExecutor(scopeFactory, commandsAssembly, logger, appLifeTime.ApplicationStopping);
             });
 
             return services;

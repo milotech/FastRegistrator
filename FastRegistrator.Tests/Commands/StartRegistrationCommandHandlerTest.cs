@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
+﻿using FastRegistrator.ApplicationCore.Commands.StartRegistration;
 using FastRegistrator.ApplicationCore.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +26,7 @@ namespace FastRegistrator.Tests.Commands
             IRequestHandler<StartRegistrationCommand> handler = new StartRegistrationCommandHandler(context, logger.Object);
             var command = new StartRegistrationCommand
             {
-                Guid = GUID,
+                RegistrationId = GUID,
                 PhoneNumber = PERSON_PHONE_NUMBER,
                 FirstName = FIRST_NAME,
                 LastName = LAST_NAME,
@@ -65,7 +65,7 @@ namespace FastRegistrator.Tests.Commands
             IRequestHandler<StartRegistrationCommand> handler = new StartRegistrationCommandHandler(context, logger.Object);
             var command = new StartRegistrationCommand
             {
-                Guid = GUID,
+                RegistrationId = GUID,
                 PhoneNumber = PERSON_PHONE_NUMBER,
                 FirstName = FIRST_NAME,
                 LastName = LAST_NAME,

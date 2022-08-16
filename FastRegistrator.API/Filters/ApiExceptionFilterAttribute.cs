@@ -47,7 +47,11 @@ namespace FastRegistrator.API.Filters
         {
             var exception = (ValidationException)context.Exception;
 
-            var details = new ValidationProblemDetails((ModelStateDictionary)exception.Errors)
+            var errors = exception.Errors
+                .GroupBy(e => e.PropertyName, e => e.ErrorMessage)
+                .ToDictionary(failureGroup => failureGroup.Key, failureGroup => failureGroup.ToArray());
+
+            var details = new ValidationProblemDetails(errors)
             {
                 Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
             };

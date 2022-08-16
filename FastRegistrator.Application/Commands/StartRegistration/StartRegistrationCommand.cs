@@ -5,12 +5,12 @@ using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
+namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
 {
     [Command(CommandExecutionMode.InPlace)]
     public record class StartRegistrationCommand : IRequest
     {
-        public Guid Guid { get; init; }
+        public Guid RegistrationId { get; init; }
         public string PhoneNumber { get; init; } = null!;
         public string FirstName { get; init; } = null!;
         public string? MiddleName { get; init; }
@@ -23,6 +23,11 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         public string Citizenship { get; init; } = null!;
         public string Snils { get; init; } = null!;
         public string FormData { get; init; } = null!;
+
+        public override string ToString()
+        {
+            return nameof(StartRegistrationCommand) + $" {{ RegistrationId = {RegistrationId} }}";
+        }
     }
 
     public class StartRegistrationCommandHandler : AsyncRequestHandler<StartRegistrationCommand>
@@ -40,7 +45,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved
         {
             _logger.LogInformation($"Registration for person with phone number '{request.PhoneNumber}' is begun.");
 
-            var registration = new Registration(request.Guid, request.PhoneNumber, ConstructPersonData(request));
+            var registration = new Registration(request.RegistrationId, request.PhoneNumber, ConstructPersonData(request));
             _dbContext.Registrations.Add(registration);
 
             await _dbContext.SaveChangesAsync();

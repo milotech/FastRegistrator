@@ -26,7 +26,7 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
         }
     }
 
-    public class RegistrationStartedCommittedEventHandler : INotificationHandler<RegistrationStartedEvent>
+    public class RegistrationStartedCommittedEventHandler : INotificationHandler<CommittedEvent<RegistrationStartedEvent>>
     {
         private readonly ILogger _logger;
         private readonly ICommandExecutor _cmdExecutor;
@@ -40,8 +40,10 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
             _logger = logger;            
         }
 
-        public Task Handle(RegistrationStartedEvent @event, CancellationToken cancellationToken)
+        public Task Handle(CommittedEvent<RegistrationStartedEvent> committedEvent, CancellationToken cancellationToken)
         {
+            var @event = committedEvent.Event;
+
             _logger.LogInformation($"Registration '{@event.Registration.Id}' started.");
 
             var command = new CheckPersonCommand(
@@ -51,6 +53,7 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
                 INN: null,
                 BirthDt: null
                 );
+
             _cmdExecutor.Execute(command);
 
             _logger.LogInformation($"Registration '{@event.Registration.Id}' sent to KonturPrizma check queue.");

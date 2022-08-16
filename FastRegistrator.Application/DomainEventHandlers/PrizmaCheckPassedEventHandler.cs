@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.DomainEventHandlers
 {
-    public class PrizmaCheckPassedCommittedEventHandler : INotificationHandler<PrizmaCheckPassedEvent>
+    public class PrizmaCheckPassedCommittedEventHandler : INotificationHandler<CommittedEvent<PrizmaCheckPassedEvent>>
     {
         private readonly ILogger _logger;
         private readonly ICommandExecutor _cmdExecutor;
@@ -19,9 +19,9 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
             _cmdExecutor = cmdExecutor;
         }
 
-        public Task Handle(PrizmaCheckPassedEvent @event, CancellationToken cancellationToken)
+        public Task Handle(CommittedEvent<PrizmaCheckPassedEvent> @event, CancellationToken cancellationToken)
         {          
-            _logger.LogInformation($"Prizma check passed for '{@event.Registration.Id}'");
+            _logger.LogInformation($"Prizma check passed for '{@event.Event.Registration.Id}'");
 
             // _cmdExecutor.Execute( send data to IC command )
 

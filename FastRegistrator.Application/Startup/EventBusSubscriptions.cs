@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
+﻿using FastRegistrator.ApplicationCore.Commands.StartRegistration;
 using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
 using FastRegistrator.ApplicationCore.IntegrationEvents.Handlers;
 using FastRegistrator.ApplicationCore.Interfaces;

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using FastRegistrator.ApplicationCore.Commands.SetStatusESIAApproved;
+using FastRegistrator.ApplicationCore.Commands.StartRegistration;
 using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
 
 namespace FastRegistrator.ApplicationCore.Mappings
