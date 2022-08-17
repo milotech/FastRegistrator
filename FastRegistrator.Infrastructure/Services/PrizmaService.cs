@@ -18,9 +18,12 @@ public class PrizmaService : IPrizmaService
 
     public async Task<PersonCheckCommonResponse> PersonCheck(PersonCheckRequest personCheckRequest, CancellationToken cancelToken)
     {
-        var request = JsonSerializer.Serialize(personCheckRequest);
-        var stringRequest = $"{PERSON_CHECK_PATH}?Fio={personCheckRequest.Fio}&PassportNumber={personCheckRequest.PassportNumber}&Inn={personCheckRequest.Inn}&DateOfBirth={personCheckRequest.DateOfBirth.ToString("MM/dd/yyyy")}"
-        var result = await _httpClient.GetAsync(stringRequest, cancelToken);
+        var uriRequest = $"{PERSON_CHECK_PATH}?Fio={personCheckRequest.Fio}&PassportNumber={personCheckRequest.PassportNumber}&Inn={personCheckRequest.Inn}";
+        if (personCheckRequest.DateOfBirth.HasValue)
+        {
+            uriRequest += $"&DateOfBirth={personCheckRequest.DateOfBirth.Value:yyyy’-‘MM’-‘dd’}";
+        }
+        var result = await _httpClient.GetAsync(uriRequest, cancelToken);
         var content = await result.Content.ReadAsStringAsync(cancelToken);
 
         var personCheckCommonResponse = new PersonCheckCommonResponse();
