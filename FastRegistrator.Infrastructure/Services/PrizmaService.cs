@@ -19,7 +19,7 @@ public class PrizmaService : IPrizmaService
         var requestUri = $"{PERSON_CHECK_PATH}?Fio={personCheckRequest.Fio}&PassportNumber={personCheckRequest.PassportNumber}";
         if (string.IsNullOrEmpty(personCheckRequest.Inn))
         {
-            requestUri = $"&Inn={personCheckRequest.Inn}";
+            requestUri += $"&Inn={personCheckRequest.Inn}";
         }
         if (personCheckRequest.DateOfBirth is not null)
         {
