@@ -45,6 +45,8 @@ public class PrizmaService : IPrizmaService
             personCheckCommonResponse.ErrorResponse = model;
         }
 
+        personCheckCommonResponse.HttpStatusCode = (int)result.StatusCode;
+
         return personCheckCommonResponse;
     }
 }
