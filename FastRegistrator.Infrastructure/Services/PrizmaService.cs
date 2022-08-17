@@ -17,7 +17,7 @@ public class PrizmaService : IPrizmaService
     public async Task<PersonCheckCommonResponse> PersonCheck(PersonCheckRequest personCheckRequest, CancellationToken cancelToken)
     {
         var requestUri = $"{PERSON_CHECK_PATH}?Fio={personCheckRequest.Fio}&PassportNumber={personCheckRequest.PassportNumber}";
-        if (string.IsNullOrEmpty(personCheckRequest.Inn))
+        if (!string.IsNullOrEmpty(personCheckRequest.Inn))
         {
             requestUri += $"&Inn={personCheckRequest.Inn}";
         }
