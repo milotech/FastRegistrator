@@ -23,7 +23,7 @@ public class PrizmaService : IPrizmaService
         }
         if (personCheckRequest.DateOfBirth is not null)
         {
-            requestUri += $"&DateOfBirth={personCheckRequest.DateOfBirth.Value:yyyy’-‘MM’-‘dd}";
+            requestUri += $"&DateOfBirth={personCheckRequest.DateOfBirth.Value:yyyy-MM-dd}";
         }
         var result = await _httpClient.GetAsync(requestUri, cancelToken);
         var content = await result.Content.ReadAsStringAsync(cancelToken);
