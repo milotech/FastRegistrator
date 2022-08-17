@@ -1,6 +1,5 @@
 ﻿using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
 using FastRegistrator.ApplicationCore.Interfaces;
-using System.Text;
 using System.Text.Json;
 
 namespace FastRegistrator.Infrastructure.Services;
@@ -9,7 +8,6 @@ public class PrizmaService : IPrizmaService
 {
     private readonly HttpClient _httpClient;
     private const string PERSON_CHECK_PATH = "PersonCheck";
-    private const string MEDIA_TYPE = "application/json";
 
     public PrizmaService(HttpClient httpClient)
     {
@@ -18,12 +16,16 @@ public class PrizmaService : IPrizmaService
 
     public async Task<PersonCheckCommonResponse> PersonCheck(PersonCheckRequest personCheckRequest, CancellationToken cancelToken)
     {
-        var uriRequest = $"{PERSON_CHECK_PATH}?Fio={personCheckRequest.Fio}&PassportNumber={personCheckRequest.PassportNumber}&Inn={personCheckRequest.Inn}";
-        if (personCheckRequest.DateOfBirth.HasValue)
+        var requestUri = $"{PERSON_CHECK_PATH}?Fio={personCheckRequest.Fio}&PassportNumber={personCheckRequest.PassportNumber}";
+        if (string.IsNullOrEmpty(personCheckRequest.Inn))
         {
-            uriRequest += $"&DateOfBirth={personCheckRequest.DateOfBirth.Value:yyyy’-‘MM’-‘dd’}";
+            requestUri = $"&Inn={personCheckRequest.Inn}";
         }
-        var result = await _httpClient.GetAsync(uriRequest, cancelToken);
+        if (personCheckRequest.DateOfBirth is not null)
+        {
+            requestUri += $"&DateOfBirth={personCheckRequest.DateOfBirth.Value:yyyy’-‘MM’-‘dd}";
+        }
+        var result = await _httpClient.GetAsync(requestUri, cancelToken);
         var content = await result.Content.ReadAsStringAsync(cancelToken);
 
         var personCheckCommonResponse = new PersonCheckCommonResponse();
@@ -35,7 +37,7 @@ public class PrizmaService : IPrizmaService
         }
         else
         {
-            if(string.IsNullOrEmpty(content))
+            if (string.IsNullOrEmpty(content))
             {
                 result.EnsureSuccessStatusCode();
             }
