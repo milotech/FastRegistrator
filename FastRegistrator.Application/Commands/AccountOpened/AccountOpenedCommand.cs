@@ -30,7 +30,6 @@ namespace FastRegistrator.ApplicationCore.Commands.AccountOpened
         {
             var registration = await _dbContext.Registrations
                                                .Where(reg => reg.Id == command.RegistrationId)
-                                               .Include(reg => reg.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
                                                .FirstOrDefaultAsync();
 
             if (registration is null)
