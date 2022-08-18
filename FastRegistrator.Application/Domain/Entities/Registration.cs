@@ -10,7 +10,6 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         public string PhoneNumber { get; private set; } = null!;
         public PersonData PersonData { get; private set; } = null!;  
         public PrizmaCheckResult? PrizmaCheckResult { get; private set; }
-        public AccountData? AccountData { get; private set; }
         public Error? Error { get; private set; }
         public bool Completed { get; private set; }
 
@@ -68,12 +67,10 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
             AddStatusToHistory(RegistrationStatus.PersonDataSentToIC);
         }
 
-        public void SetAccountOpened(/* some account data */)
+        public void SetAccountOpened()
         {
             ValidateCompletion();
             SetCompleted();
-
-            AccountData = new AccountData();
 
             AddStatusToHistory(RegistrationStatus.AccountOpened);
         }

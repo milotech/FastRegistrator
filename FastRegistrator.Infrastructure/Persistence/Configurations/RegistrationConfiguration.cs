@@ -23,10 +23,6 @@ namespace FastRegistrator.Infrastructure.Persistence.Configurations
             builder.HasOne(item => item.Error)
                    .WithOne()
                    .HasForeignKey<Error>(p => p.Id);
-
-            builder.HasOne(item => item.AccountData)
-                   .WithOne()
-                   .HasForeignKey<AccountData>(p => p.Id);
         }
     }
 }
