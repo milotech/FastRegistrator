@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace FastRegistrator.ApplicationCore.DomainEventHandlers
-{    
+{
     public class RegistrationStartedEventHandler : INotificationHandler<RegistrationStartedEvent>
     {
         private readonly ILogger _logger;
@@ -33,11 +33,11 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
 
         public RegistrationStartedCommittedEventHandler(
             ICommandExecutor cmdExecutor,
-            ILogger<RegistrationStartedCommittedEventHandler> logger            
+            ILogger<RegistrationStartedCommittedEventHandler> logger
         )
         {
             _cmdExecutor = cmdExecutor;
-            _logger = logger;            
+            _logger = logger;
         }
 
         public Task Handle(CommittedEvent<RegistrationStartedEvent> committedEvent, CancellationToken cancellationToken)

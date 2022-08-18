@@ -72,9 +72,8 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
         }
 
         public async Task<bool> BeUniqueId(Guid id, CancellationToken cancellationToken)
-        {
-            return !(await _dbContext.Registrations.AnyAsync(r => r.Id == id, cancellationToken));
-        }
+            => !await _dbContext.Registrations.AnyAsync(r => r.Id == id, cancellationToken);
+        
 
         private string RemoveAllRedundantSymbols(string? value)
             => value is null

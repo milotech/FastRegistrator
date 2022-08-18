@@ -1,7 +1,7 @@
 ﻿using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.ValueObjects;
 using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Queries.GetStatus;
+using FastRegistrator.ApplicationCore.Queries;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.ComponentModel;
@@ -41,7 +41,7 @@ namespace FastRegistrator.Tests.Queries
         [Description("Arrange GetStatus action trying to get status of registration that doesn't exist" +
                      "Act Handler for GetRegistrationStatusQuery is called" +
                      "Assert Handler throws exception")]
-        public async Task Handle_GetStatusForNonExsistentRegistration_ThrowsException() 
+        public async Task Handle_GetStatusForNonExsistentRegistration_ThrowsException()
         {
             // Arrange
             var logger = new Mock<ILogger<GetRegistrationStatusQueryHandler>>();

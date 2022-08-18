@@ -9,7 +9,7 @@ namespace FastRegistrator.ApplicationCore.Commands.Tests
 
     public class TestRunFromQueueCommandHandler : AsyncRequestHandler<TestRunFromQueueCommand>
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public TestRunFromQueueCommandHandler(ILogger<TestRunFromQueueCommand> logger)
         {

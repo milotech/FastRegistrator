@@ -29,7 +29,7 @@ namespace FastRegistrator.ApplicationCore.Behaviours
                 _logger.LogError(ex, ex.Message);
                 throw;
             }
-            catch(ValidationException ex)
+            catch (ValidationException ex)
             {
                 _logger.LogError(ex, $"Validation failed for the command {request}");
                 throw;
@@ -47,7 +47,6 @@ namespace FastRegistrator.ApplicationCore.Behaviours
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Unhandled exception for command {request}");
-
                 throw;
             }
         }

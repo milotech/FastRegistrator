@@ -25,7 +25,7 @@ public class RegistrationStopOnErrorBehaviour<TRequest, TResponse> : IPipelineBe
         {
             return await next();
         }
-        catch(NotFoundException)
+        catch (NotFoundException)
         {
             throw;
         }

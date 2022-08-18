@@ -8,7 +8,7 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
         private List<StatusHistoryItem> _history = new();
 
         public string PhoneNumber { get; private set; } = null!;
-        public PersonData PersonData { get; private set; } = null!;  
+        public PersonData PersonData { get; private set; } = null!;
         public PrizmaCheckResult? PrizmaCheckResult { get; private set; }
         public AccountData? AccountData { get; private set; }
         public Error? Error { get; private set; }
@@ -92,7 +92,7 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
             AddDomainEvent(new RegistrationCompletedEvent(this));
         }
 
-        private void AddStatusToHistory(RegistrationStatus status) 
+        private void AddStatusToHistory(RegistrationStatus status)
         {
             var statusHistoryItem = new StatusHistoryItem(status);
             _history.Add(statusHistoryItem);

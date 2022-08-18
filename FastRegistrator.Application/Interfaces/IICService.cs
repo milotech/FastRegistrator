@@ -1,5 +1,4 @@
 ﻿using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
-using FastRegistrator.ApplicationCore.DTOs.RegistrationDTOs;
 
 namespace FastRegistrator.ApplicationCore.Interfaces
 {

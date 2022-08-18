@@ -13,7 +13,7 @@ namespace FastRegistrator.Tests.Domain
         [Description("Arrange Create new registration object" +
                      "Act Registration constructor is called" +
                      "Assert Registration has status 'PersonDataReceived' and domain event 'RegistrationStartedEvent'")]
-        public void Registration_NewRegistrationObject_RegistrationHasStatusPersonDataReceived() 
+        public void Registration_NewRegistrationObject_RegistrationHasStatusPersonDataReceived()
         {
             // Arrange & Act
             var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());

@@ -36,17 +36,19 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
         {
             var type = command.GetType();
             if (!_commandTypes.ContainsKey(type))
+            {
                 throw new InvalidOperationException("Unknown command type: " + type.Name);
+            }
 
             cancel ??= _cancel;
 
-            switch(_commandTypes[type].Mode)
+            switch (_commandTypes[type].Mode)
             {
                 case CommandExecutionMode.InPlace:
                     return ExecuteInScope(command, cancel.Value);
                 case CommandExecutionMode.Parallel:
                     return ExecuteParallel(command, cancel.Value);
-                case CommandExecutionMode.ExecutionQueue:                    
+                case CommandExecutionMode.ExecutionQueue:
                     var queue = (_commandTypes[type].Queue as CommandsQueue<TResponse>)!;
                     var taskCompletion = new TaskCompletionSource<TResponse>();
                     var item = new CommandsQueueItem<TResponse>(command, taskCompletion, cancel.Value);
@@ -82,9 +84,9 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                     catch (RetryRequiredException)
                     {
                         await Task.Delay(RetryDelay, cancel);
-                    }                    
+                    }
                 }
-            });            
+            });
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members",
@@ -96,7 +98,7 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                 var response = await ExecuteInScope(queueItem.Command, queueItem.Cancel);
                 queueItem.TaskCompletion.SetResult(response);
             }
-            catch(RetryRequiredException)
+            catch (RetryRequiredException)
             {
                 var type = queueItem.Command.GetType();
                 var queue = (_commandTypes[type].Queue as CommandsQueue<TResponse>)!;
@@ -106,7 +108,7 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                     queue.Enqueue(queueItem);
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 queueItem.TaskCompletion.SetException(ex);
             }

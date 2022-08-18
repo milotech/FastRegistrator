@@ -33,9 +33,9 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         private string Name { get; }
 
-        public bool IsAlive => !_disposed 
+        public bool IsAlive => !_disposed
                             && _channel != null && _channel.IsOpen
-                            && _consumer != null && _consumer.IsRunning;        
+                            && _consumer != null && _consumer.IsRunning;
 
         public event NewEventHandler? OnNewEvent;
 
@@ -57,14 +57,18 @@ namespace FastRegistrator.Infrastructure.EventBus
 
             _queueName = eventType.Name;
             if (_queueName.EndsWith("Event"))
+            {
                 _queueName += "s";
+            }
 
             _deadLetterExchangeName = _exchangeName + "_DLX";
             _deadLetterQueueName = _exchangeName + "_DLQ";
 
             var retry = eventType.GetCustomAttributes(typeof(RetryAttribute), false).FirstOrDefault();
             if (retry != null)
+            {
                 _maxRetriesCount = ((RetryAttribute)retry).MaxRetries;
+            }
 
             Name = $"Consumer ({_queueName})";
         }
@@ -72,7 +76,7 @@ namespace FastRegistrator.Infrastructure.EventBus
         public void Open()
         {
             _logger.LogInformation($"{Name}: Creating RabbitMQ channel");
-            
+
             AsyncEventingBasicConsumer consumer;
             var channel = _connection.CreateChannel();
 
@@ -114,7 +118,7 @@ namespace FastRegistrator.Infrastructure.EventBus
                 consumer = new AsyncEventingBasicConsumer(channel);
 
                 consumer.Received += Consumer_Received;
-                
+
                 consumer.Shutdown += (sender, ea) =>
                 {
                     _logger.LogInformation($"{Name}: shutdown. " + ea.ToString());
@@ -160,9 +164,12 @@ namespace FastRegistrator.Infrastructure.EventBus
                         _consumer = null;
                     }
                     if (_channel.IsOpen)
+                    {
                         _channel.Close();
+                    }
+
                     _channel.Dispose();
-                    _channel = null;                    
+                    _channel = null;
                 }
                 catch (Exception ex)
                 {
@@ -181,24 +188,25 @@ namespace FastRegistrator.Infrastructure.EventBus
             {
                 if (OnNewEvent != null)
                 {
-                    var integrationEvent = JsonSerializer.Deserialize(message, _eventType) as IIntegrationEvent;
-                    if (integrationEvent is null)
+                    if (JsonSerializer.Deserialize(message, _eventType) is not IIntegrationEvent integrationEvent)
                     {
                         _logger.LogWarning($"{Name}: Received message that can't be deserialized to {_eventType.Name}. Message: {message}");
                     }
                     else
-                    { 
+                    {
                         await OnNewEvent(integrationEvent);
                     }
                 }
                 else
+                {
                     _logger.LogWarning($"{Name}: OnNewEvent event handler is not set, message will be lost");
+                }
             }
             catch (JsonException ex)
             {
                 _logger.LogError(ex, $"{Name}: Can't deserialize message to '{_eventType.Name}'. Message: {message}");
             }
-            catch(RetryRequiredException ex)
+            catch (RetryRequiredException ex)
             {
                 if (retryNumber < _maxRetriesCount)
                 {
@@ -206,19 +214,25 @@ namespace FastRegistrator.Infrastructure.EventBus
                     _channel!.BasicNack(eventArgs.DeliveryTag, false, false);
                 }
                 else
+                {
                     _logger.LogWarning($"{Name}: Max retries count ({_maxRetriesCount}) reached.");
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"{Name}: Unhandled exception while processing new message with routing key '{routingKey}'");
             }
-            
+
             _channel!.BasicAck(eventArgs.DeliveryTag, multiple: false);
         }
 
         public void Dispose()
         {
-            if (_disposed) return;
+            if (_disposed)
+            {
+                return;
+            }
+
             _disposed = true;
 
             Close();

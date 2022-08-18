@@ -18,8 +18,10 @@ namespace FastRegistrator.API
 
             // EventBus
             var eventBus = app.ApplicationServices.GetService<IEventBus>();
-            if(eventBus != null)
+            if (eventBus != null)
+            {
                 eventBus.StartApplicationSubscriptions();
+            }
 
             // Incompleted registrations
             using (var scope = app.ApplicationServices.CreateScope())

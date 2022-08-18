@@ -10,7 +10,7 @@ namespace FastRegistrator.Infrastructure.EventBus
     {
         private readonly IConnectionFactory _connectionFactory;
         private readonly ILogger<RabbitMqConnection> _logger;
-        
+
         private IConnection? _connection;
         private bool _disposed;
         private object _sync = new object();
@@ -21,28 +21,21 @@ namespace FastRegistrator.Infrastructure.EventBus
             _connectionFactory = CreateConnectionFactory(settings.Value);
         }
 
-        public bool IsConnected
-        {
-            get
-            {
-                return _connection != null && _connection.IsOpen && !_disposed;
-            }
-        }
+        public bool IsConnected => _connection != null && _connection.IsOpen && !_disposed;
 
         public IModel CreateChannel()
         {
-            if (!IsConnected)
-            {
-                throw new InvalidOperationException("No RabbitMQ connections are available to perform this action");
-            }
-
-            return _connection!.CreateModel();
+            return !IsConnected
+                ? throw new InvalidOperationException("No RabbitMQ connections are available to perform this action")
+                : _connection!.CreateModel();
         }
 
         public void Connect()
         {
             if (_disposed)
+            {
                 throw new ObjectDisposedException("Connection disposed");
+            }
 
             lock (_sync)
             {
@@ -53,7 +46,9 @@ namespace FastRegistrator.Infrastructure.EventBus
                     try
                     {
                         if (_connection != null)
+                        {
                             _connection.Dispose();
+                        }
 
                         _connection = _connectionFactory.CreateConnection();
 
@@ -74,7 +69,10 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         public void Dispose()
         {
-            if (_disposed) return;
+            if (_disposed)
+            {
+                return;
+            }
 
             _disposed = true;
 
@@ -101,7 +99,10 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         private void OnConnectionBlocked(object? sender, ConnectionBlockedEventArgs e)
         {
-            if (_disposed) return;
+            if (_disposed)
+            {
+                return;
+            }
 
             _logger.LogWarning("A RabbitMQ connection is shutdown. Trying to re-connect...");
 
@@ -110,7 +111,10 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         private void OnCallbackException(object? sender, CallbackExceptionEventArgs e)
         {
-            if (_disposed) return;
+            if (_disposed)
+            {
+                return;
+            }
 
             _logger.LogWarning("A RabbitMQ connection throw exception. Trying to re-connect...");
 
@@ -119,7 +123,10 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         private void OnConnectionShutdown(object? sender, ShutdownEventArgs reason)
         {
-            if (_disposed) return;
+            if (_disposed)
+            {
+                return;
+            }
 
             _logger.LogWarning("A RabbitMQ connection is on shutdown. Trying to re-connect...");
 
@@ -135,7 +142,9 @@ namespace FastRegistrator.Infrastructure.EventBus
             };
 
             if (settings.Ssl)
+            {
                 factory.Ssl = new SslOption() { Enabled = true, CertificateValidationCallback = (sender, cert, chain, errors) => true };
+            }
 
             if (!string.IsNullOrEmpty(settings.VirtualHost))
             {

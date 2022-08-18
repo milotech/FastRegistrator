@@ -41,10 +41,14 @@ namespace FastRegistrator.Infrastructure.EventBus
             Type eventType = typeof(T);
 
             if (_eventConfigurations.ContainsKey(eventType))
+            {
                 throw new ArgumentException($"Event Type {eventType.Name} already configured");
+            }
 
             if (routingKey is null)
+            {
                 routingKey = eventType.Name;
+            }
 
             _eventConfigurations.Add(eventType, new EventConfiguration(exchangeName, routingKey));
         }
@@ -54,12 +58,16 @@ namespace FastRegistrator.Infrastructure.EventBus
             Type eventType = integrationEvent.GetType();
 
             if (!_eventConfigurations.ContainsKey(eventType))
+            {
                 throw new ArgumentException($"Event Type {eventType.Name} not configured");
+            }
 
             var eventConfig = _eventConfigurations[eventType];
 
             if (!_connection.IsConnected)
+            {
                 _connection.Connect();
+            }
 
             var message = JsonSerializer.SerializeToUtf8Bytes(integrationEvent);
 
@@ -79,10 +87,14 @@ namespace FastRegistrator.Infrastructure.EventBus
             Type handlerType = typeof(THandler);
 
             if (!_eventConfigurations.ContainsKey(eventType))
+            {
                 throw new ArgumentException($"Event Type {eventType.Name} not configured");
+            }
 
             if (!_connection.IsConnected)
+            {
                 _connection.Connect();
+            }
 
             var eventConfig = _eventConfigurations[eventType];
 
@@ -100,7 +112,9 @@ namespace FastRegistrator.Infrastructure.EventBus
                 _subscriptions.Add(eventType, subscription);
             }
             else
-                _subscriptions[eventType].HandlerTypes.Add(handlerType);
+            {
+                _ = _subscriptions[eventType].HandlerTypes.Add(handlerType);
+            }
 
             _logger.LogInformation($"Added {handlerType.Name} for {eventType.Name}");
         }
@@ -111,15 +125,13 @@ namespace FastRegistrator.Infrastructure.EventBus
 
             if (_subscriptions.TryGetValue(eventType, out Subscription? subscription))
             {
-                using (var scope = _serviceProvider.CreateScope())
+                using var scope = _serviceProvider.CreateScope();
+                foreach (Type handlerType in subscription.HandlerTypes)
                 {
-                    foreach (Type handlerType in subscription.HandlerTypes)
-                    {
-                        var handler = ActivatorUtilities.CreateInstance(scope.ServiceProvider, handlerType);
-                        var handleMethod = handlerType.GetMethod("Handle");
-                        await Task.Yield();
-                        await (Task)handleMethod!.Invoke(handler, new object[] { integrationEvent, _cancelToken })!;
-                    }
+                    var handler = ActivatorUtilities.CreateInstance(scope.ServiceProvider, handlerType);
+                    var handleMethod = handlerType.GetMethod("Handle");
+                    await Task.Yield();
+                    await (Task)handleMethod!.Invoke(handler, new object[] { integrationEvent, _cancelToken })!;
                 }
             }
             else
@@ -149,7 +161,9 @@ namespace FastRegistrator.Infrastructure.EventBus
         public void Dispose()
         {
             foreach (var subscription in _subscriptions.Values)
+            {
                 subscription.Consumer.Dispose();
+            }
 
             _connection.Dispose();
             _subscriptions.Clear();

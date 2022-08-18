@@ -11,7 +11,7 @@ Log.Logger = new LoggerConfiguration()
 Log.Information("Starting the FastRegistrator Service...");
 
 try
-{ 
+{
     var builder = WebApplication.CreateBuilder(args);
 
     // Add services to the container.
@@ -25,7 +25,8 @@ try
     builder.Services.AddApplicationServices();
     builder.Services.AddInfrastructureServices(builder.Configuration);
 
-    builder.Services.AddSwaggerGen(x => {
+    builder.Services.AddSwaggerGen(x =>
+    {
         x.CustomSchemaIds(i => i.FullName);
     });
 

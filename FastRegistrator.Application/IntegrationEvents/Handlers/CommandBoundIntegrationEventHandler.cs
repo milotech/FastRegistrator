@@ -6,10 +6,10 @@ namespace FastRegistrator.ApplicationCore.IntegrationEvents.Handlers
 {
     public class CommandBoundIntegrationEventHandler<TEvent, TCommand> : IIntegrationEventHandler<TEvent>
         where TEvent : IIntegrationEvent
-        where TCommand: IBaseRequest
+        where TCommand : IBaseRequest
     {
-        private IMediator _mediator;
-        private IMapper _mapper;
+        private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
         public CommandBoundIntegrationEventHandler(IMediator mediator, IMapper mapper)
         {

@@ -44,7 +44,9 @@ namespace FastRegistrator.Infrastructure.EventBus
         public void Publish(string exchangeName, string routingKey, byte[] message)
         {
             if (_channel == null)
+            {
                 throw new InvalidOperationException("Publisher Channel is not open");
+            }
 
             var properties = _channel.CreateBasicProperties();
             properties.DeliveryMode = 2;
@@ -63,9 +65,12 @@ namespace FastRegistrator.Infrastructure.EventBus
             if (_channel != null)
             {
                 try
-                {                    
+                {
                     if (_channel.IsOpen)
+                    {
                         _channel.Close();
+                    }
+
                     _channel.Dispose();
                     _channel = null;
                 }
@@ -78,7 +83,11 @@ namespace FastRegistrator.Infrastructure.EventBus
 
         public void Dispose()
         {
-            if (_disposed) return;
+            if (_disposed)
+            {
+                return;
+            }
+
             _disposed = true;
 
             Close();

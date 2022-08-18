@@ -3,7 +3,6 @@ using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
 using FastRegistrator.ApplicationCore.Domain.ValueObjects;
 using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
-using FastRegistrator.ApplicationCore.DTOs.RegistrationDTOs;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
@@ -66,7 +65,7 @@ namespace FastRegistrator.Tests.Commands
             var assertPerson = await context.Registrations
                                             .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
                                             .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
-            
+
             Assert.Contains(assertPerson.StatusHistory, shi => shi.Status == RegistrationStatus.Error);
             Assert.True(assertPerson.Error.Source == ErrorSource.FastRegistrator);
         }
@@ -144,7 +143,7 @@ namespace FastRegistrator.Tests.Commands
             Assert.True(assertPerson.Error.Source == ErrorSource.IC);
         }
 
-            private PersonData ConstructPersonData()
+        private PersonData ConstructPersonData()
         {
             var personName = new PersonName(FIRST_NAME, MIDDLE_NAME, LAST_NAME);
             var passport = new Passport(SERIES, NUMBER, ISSUED_BY, ISSUE_DATE, ISSUE_ID, CITIZENSHIP);

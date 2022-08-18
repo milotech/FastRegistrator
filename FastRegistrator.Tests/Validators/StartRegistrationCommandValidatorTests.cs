@@ -1,9 +1,5 @@
 ﻿using FastRegistrator.ApplicationCore.Commands.StartRegistration;
-using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Interfaces;
 using FluentValidation.TestHelper;
-using Microsoft.EntityFrameworkCore;
-using Moq;
 using System.ComponentModel;
 using static FastRegistrator.Tests.Constants;
 

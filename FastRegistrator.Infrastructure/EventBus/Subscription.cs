@@ -9,7 +9,9 @@
         {
             Consumer = consumer;
             foreach (var handlerType in handlerTypes)
+            {
                 HandlerTypes.Add(handlerType);
+            }
         }
     }
 }

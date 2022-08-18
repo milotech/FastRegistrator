@@ -6,7 +6,7 @@ namespace FastRegistrator.ApplicationCore.IntegrationEvents.Handlers
 {
     public class TestIntegrationEventHandler : IIntegrationEventHandler<TestIntegrationEvent>
     {
-        private ILogger<TestIntegrationEventHandler> _logger;
+        private readonly ILogger<TestIntegrationEventHandler> _logger;
 
         public TestIntegrationEventHandler(ILogger<TestIntegrationEventHandler> logger)
         {

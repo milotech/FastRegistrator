@@ -30,7 +30,9 @@ namespace FastRegistrator.Infrastructure
         public static void RegisterEventBus(this IServiceCollection services, IConfiguration configuration)
         {
             if (!configuration.GetSection("EventBus").GetValue<bool>("Enabled"))
+            {
                 return;
+            }
 
             services.Configure<EventBusConnectionSettings>(configuration.GetSection("EventBus"));
             services.AddSingleton<RabbitMqConnection>();

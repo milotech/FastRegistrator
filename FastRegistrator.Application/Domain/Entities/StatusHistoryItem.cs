@@ -5,7 +5,7 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
     public class StatusHistoryItem : BaseEntity<int>
     {
         public RegistrationStatus Status { get; private set; }
-        public DateTime StatusDT { get; private set; } 
+        public DateTime StatusDT { get; private set; }
 
         public StatusHistoryItem(RegistrationStatus status)
         {

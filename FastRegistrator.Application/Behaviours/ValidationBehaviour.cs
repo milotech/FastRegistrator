@@ -29,7 +29,9 @@ namespace FastRegistrator.ApplicationCore.Behaviours
                     .ToList();
 
                 if (failures.Any())
+                {
                     throw new ValidationException(failures);
+                }
             }
             return await next();
         }

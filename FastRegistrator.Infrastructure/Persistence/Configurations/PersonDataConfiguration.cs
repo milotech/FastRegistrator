@@ -6,7 +6,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Configurations
 {
     public class PersonDataConfiguration : IEntityTypeConfiguration<PersonData>
     {
-        public void Configure(EntityTypeBuilder<PersonData> builder) 
+        public void Configure(EntityTypeBuilder<PersonData> builder)
         {
             builder.OwnsOne(p => p.Name);
             builder.OwnsOne(p => p.Passport);
