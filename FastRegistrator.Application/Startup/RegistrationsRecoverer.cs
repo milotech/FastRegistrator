@@ -57,7 +57,7 @@ namespace FastRegistrator.ApplicationCore.Startup
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to recover registrations");
             }

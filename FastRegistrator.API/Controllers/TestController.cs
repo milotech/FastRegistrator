@@ -16,7 +16,6 @@ namespace FastRegistrator.API.Controllers
         [HttpGet("/queue")]
         public async Task<ActionResult> TestQueuedCommands(string name, CancellationToken cancel)
         {
-
             for (int i = 0; i < 40; i++)
             {
                 var cmd = new TestRunFromQueueCommand($"{name} # {i}");

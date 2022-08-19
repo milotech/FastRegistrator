@@ -1,6 +1,6 @@
 ﻿namespace FastRegistrator.ApplicationCore.Attributes
 {
-    public class RetryAttribute: Attribute
+    public class RetryAttribute : Attribute
     {
         public int MaxRetries { get; }
 

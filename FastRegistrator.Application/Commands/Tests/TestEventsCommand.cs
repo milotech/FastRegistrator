@@ -10,7 +10,7 @@ namespace FastRegistrator.ApplicationCore.Commands.Tests
     [Command(CommandExecutionMode.InPlace)]
     public record TestEventsCommand(Guid Id, string PhoneNumber, string FirstName, string LastName) : IRequest;
 
-    public class TestEventsCommandHandler: AsyncRequestHandler<TestEventsCommand>
+    public class TestEventsCommandHandler : AsyncRequestHandler<TestEventsCommand>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly ILogger _logger;

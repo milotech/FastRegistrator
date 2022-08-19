@@ -1,6 +1,6 @@
 ﻿using FastRegistrator.ApplicationCore.Domain.Entities;
 
-namespace FastRegistrator.ApplicationCore.DTOs.RegistrationDTOs
+namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
 {
     public record class ICRegistrationData
     {

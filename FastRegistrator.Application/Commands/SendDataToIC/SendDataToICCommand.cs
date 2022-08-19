@@ -2,7 +2,6 @@
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
 using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
-using FastRegistrator.ApplicationCore.DTOs.RegistrationDTOs;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
@@ -34,7 +33,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             var registration = await _dbContext.Registrations.Where(reg => reg.Id == request.RegistrationId)
                                                              .Include(reg => reg.PersonData)
                                                              .FirstOrDefaultAsync(cancellationToken);
-            
+
             if (registration is null)
             {
                 throw new NotFoundException(nameof(registration), request.RegistrationId);
@@ -47,7 +46,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
-        private async Task SendDataToICAsync(Registration registration, ICRegistrationData icRegistrationData, CancellationToken cancellationToken) 
+        private async Task SendDataToICAsync(Registration registration, ICRegistrationData icRegistrationData, CancellationToken cancellationToken)
         {
             ICRegistrationResponse? icRegistrationResponse;
             try

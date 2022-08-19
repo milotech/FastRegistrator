@@ -6,7 +6,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Configurations
 {
     public class RegistrationConfiguration : IEntityTypeConfiguration<Registration>
     {
-        public void Configure(EntityTypeBuilder<Registration> builder) 
+        public void Configure(EntityTypeBuilder<Registration> builder)
         {
             builder.HasOne(p => p.PersonData)
                    .WithOne()

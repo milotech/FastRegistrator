@@ -1,12 +1,12 @@
 ﻿using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.DTOs.GetStatusDTOs;
+using FastRegistrator.ApplicationCore.DTOs.RegistrationStatusDTOs;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FastRegistrator.ApplicationCore.Queries.GetStatus
+namespace FastRegistrator.ApplicationCore.Queries
 {
     public record class GetRegistrationStatusQuery(Guid Id) : IRequest<RegistrationStatusResponse>;
 
@@ -38,7 +38,7 @@ namespace FastRegistrator.ApplicationCore.Queries.GetStatus
             }
 
             var registrationStatus = registration.StatusHistory.First()!.Status;
-            
+
             var prizmaRejectionReason = registration.PrizmaCheckResult?.RejectionReasonCode;
 
             var registrationError = ConstructRegistrationError(registration);

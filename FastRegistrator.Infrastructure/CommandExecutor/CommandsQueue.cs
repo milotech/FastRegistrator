@@ -29,13 +29,15 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
 
         public CommandsQueue(int maxParallelExecutions, Func<CommandsQueueItem<TResponse>, Task> executeAction, CancellationToken cancel)
         {
-            if(maxParallelExecutions <= 0) 
+            if (maxParallelExecutions <= 0)
+            {
                 throw new ArgumentException(nameof(maxParallelExecutions));
+            }
 
             _queue = Channel.CreateUnbounded<CommandsQueueItem<TResponse>>(new UnboundedChannelOptions
             {
                 SingleWriter = false,
-                SingleReader = (maxParallelExecutions == 1)
+                SingleReader = maxParallelExecutions == 1
             });
             _executeAction = executeAction;
             _cancel = cancel;
@@ -50,7 +52,7 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
 
         private void StartQueueConsumers(int consumersCount)
         {
-            for(int i = 0; i < consumersCount; i++)
+            for (int i = 0; i < consumersCount; i++)
             {
                 Task.Run(ConsumerWork);
             }

@@ -26,11 +26,11 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
         }
     }
 
-    public class CheckPersonCommandHandler: AsyncRequestHandler<CheckPersonCommand>
+    public class CheckPersonCommandHandler : AsyncRequestHandler<CheckPersonCommand>
     {
-        private IApplicationDbContext _dbContext;
-        private IPrizmaService _prizmaService;
-        private ILogger _logger;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly IPrizmaService _prizmaService;
+        private readonly ILogger _logger;
 
         public CheckPersonCommandHandler(
             IApplicationDbContext dbContext,
@@ -61,7 +61,9 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
                 .FirstOrDefaultAsync();
 
             if (registration is null)
+            {
                 throw new NotFoundException(nameof(Registration), command.RegistrationId);
+            }
 
             await TryCheckPerson(prizmaRequest, registration, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);

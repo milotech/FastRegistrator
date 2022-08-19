@@ -32,9 +32,11 @@ namespace FastRegistrator.ApplicationCore.Commands.CompleteRegistration
             _logger.LogInformation($"Registration '{request.RegistrationId}' should be completed with Error: ({request.ErrorSource}) {request.ErrorMessage}.");
 
             var registration = await _dbContext.Registrations.FirstOrDefaultAsync(r => r.Id == request.RegistrationId);
-            
+
             if (registration is null)
+            {
                 throw new NotFoundException(nameof(Registration), request.RegistrationId);
+            }
 
             var error = new Error(request.ErrorSource, request.ErrorMessage);
             registration.SetError(error);

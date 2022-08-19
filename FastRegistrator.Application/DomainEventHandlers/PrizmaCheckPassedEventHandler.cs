@@ -20,7 +20,7 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
         }
 
         public Task Handle(CommittedEvent<PrizmaCheckPassedEvent> @event, CancellationToken cancellationToken)
-        {          
+        {
             _logger.LogInformation($"Prizma check passed for '{@event.Event.Registration.Id}'");
 
             // _cmdExecutor.Execute( send data to IC command )

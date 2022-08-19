@@ -1,7 +1,6 @@
 ﻿using FastRegistrator.ApplicationCore.Interfaces;
 using FastRegistrator.Infrastructure.Persistence;
 using FastRegistrator.Infrastructure.Services;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,14 +24,14 @@ namespace FastRegistrator.Infrastructure
                 var url = configuration[PrizmaServiceUrl];
                 options.BaseAddress = new Uri(url);
             });
-            
+
             services.AddSqlServer<ApplicationDbContext>(
                 configuration.GetConnectionString("FastRegConnection"),
                 opts => opts.EnableRetryOnFailure()
             );
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
             services.AddScoped<ApplicationDbContextInitialiser>();
-            
+
             services.RegisterEventBus(configuration);
 
             services.AddSingleton<ICommandExecutor>(sp =>

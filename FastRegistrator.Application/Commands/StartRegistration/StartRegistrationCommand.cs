@@ -51,7 +51,7 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
             await _dbContext.SaveChangesAsync();
         }
 
-        private PersonData ConstructPersonData(StartRegistrationCommand request) 
+        private PersonData ConstructPersonData(StartRegistrationCommand request)
         {
             var personName = new PersonName(request.FirstName, request.MiddleName, request.LastName);
             var passport = new Passport(request.Series, request.Number, request.IssuedBy, request.IssueDate, request.IssueId, request.Citizenship);

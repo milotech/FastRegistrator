@@ -47,7 +47,7 @@ namespace FastRegistrator.Infrastructure.Persistence
         {
             // nothing to seed right now
 
-            return Task.CompletedTask;            
+            return Task.CompletedTask;
         }
     }
 }
