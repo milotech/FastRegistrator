@@ -248,22 +248,6 @@ namespace FastRegistrator.Tests.Domain
         [Fact]
         [Description("Arrange Created registration" +
                      "Act Call method SetAccountOpened for exsisting registraion" +
-                     "Assert AccountData is not null")]
-        public void SetAccountOpened_CallMethodSetAccountOpened_AccountDataIsNotNull()
-        {
-            // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
-
-            // Act
-            registration.SetAccountOpened();
-
-            // Assert
-            Assert.NotNull(registration.AccountData);
-        }
-
-        [Fact]
-        [Description("Arrange Created registration" +
-                     "Act Call method SetAccountOpened for exsisting registraion" +
                      "Assert Registration has Complete flag is true and domain event 'RegistrationCompletedEvent'")]
         public void SetAccountOpened_CallMethodSetAccountOpened_RegistrationHasCompleteFlagIsTrue()
         {

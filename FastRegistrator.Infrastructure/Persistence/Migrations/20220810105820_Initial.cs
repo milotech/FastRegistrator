@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -20,23 +19,6 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Registrations", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AccountData",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AccountData", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AccountData_Registrations_Id",
-                        column: x => x.Id,
-                        principalTable: "Registrations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -134,9 +116,6 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AccountData");
-
             migrationBuilder.DropTable(
                 name: "Error");
 
