@@ -1,4 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Commands.StartRegistration;
+using FastRegistrator.ApplicationCore.Commands.AccountOpened;
+using FastRegistrator.ApplicationCore.Commands.StartRegistration;
 using FastRegistrator.ApplicationCore.DTOs.RegistrationStatusDTOs;
 using FastRegistrator.ApplicationCore.Queries;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,13 @@ namespace FastRegistrator.API.Controllers
 
         [HttpPost("start")]
         public async Task<ActionResult> StartRegistration(StartRegistrationCommand command, CancellationToken cancel)
+        {
+            await ExecuteCommand(command, cancel);
+            return Ok();
+        }
+
+        [HttpPost("complete")]
+        public async Task<ActionResult> CompleteRegistration(AccountOpenedCommand command, CancellationToken cancel)
         {
             await ExecuteCommand(command, cancel);
             return Ok();
