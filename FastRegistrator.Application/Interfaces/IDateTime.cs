@@ -4,5 +4,6 @@
     {
         DateTime Now { get; }
         DateTime UtcNow { get; }
+        DateTime ServiceStarted { get; }
     }
 }
