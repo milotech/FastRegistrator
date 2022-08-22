@@ -28,19 +28,24 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 
     public class CheckPersonCommandHandler : AsyncRequestHandler<CheckPersonCommand>
     {
-        private readonly IApplicationDbContext _dbContext;
-        private readonly IPrizmaService _prizmaService;
-        private readonly ILogger _logger;
+        private const int TIME_RETRIED = 10;
+
+        private IApplicationDbContext _dbContext;
+        private IPrizmaService _prizmaService;
+        private ILogger _logger;
+        private IDateTime _dateTime;
 
         public CheckPersonCommandHandler(
             IApplicationDbContext dbContext,
             IPrizmaService prizmaService,
-            ILogger<CheckPersonCommandHandler> logger
+            ILogger<CheckPersonCommandHandler> logger,
+            IDateTime dateTime
             )
         {
             _dbContext = dbContext;
             _prizmaService = prizmaService;
             _logger = logger;
+            _dateTime = dateTime;
         }
 
         protected override async Task Handle(CheckPersonCommand command, CancellationToken cancellationToken)
@@ -79,6 +84,11 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed to check Person for Registration '{registration.Id}'");
+
+                if(IsRetryNeeded(ex, registration))
+                {
+                    throw new RetryRequiredException(ex.Message);
+                }
 
                 var error = new Error(ErrorSource.FastRegistrator, ex.Message);
                 registration.SetError(error);
@@ -119,6 +129,19 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 
         private bool IsRetryNeeded(ErrorResponse errorResponse, Registration registration)
         {
+            return false;
+        }
+
+        private bool IsRetryNeeded(Exception exception, Registration registration)
+        {
+            if((_dateTime.Now - _dateTime.ServiceStarted).TotalMinutes <= TIME_RETRIED)
+            {
+                return true;
+            }
+            else if((registration.StatusHistory.FirstOrDefault()!.StatusDT - _dateTime.Now).TotalMinutes <= TIME_RETRIED)
+            {
+                return true;
+            }
             return false;
         }
 

@@ -6,5 +6,6 @@ namespace FastRegistrator.Infrastructure.Services
     {
         public DateTime Now => DateTime.Now;
         public DateTime UtcNow => DateTime.UtcNow;
+        public DateTime ServiceStarted => System.Diagnostics.Process.GetCurrentProcess().StartTime;
     }
 }
