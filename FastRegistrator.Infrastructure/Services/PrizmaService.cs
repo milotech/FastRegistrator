@@ -29,10 +29,14 @@ public class PrizmaService : IPrizmaService
         var content = await result.Content.ReadAsStringAsync(cancelToken);
 
         var personCheckCommonResponse = new PersonCheckCommonResponse();
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         if (result.IsSuccessStatusCode)
         {
-            var model = JsonSerializer.Deserialize<PersonCheckResult>(content);
+            var model = JsonSerializer.Deserialize<PersonCheckResult>(content, options);
             personCheckCommonResponse.PersonCheckResult = model;
         }
         else
@@ -41,7 +45,7 @@ public class PrizmaService : IPrizmaService
             {
                 result.EnsureSuccessStatusCode();
             }
-            var model = JsonSerializer.Deserialize<ErrorResponse>(content!);
+            var model = JsonSerializer.Deserialize<ErrorResponse>(content!, options);
             personCheckCommonResponse.ErrorResponse = model;
         }
 
