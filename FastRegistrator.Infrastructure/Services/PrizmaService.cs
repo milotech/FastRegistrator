@@ -6,6 +6,11 @@ namespace FastRegistrator.Infrastructure.Services;
 
 public class PrizmaService : IPrizmaService
 {
+    private static JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly HttpClient _httpClient;
     private const string PERSON_CHECK_PATH = "PersonCheck";
 
@@ -29,10 +34,11 @@ public class PrizmaService : IPrizmaService
         var content = await result.Content.ReadAsStringAsync(cancelToken);
 
         var personCheckCommonResponse = new PersonCheckCommonResponse();
+        
 
         if (result.IsSuccessStatusCode)
         {
-            var model = JsonSerializer.Deserialize<PersonCheckResult>(content);
+            var model = JsonSerializer.Deserialize<PersonCheckResult>(content, _jsonOptions);
             personCheckCommonResponse.PersonCheckResult = model;
         }
         else
@@ -41,7 +47,7 @@ public class PrizmaService : IPrizmaService
             {
                 result.EnsureSuccessStatusCode();
             }
-            var model = JsonSerializer.Deserialize<ErrorResponse>(content!);
+            var model = JsonSerializer.Deserialize<ErrorResponse>(content!, _jsonOptions);
             personCheckCommonResponse.ErrorResponse = model;
         }
 
