@@ -1,6 +1,6 @@
 ﻿using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
 using FastRegistrator.ApplicationCore.Interfaces;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace FastRegistrator.Infrastructure.Services;
 
@@ -32,7 +32,7 @@ public class PrizmaService : IPrizmaService
 
         if (result.IsSuccessStatusCode)
         {
-            var model = JsonConvert.DeserializeObject<PersonCheckResult>(content);
+            var model = JsonSerializer.Deserialize<PersonCheckResult>(content);
             personCheckCommonResponse.PersonCheckResult = model;
         }
         else
@@ -41,7 +41,7 @@ public class PrizmaService : IPrizmaService
             {
                 result.EnsureSuccessStatusCode();
             }
-            var model = JsonConvert.DeserializeObject<ErrorResponse>(content!);
+            var model = JsonSerializer.Deserialize<ErrorResponse>(content!);
             personCheckCommonResponse.ErrorResponse = model;
         }
 
