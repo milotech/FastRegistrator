@@ -8,8 +8,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<PersonData> builder)
         {
-            builder.OwnsOne(p => p.Name);
-            builder.OwnsOne(p => p.Passport);
+            builder.OwnsOne(p => p.Name);            
         }
     }
 }

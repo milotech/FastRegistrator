@@ -49,9 +49,9 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
             var command = new CheckPersonCommand(
                 RegistrationId: @event.Registration.Id,
                 Name: @event.Registration.PersonData.Name,
-                PassportNumber: @event.Registration.PersonData.Passport,
-                INN: null,
-                BirthDt: null
+                PassportNumber: @event.Registration.PersonData.PassportNumber,
+                INN: @event.Registration.PersonData.Inn,
+                BirthDt: @event.Registration.PersonData.BirthDay
                 );
 
             _cmdExecutor.Execute(command);

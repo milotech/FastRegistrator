@@ -27,17 +27,13 @@ namespace FastRegistrator.Tests.Commands
             var command = new StartRegistrationCommand
             {
                 RegistrationId = GUID,
-                PhoneNumber = PERSON_PHONE_NUMBER,
+                PhoneNumber = PHONE_NUMBER,
                 FirstName = FIRST_NAME,
                 LastName = LAST_NAME,
                 MiddleName = MIDDLE_NAME,
-                Series = SERIES,
-                Number = NUMBER,
-                IssuedBy = ISSUED_BY,
-                IssueDate = ISSUE_DATE,
-                IssueId = ISSUE_ID,
-                Citizenship = CITIZENSHIP,
-                Snils = SNILS,
+                PassportNumber = PASSPORT_NUMBER,
+                BirthDay = BIRTHDAY,
+                Inn = INN,
                 FormData = FORM_DATA
             };
 
@@ -47,7 +43,7 @@ namespace FastRegistrator.Tests.Commands
             // Assert
             var assertPerson = await context.Registrations
                 .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
-                .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
+                .FirstOrDefaultAsync(p => p.PhoneNumber == PHONE_NUMBER);
 
             Assert.NotNull(assertPerson);
             Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == RegistrationStatus.PersonDataReceived);
@@ -66,17 +62,13 @@ namespace FastRegistrator.Tests.Commands
             var command = new StartRegistrationCommand
             {
                 RegistrationId = GUID,
-                PhoneNumber = PERSON_PHONE_NUMBER,
+                PhoneNumber = PHONE_NUMBER,
                 FirstName = FIRST_NAME,
                 LastName = LAST_NAME,
                 MiddleName = MIDDLE_NAME,
-                Series = SERIES,
-                Number = NUMBER,
-                IssuedBy = ISSUED_BY,
-                IssueDate = ISSUE_DATE,
-                IssueId = ISSUE_ID,
-                Citizenship = CITIZENSHIP,
-                Snils = SNILS,
+                PassportNumber = PASSPORT_NUMBER,
+                BirthDay = BIRTHDAY,
+                Inn = INN,
                 FormData = FORM_DATA
             };
 
@@ -86,7 +78,7 @@ namespace FastRegistrator.Tests.Commands
             // Assert
             var assertPerson = await context.Registrations
                 .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
-                .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
+                .FirstOrDefaultAsync(p => p.PhoneNumber == PHONE_NUMBER);
 
             Assert.NotNull(assertPerson);
             Assert.NotNull(assertPerson!.PersonData);

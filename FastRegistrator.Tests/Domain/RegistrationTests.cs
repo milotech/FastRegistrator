@@ -16,7 +16,7 @@ namespace FastRegistrator.Tests.Domain
         public void Registration_NewRegistrationObject_RegistrationHasStatusPersonDataReceived()
         {
             // Arrange & Act
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
 
             // Assert
             var assertStatus = registration.StatusHistory.OrderByDescending(x => x.StatusDT).First().Status;
@@ -32,7 +32,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetPrizmaCheckInProgress_CallMethodSetPrizmaCheckInProgressWithCompletedIsTrue_RegistrationThrowsInvalidOperationException()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
             var error = new Error(ErrorSource.FastRegistrator, "some error");
             registration.SetError(error);
 
@@ -47,7 +47,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetPrizmaCheckInProgress_CallMethodSetPrizmaCheckInProgress_RegistrationHasStatusPrizmaCheckInProgress()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
 
             // Act
             registration.SetPrizmaCheckInProgress();
@@ -65,7 +65,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetPrizmaCheckResult_CallMethodSetPrizmaCheckResult_RegistrationThrowsInvalidOperationException()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
             var error = new Error(ErrorSource.FastRegistrator, "some error");
             registration.SetError(error);
 
@@ -80,7 +80,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetPrizmaCheckResult_CallMethodSetPrizmaCheckResult_PrizmaCheckResultIsNotNull()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
 
             // Act
             registration.SetPrizmaCheckResult(ConstructPositivPrizmaCheckResult());
@@ -96,7 +96,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetPrizmaCheckResult_CallMethodSetPrizmaCheckResultWithPositivPrizmaCheckResult_RegistrationHasStatusPrizmaCheckSuccessful()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
 
             // Act
             registration.SetPrizmaCheckResult(ConstructPositivPrizmaCheckResult());
@@ -115,7 +115,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetPrizmaCheckResult_CallMethodSetPrizmaCheckResultWithNegativPrizmaCheckResult_RegistrationHasStatusPrizmaCheckRejected()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
 
             // Act
             registration.SetPrizmaCheckResult(ConstructNegativPrizmaCheckResult());
@@ -135,7 +135,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetError_CallMethodSetError_RegistrationThrowsInvalidOperationException()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
             var error = new Error(ErrorSource.FastRegistrator, "some error");
             registration.SetError(error);
 
@@ -150,7 +150,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetError_CallMethodSetPrizmaCheckResult_ErrorIsNotNull()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
             var error = new Error(ErrorSource.FastRegistrator, "some error");
 
             // Act
@@ -167,7 +167,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetError_CallMethodSetError_RegistrationHasCompleteFlagIsTrue()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
             var error = new Error(ErrorSource.FastRegistrator, "some error");
 
             // Act
@@ -185,7 +185,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetError_CallMethodSetError_RegistrationHasStatusError()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
             var error = new Error(ErrorSource.FastRegistrator, "some error");
 
             // Act
@@ -204,7 +204,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetPersonDataSentToIC_CallMethodSetPersonDataSentToIC_RegistrationThrowsInvalidOperationException()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
             var error = new Error(ErrorSource.FastRegistrator, "some error");
             registration.SetError(error);
 
@@ -219,7 +219,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetPersonDataSentToIC_CallMethodSetPersonDataSentToIC_RegistrationHasStatusPersonDataSentToIC()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
 
             // Act
             registration.SetPersonDataSentToIC();
@@ -237,7 +237,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetAccountOpened_CallMethodSetAccountOpened_RegistrationThrowsInvalidOperationException()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
             var error = new Error(ErrorSource.FastRegistrator, "some error");
             registration.SetError(error);
 
@@ -252,7 +252,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetAccountOpened_CallMethodSetAccountOpened_RegistrationHasCompleteFlagIsTrue()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
 
             // Act
             registration.SetAccountOpened();
@@ -269,7 +269,7 @@ namespace FastRegistrator.Tests.Domain
         public void SetAccountOpened_CallMethodSetAccountOpened_RegistrationHasStatusAccountOpened()
         {
             // Arrange
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, ConstructPersonData());
+            var registration = new Registration(GUID, PHONE_NUMBER, ConstructPersonData());
 
             // Act
             registration.SetAccountOpened();
@@ -283,8 +283,7 @@ namespace FastRegistrator.Tests.Domain
         private PersonData ConstructPersonData()
         {
             var personName = new PersonName(FIRST_NAME, MIDDLE_NAME, LAST_NAME);
-            var passport = new Passport(SERIES, NUMBER, ISSUED_BY, ISSUE_DATE, ISSUE_ID, CITIZENSHIP);
-            var personData = new PersonData(personName, passport, SNILS, FORM_DATA);
+            var personData = new PersonData(personName, PHONE_NUMBER, PASSPORT_NUMBER, BIRTHDAY, INN, FORM_DATA);
 
             return personData;
         }

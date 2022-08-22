@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -49,13 +50,10 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     Name_FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name_MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Name_LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Passport_Series = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Passport_Number = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Passport_IssuedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Passport_IssueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Passport_IssueId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Passport_Citizenship = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Snils = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PassportNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BirthDay = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Inn = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FormData = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>

@@ -132,7 +132,7 @@ namespace FastRegistrator.Tests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
-                  .WithErrorMessage(StartRegistrationCommandValidator.MobilePhoneIsEmpty);
+                  .WithErrorMessage(StartRegistrationCommandValidator.PhoneNumberIsEmpty);
         }
 
         [Fact]
@@ -154,7 +154,7 @@ namespace FastRegistrator.Tests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
-                  .WithErrorMessage(StartRegistrationCommandValidator.MobilePhoneHasWrongFormat);
+                  .WithErrorMessage(StartRegistrationCommandValidator.PhoneNumberHasWrongFormat);
         }
 
         [Fact]
@@ -176,7 +176,7 @@ namespace FastRegistrator.Tests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
-                  .WithErrorMessage(StartRegistrationCommandValidator.MobilePhoneHasWrongFormat);
+                  .WithErrorMessage(StartRegistrationCommandValidator.PhoneNumberHasWrongFormat);
         }
 
         [Fact]
@@ -266,411 +266,132 @@ namespace FastRegistrator.Tests.Validators
         }
 
         [Fact]
-        [Description("Arrange Command come with regular series" +
+        [Description("Arrange Command come with correct PassportNumber" +
                      "Act Validate method is called" +
                      "Assert Validation result is true")]
-        public async Task Validate_RegularSeries_PassValidation()
+        public async Task Validate_CorrectPassportNumber_PassValidation()
         {
             // Arrange
             var dbContext = CreateDbContext();
             var validator = new StartRegistrationCommandValidator(dbContext);
             var command = new StartRegistrationCommand
             {
-                Series = SERIES
+                PassportNumber = PASSPORT_NUMBER
             };
 
             // Act
             var result = await validator.TestValidateAsync(command);
 
             // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.Series);
+            result.ShouldNotHaveValidationErrorFor(x => x.PassportNumber);
         }
 
         [Fact]
-        [Description("Arrange Command come with redundant symbols in series" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is true")]
-        public async Task Validate_RedundantSymbolsSeries_PassValidation()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                Series = "11 11"
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.Series);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with wrong count of digits in series" +
+        [Description("Arrange Command come with wrong count of digits in PassportNumber" +
                      "Act Validate method is called" +
                      "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_WrongCountDigitsSeries_FalseValidationAndErrorMessage()
+        public async Task Validate_IncorrectPassportNumber_FalseValidationAndErrorMessage()
         {
             // Arrange
             var dbContext = CreateDbContext();
             var validator = new StartRegistrationCommandValidator(dbContext);
             var command = new StartRegistrationCommand
             {
-                Series = "11 11 1",
+                PassportNumber = "1111 1111111",
             };
 
             // Act
             var result = await validator.TestValidateAsync(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(x => x.Series)
-                  .WithErrorMessage(StartRegistrationCommandValidator.SeriesHasWrongFormat);
+            result.ShouldHaveValidationErrorFor(x => x.PassportNumber)
+                  .WithErrorMessage(StartRegistrationCommandValidator.PassportNumberHasWrongFormat);
         }
 
         [Fact]
-        [Description("Arrange Command come with empty series" +
+        [Description("Arrange Command come with empty PassportNumber" +
                      "Act Validate method is called" +
                      "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_EmptySeries_FalseValidationAndErrorMessage()
+        public async Task Validate_EmptyPassportNumber_FalseValidationAndErrorMessage()
         {
             // Arrange
             var dbContext = CreateDbContext();
             var validator = new StartRegistrationCommandValidator(dbContext);
             var command = new StartRegistrationCommand
             {
-                Series = string.Empty,
+                PassportNumber = string.Empty,
             };
 
             // Act
             var result = await validator.TestValidateAsync(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(x => x.Series)
-                  .WithErrorMessage(StartRegistrationCommandValidator.SeriesIsEmpty);
+            result.ShouldHaveValidationErrorFor(x => x.PassportNumber)
+                  .WithErrorMessage(StartRegistrationCommandValidator.PassportNumberIsEmpty);
         }
 
         [Fact]
-        [Description("Arrange Command come with regular number" +
+        [Description("Arrange Command come with correct INN" +
                      "Act Validate method is called" +
                      "Assert Validation result is true")]
-        public async Task Validate_RegularNumber_PassValidation()
+        public async Task Validate_CorrectINN_PassValidation()
         {
             // Arrange
             var dbContext = CreateDbContext();
             var validator = new StartRegistrationCommandValidator(dbContext);
             var command = new StartRegistrationCommand
             {
-                Number = NUMBER
+                Inn = INN
             };
 
             // Act
             var result = await validator.TestValidateAsync(command);
 
             // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.Number);
+            result.ShouldNotHaveValidationErrorFor(x => x.Inn);
         }
 
         [Fact]
-        [Description("Arrange Command come with redundant symbols in number" +
+        [Description("Arrange Command come with whitespace symbols in INN" +
                      "Act Validate method is called" +
                      "Assert Validation result is true")]
-        public async Task Validate_RedundantSymbolsNumber_PassValidation()
+        public async Task Validate_WhitespacesINN_PassValidation()
         {
             // Arrange
             var dbContext = CreateDbContext();
             var validator = new StartRegistrationCommandValidator(dbContext);
             var command = new StartRegistrationCommand
             {
-                Number = "111-111"
+                Inn = "111 111 111 111"
             };
 
             // Act
             var result = await validator.TestValidateAsync(command);
 
             // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.Number);
+            result.ShouldNotHaveValidationErrorFor(x => x.Inn);
         }
 
         [Fact]
-        [Description("Arrange Command come with wrong count of digits in number" +
+        [Description("Arrange Command come with wrong count of digits in INN" +
                      "Act Validate method is called" +
                      "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_WrongCountDigitsNumber_FalseValidationAndErrorMessage()
+        public async Task Validate_WrongCountDigitsInn_FalseValidationAndErrorMessage()
         {
             // Arrange
             var dbContext = CreateDbContext();
             var validator = new StartRegistrationCommandValidator(dbContext);
             var command = new StartRegistrationCommand
             {
-                Number = "111 111 1"
+                Inn = "111 111 111 111 1"
             };
 
             // Act
             var result = await validator.TestValidateAsync(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(x => x.Number)
-                  .WithErrorMessage(StartRegistrationCommandValidator.NumberHasWrongFormat);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with empty number" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_EmptyNumber_FalseValidationAndErrorMessage()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                Number = string.Empty
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(x => x.Number)
-                  .WithErrorMessage(StartRegistrationCommandValidator.NumberIsEmpty);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with regular issued by" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is true")]
-        public async Task Validate_RegularIssuedBy_PassValidation()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                IssuedBy = ISSUED_BY
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.IssuedBy);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with empty issued by" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_EmptyIssuedBy_FalseValidationAndErrorMessage()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                IssuedBy = string.Empty
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(x => x.IssuedBy)
-                  .WithErrorMessage(StartRegistrationCommandValidator.IssuedByIsEmpty);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with regular issue id" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is true")]
-        public async Task Validate_RegularIssueId_PassValidation()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                IssueId = ISSUE_ID
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.IssueId);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with redundant symbols in issue id" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is true")]
-        public async Task Validate_RedundantSymbolsIssueId_PassValidation()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                IssueId = "111 111"
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.IssueId);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with wrong count of digits in issue id" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_WrongCountDigitsIssueId_FalseValidationAndErrorMessage()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                IssueId = "111 111 1"
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(x => x.IssueId)
-                  .WithErrorMessage(StartRegistrationCommandValidator.IssueIdHasWrongFormat);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with empty issue id" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_EmptyIssueId_FalseValidationAndErrorMessage()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                IssueId = string.Empty
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(x => x.IssueId)
-                  .WithErrorMessage(StartRegistrationCommandValidator.IssueIdIsEmpty);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with regular citizenship" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is true")]
-        public async Task Validate_RegularCitizenship_PassValidation()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                Citizenship = CITIZENSHIP
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.Citizenship);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with empty citizenship" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_EmptyCitizenship_FalseValidationAndErrorMessage()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                Citizenship = string.Empty
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(x => x.Citizenship)
-                  .WithErrorMessage(StartRegistrationCommandValidator.CitizenshipIsEmpty);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with regular snils" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is true")]
-        public async Task Validate_RegularSnils_PassValidation()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                Snils = SNILS
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.Snils);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with redundant symbols in snils" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is true")]
-        public async Task Validate_RedundantSymbolsSnils_PassValidation()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                Snils = "111 111 111 11"
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldNotHaveValidationErrorFor(x => x.Snils);
-        }
-
-        [Fact]
-        [Description("Arrange Command come with wrong count of digits in snils" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_WrongCountDigitsSnils_FalseValidationAndErrorMessage()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                Snils = "111 111 111 111"
-            };
-
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(x => x.Snils)
-                  .WithErrorMessage(StartRegistrationCommandValidator.SnilsHasWrongFormat);
+            result.ShouldHaveValidationErrorFor(x => x.Inn)
+                  .WithErrorMessage(StartRegistrationCommandValidator.InnHasWrongFormat);
         }
 
         [Fact]
@@ -684,15 +405,15 @@ namespace FastRegistrator.Tests.Validators
             var validator = new StartRegistrationCommandValidator(dbContext);
             var command = new StartRegistrationCommand
             {
-                Snils = string.Empty
+                Inn = string.Empty
             };
 
             // Act
             var result = await validator.TestValidateAsync(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(x => x.Snils)
-                  .WithErrorMessage(StartRegistrationCommandValidator.SnilsIsEmpty);
+            result.ShouldHaveValidationErrorFor(x => x.Inn)
+                  .WithErrorMessage(StartRegistrationCommandValidator.InnIsEmpty);
         }
 
         [Fact]
