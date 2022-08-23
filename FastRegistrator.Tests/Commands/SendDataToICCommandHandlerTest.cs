@@ -77,6 +77,7 @@ namespace FastRegistrator.Tests.Commands
         public async Task Handle_ICServiceReturnResponseWithoutErrorMessage_SaveRegistrationWithPersonDataSentToICStatus()
         {
             // Arrange
+            const int successStatusCode = 200;
             var logger = new Mock<ILogger<SendDataToICCommandHandler>>();
             using var context = CreateDbContext();
 
@@ -87,7 +88,7 @@ namespace FastRegistrator.Tests.Commands
             await context.SaveChangesAsync();
 
             var icService = new Mock<IICService>();
-            var icRegistrationResponse = new ICRegistrationResponse(null);
+            var icRegistrationResponse = new ICRegistrationResponse(successStatusCode, null);
             icService.Setup(x => x.SendData(It.IsAny<ICRegistrationData>(), It.IsAny<CancellationToken>()))
                      .Returns(Task.FromResult(icRegistrationResponse));
 
@@ -113,6 +114,7 @@ namespace FastRegistrator.Tests.Commands
         public async Task Handle_ICServiceReturnResponseWithErrorMessage_SaveRegistrationWithErrorStatus()
         {
             // Arrange
+            const int successStatusCode = 500;
             var logger = new Mock<ILogger<SendDataToICCommandHandler>>();
             using var context = CreateDbContext();
 
@@ -123,7 +125,8 @@ namespace FastRegistrator.Tests.Commands
             await context.SaveChangesAsync();
 
             var icService = new Mock<IICService>();
-            var icRegistrationResponse = new ICRegistrationResponse("Error message.");
+            var icRegistrationError = new ICRegistrationError("Error message.", "Error detail.");
+            var icRegistrationResponse = new ICRegistrationResponse(successStatusCode, icRegistrationError);
             icService.Setup(x => x.SendData(It.IsAny<ICRegistrationData>(), It.IsAny<CancellationToken>()))
                      .Returns(Task.FromResult(icRegistrationResponse));
 
