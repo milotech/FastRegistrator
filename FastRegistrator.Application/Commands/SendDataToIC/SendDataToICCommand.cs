@@ -55,7 +55,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             }
             catch (Exception ex)
             {
-                _logger.LogInformation($"Failed to send person data with Giud: {registration.Id} to IC.");
+                _logger.LogInformation($"Failed to send person data with Guid: {registration.Id} to IC.");
 
                 var error = new Error(ErrorSource.FastRegistrator, ex.Message, null);
                 registration.SetError(error);
