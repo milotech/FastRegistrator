@@ -29,8 +29,11 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 
     public class CheckPersonCommandHandler : AsyncRequestHandler<CheckPersonCommand>
     {
-        private const int TIME_RETRIED_MINUTE_REQUEST_ERROR = 10;
-        private const int TIME_RETRIED_MINUTE_ERRORS = 30;
+        private static class RETRIES_DURATIONS
+        {
+            public const int REQUEST_ERROR = 10;
+            public const int UNAVAILABLE_RESPONSE = 30;
+        }
 
         private IApplicationDbContext _dbContext;
         private IPrizmaService _prizmaService;
@@ -136,8 +139,9 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
         {
             if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable || httpStatusCode == 529)
             {
-                return CheckRetryByMinutes(TIME_RETRIED_MINUTE_ERRORS, registration);
+                return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
             }
+
             return false;
         }
 
@@ -148,20 +152,19 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             if (exception is HttpRequestException)
             {
                 isRetryNeeded = true;
-            }
-            return isRetryNeeded && CheckRetryByMinutes(TIME_RETRIED_MINUTE_REQUEST_ERROR, registration);
+            }            
+
+            return isRetryNeeded && CheckRetriesDuration(RETRIES_DURATIONS.REQUEST_ERROR, registration);
         }
 
-        private bool CheckRetryByMinutes(int minutes, Registration registration)
+        private bool CheckRetriesDuration(int maxDurationInMinutes, Registration registration)
         {
-            var serviceStarted = _dateTime.ServiceStarted;
-            var statusDt = registration.StatusHistory.FirstOrDefault()!.StatusDT;
-            var date = serviceStarted > statusDt ? serviceStarted : statusDt;
-            if ((_dateTime.Now - date).TotalMinutes <= minutes)
-            {
-                return true;
-            }
-            return false;
+            var serviceStartedDt = _dateTime.ServiceStarted;
+            var statusSetDt = registration.StatusHistory.FirstOrDefault()!.StatusDT;
+
+            var thresholdDate = serviceStartedDt > statusSetDt ? serviceStartedDt : statusSetDt;
+
+            return (_dateTime.Now - thresholdDate).TotalMinutes <= maxDurationInMinutes;
         }
 
         private Error ConstructErrorEntity(ErrorResponse errorResponse, int httpResponseStatusCode)
