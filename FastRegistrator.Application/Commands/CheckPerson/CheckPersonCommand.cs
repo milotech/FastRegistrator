@@ -7,6 +7,7 @@ using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Net;
 using System.Text.Json;
 
 namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
@@ -28,7 +29,8 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 
     public class CheckPersonCommandHandler : AsyncRequestHandler<CheckPersonCommand>
     {
-        private const int TIME_RETRIED = 10;
+        private const int TIME_RETRIED_MINUTE_REQUEST_ERROR = 10;
+        private const int TIME_RETRIED_MINUTE_ERRORS = 30;
 
         private IApplicationDbContext _dbContext;
         private IPrizmaService _prizmaService;
@@ -83,16 +85,11 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to check Person for Registration '{registration.Id}'");
-
-                if(IsRetryNeeded(ex, registration))
+                if (IsRetryNeeded(ex, registration))
                 {
                     throw new RetryRequiredException(ex.Message);
                 }
-
-                var error = new Error(ErrorSource.FastRegistrator, ex.Message);
-                registration.SetError(error);
-
+                SetError(ex, registration);
                 return;
             }
 
@@ -116,7 +113,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
                 }
                 else
                 {
-                    if (IsRetryNeeded(errorResponse, registration))
+                    if (IsRetryNeeded(prizmaResponse.HttpStatusCode, errorResponse, registration))
                     {
                         throw new RetryRequiredException(errorResponse.Message);
                     }
@@ -127,18 +124,40 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             }
         }
 
-        private bool IsRetryNeeded(ErrorResponse errorResponse, Registration registration)
+        private void SetError(Exception ex, Registration registration)
         {
+            _logger.LogError(ex, $"Failed to check Person for Registration '{registration.Id}'");
+
+            var error = new Error(ErrorSource.FastRegistrator, ex.Message);
+            registration.SetError(error);
+        }
+
+        private bool IsRetryNeeded(int httpStatusCode, ErrorResponse errorResponse, Registration registration)
+        {
+            if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable || httpStatusCode == 529)
+            {
+                return CheckRetryByMinutes(TIME_RETRIED_MINUTE_ERRORS, registration);
+            }
             return false;
         }
 
         private bool IsRetryNeeded(Exception exception, Registration registration)
         {
-            if((_dateTime.Now - _dateTime.ServiceStarted).TotalMinutes <= TIME_RETRIED)
+            var isRetryNeeded = false;
+
+            if (exception is HttpRequestException)
             {
-                return true;
+                isRetryNeeded = true;
             }
-            else if((registration.StatusHistory.FirstOrDefault()!.StatusDT - _dateTime.Now).TotalMinutes <= TIME_RETRIED)
+            return isRetryNeeded && CheckRetryByMinutes(TIME_RETRIED_MINUTE_REQUEST_ERROR, registration);
+        }
+
+        private bool CheckRetryByMinutes(int minutes, Registration registration)
+        {
+            var serviceStarted = _dateTime.ServiceStarted;
+            var statusDt = registration.StatusHistory.FirstOrDefault()!.StatusDT;
+            var date = serviceStarted > statusDt ? serviceStarted : statusDt;
+            if ((_dateTime.Now - date).TotalMinutes <= minutes)
             {
                 return true;
             }
