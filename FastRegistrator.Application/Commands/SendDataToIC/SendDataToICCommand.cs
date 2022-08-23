@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
 {
     [Command(CommandExecutionMode.Parallel)]
-    public record class SendDataToICCommand(Guid RegistrationId) : IRequest;
+    public record class SendDataToICCommand(Guid RegistrationId) : IRequest, IRegistrationStopOnErrorTrigger;
 
     public class SendDataToICCommandHandler : AsyncRequestHandler<SendDataToICCommand>
     {
