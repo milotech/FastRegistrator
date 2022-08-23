@@ -1,10 +1,17 @@
-﻿using System.Net;
-
-namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
+﻿namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
 {
     public class ICRegistrationResponse
     {
         public int StatusCode { get; set; }
-        public string? ErrorMessage { get; set; }
+        public ICRegistrationError? ICRegistrationError { get; set; }
+
+        public ICRegistrationResponse()
+        { }
+
+        public ICRegistrationResponse(int statusCode, ICRegistrationError? iCRegistrationError)
+        {
+            StatusCode = statusCode;
+            ICRegistrationError = iCRegistrationError;
+        }
     }
 }

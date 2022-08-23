@@ -17,10 +17,13 @@ namespace FastRegistrator.Infrastructure
         {
             services.AddSingleton<IDateTime, DateTimeService>();
 
-            services.AddTransient<IICService, ICService>();
-            services.AddTransient<ITestIC, TestIC>();
-
             services.AddHttpClient<IPrizmaService, PrizmaService>(options =>
+            {
+                var url = configuration[PrizmaServiceUrl];
+                options.BaseAddress = new Uri(url);
+            });
+
+            services.AddHttpClient<IICService, ICService>(options =>
             {
                 var url = configuration[PrizmaServiceUrl];
                 options.BaseAddress = new Uri(url);

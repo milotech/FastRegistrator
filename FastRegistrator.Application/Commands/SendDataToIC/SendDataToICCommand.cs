@@ -57,13 +57,13 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             {
                 _logger.LogInformation($"Failed to send person data with Guid: {registration.Id} to IC.");
 
-                var error = new Error(ErrorSource.FastRegistrator, ex.Message, null);
+                var error = new Error(ErrorSource.FastRegistrator, ex.Message);
                 registration.SetError(error);
 
                 return;
             }
 
-            if (icRegistrationResponse.ErrorMessage is null)
+            if (icRegistrationResponse.ICRegistrationError is null)
             {
                 registration.SetPersonDataSentToIC();
 
@@ -71,10 +71,10 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             }
             else
             {
-                var error = new Error(ErrorSource.IC, icRegistrationResponse.ErrorMessage!, null);
+                var error = new Error(ErrorSource.IC, icRegistrationResponse.ICRegistrationError.Message, icRegistrationResponse.ICRegistrationError.Detail);
                 registration.SetError(error);
 
-                _logger.LogInformation(icRegistrationResponse.ErrorMessage);
+                _logger.LogInformation(icRegistrationResponse.ICRegistrationError.Message);
             }
         }
 
