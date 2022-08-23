@@ -1,12 +1,10 @@
-﻿namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
-{
-    public record class ICRegistrationResponse
-    {
-        public string? ErrorMessage { get; init; }
+﻿using System.Net;
 
-        public ICRegistrationResponse(string? errorMessage)
-        {
-            ErrorMessage = errorMessage;
-        }
+namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
+{
+    public class ICRegistrationResponse
+    {
+        public int StatusCode { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 }

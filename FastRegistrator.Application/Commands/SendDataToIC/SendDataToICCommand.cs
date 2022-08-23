@@ -79,6 +79,6 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
         }
 
         private ICRegistrationData ConstructICRegistrationData(Registration registration)
-            => new ICRegistrationData(registration.Id, registration.PhoneNumber, registration.PersonData);
+            => new ICRegistrationData(registration.PhoneNumber, registration.PersonData);
     }
 }

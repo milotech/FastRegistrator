@@ -18,6 +18,7 @@ namespace FastRegistrator.Infrastructure
             services.AddSingleton<IDateTime, DateTimeService>();
 
             services.AddTransient<IICService, ICService>();
+            services.AddTransient<ITestIC, TestIC>();
 
             services.AddHttpClient<IPrizmaService, PrizmaService>(options =>
             {
