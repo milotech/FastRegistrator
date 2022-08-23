@@ -30,6 +30,11 @@ try
         x.CustomSchemaIds(i => i.FullName);
     });
 
+    builder.Services.Configure<RouteOptions>(options =>
+    {
+        options.LowercaseUrls = true;
+    });
+
     var app = builder.Build();
     // Configure the HTTP request pipeline. 
 

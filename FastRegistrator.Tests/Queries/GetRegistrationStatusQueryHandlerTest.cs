@@ -22,7 +22,7 @@ namespace FastRegistrator.Tests.Queries
             using var context = CreateDbContext();
 
             var personData = ConstructPersonData();
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, personData);
+            var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
@@ -57,8 +57,7 @@ namespace FastRegistrator.Tests.Queries
         private PersonData ConstructPersonData()
         {
             var personName = new PersonName(FIRST_NAME, MIDDLE_NAME, LAST_NAME);
-            var passport = new Passport(SERIES, NUMBER, ISSUED_BY, ISSUE_DATE, ISSUE_ID, CITIZENSHIP);
-            var personData = new PersonData(personName, passport, SNILS, FORM_DATA);
+            var personData = new PersonData(personName, PHONE_NUMBER, PASSPORT_NUMBER, BIRTHDAY, INN, FORM_DATA);
 
             return personData;
         }

@@ -15,13 +15,9 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
         public string FirstName { get; init; } = null!;
         public string? MiddleName { get; init; }
         public string LastName { get; init; } = null!;
-        public string Series { get; init; } = null!;
-        public string Number { get; init; } = null!;
-        public string IssuedBy { get; init; } = null!;
-        public DateTime IssueDate { get; init; }
-        public string IssueId { get; init; } = null!;
-        public string Citizenship { get; init; } = null!;
-        public string Snils { get; init; } = null!;
+        public string PassportNumber { get; init; } = null!;
+        public DateTime? BirthDay { get; init; }
+        public string Inn { get; init; } = null!;
         public string FormData { get; init; } = null!;
 
         public override string ToString()
@@ -53,9 +49,9 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
 
         private PersonData ConstructPersonData(StartRegistrationCommand request)
         {
-            var personName = new PersonName(request.FirstName, request.MiddleName, request.LastName);
-            var passport = new Passport(request.Series, request.Number, request.IssuedBy, request.IssueDate, request.IssueId, request.Citizenship);
-            var personData = new PersonData(personName, passport, request.Snils, request.FormData);
+            var personName = new PersonName(request.FirstName, request.MiddleName, request.LastName);            
+            var personData = new PersonData(personName, request.PhoneNumber, request.PassportNumber,
+                request.BirthDay, request.Inn, request.FormData);
 
             return personData;
         }

@@ -45,7 +45,7 @@ namespace FastRegistrator.Tests.Commands
             using var context = CreateDbContext();
 
             var personData = ConstructPersonData();
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, personData);
+            var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
@@ -64,10 +64,10 @@ namespace FastRegistrator.Tests.Commands
             //Assert
             var assertPerson = await context.Registrations
                                             .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
-                                            .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
+                                            .FirstOrDefaultAsync(p => p.PhoneNumber == PHONE_NUMBER);
 
-            Assert.Contains(assertPerson.StatusHistory, shi => shi.Status == RegistrationStatus.Error);
-            Assert.True(assertPerson.Error.Source == ErrorSource.FastRegistrator);
+            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == RegistrationStatus.Error);
+            Assert.True(assertPerson!.Error!.Source == ErrorSource.FastRegistrator);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace FastRegistrator.Tests.Commands
             using var context = CreateDbContext();
 
             var personData = ConstructPersonData();
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, personData);
+            var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
@@ -101,9 +101,9 @@ namespace FastRegistrator.Tests.Commands
             //Assert
             var assertPerson = await context.Registrations
                                             .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
-                                            .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
+                                            .FirstOrDefaultAsync(p => p.PhoneNumber == PHONE_NUMBER);
 
-            Assert.Contains(assertPerson.StatusHistory, shi => shi.Status == RegistrationStatus.PersonDataSentToIC);
+            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == RegistrationStatus.PersonDataSentToIC);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace FastRegistrator.Tests.Commands
             using var context = CreateDbContext();
 
             var personData = ConstructPersonData();
-            var registration = new Registration(GUID, PERSON_PHONE_NUMBER, personData);
+            var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
@@ -137,17 +137,16 @@ namespace FastRegistrator.Tests.Commands
             //Assert
             var assertPerson = await context.Registrations
                                             .Include(p => p.StatusHistory.OrderByDescending(shi => shi.StatusDT).Take(1))
-                                            .FirstOrDefaultAsync(p => p.PhoneNumber == PERSON_PHONE_NUMBER);
+                                            .FirstOrDefaultAsync(p => p.PhoneNumber == PHONE_NUMBER);
 
-            Assert.Contains(assertPerson.StatusHistory, shi => shi.Status == RegistrationStatus.Error);
-            Assert.True(assertPerson.Error.Source == ErrorSource.IC);
+            Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == RegistrationStatus.Error);
+            Assert.True(assertPerson!.Error!.Source == ErrorSource.IC);
         }
 
         private PersonData ConstructPersonData()
         {
             var personName = new PersonName(FIRST_NAME, MIDDLE_NAME, LAST_NAME);
-            var passport = new Passport(SERIES, NUMBER, ISSUED_BY, ISSUE_DATE, ISSUE_ID, CITIZENSHIP);
-            var personData = new PersonData(personName, passport, SNILS, FORM_DATA);
+            var personData = new PersonData(personName, PHONE_NUMBER, PASSPORT_NUMBER, BIRTHDAY, INN, FORM_DATA);
 
             return personData;
         }

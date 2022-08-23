@@ -3,19 +3,23 @@
 namespace FastRegistrator.ApplicationCore.Domain.Entities
 {
     public class PersonData : BaseEntity<Guid>
-    {
+    {        
         public PersonName Name { get; private set; } = null!;
-        public Passport Passport { get; private set; } = null!;
-        public string Snils { get; private set; } = null!;
+        public string PhoneNumber { get; private set; }
+        public string PassportNumber { get; private set; } = null!;
+        public DateTime? BirthDay { get; private set; }
+        public string Inn { get; private set; } = null!;
         public string FormData { get; private set; } = null!;
 
         private PersonData() { /* For EF */ }
 
-        public PersonData(PersonName name, Passport passport, string snils, string formData)
+        public PersonData(PersonName name, string phoneNumber, string passportNumber, DateTime? birthDay, string inn, string formData)
         {
             Name = name;
-            Passport = passport;
-            Snils = snils;
+            PhoneNumber = phoneNumber;
+            PassportNumber = passportNumber;
+            BirthDay = birthDay;
+            Inn = inn;
             FormData = formData;
         }
     }
