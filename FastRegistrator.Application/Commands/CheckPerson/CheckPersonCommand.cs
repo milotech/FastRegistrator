@@ -8,7 +8,10 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Net;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Text.Unicode;
 
 namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 {
@@ -36,6 +39,12 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             public const int UNAVAILABLE_RESPONSE = 30;
         }
 
+        private static JsonSerializerOptions _jsonOptions = new()
+        {
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
         private readonly IApplicationDbContext _dbContext;
         private readonly IPrizmaService _prizmaService;
         private readonly ILogger _logger;
@@ -58,12 +67,15 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
         {
             _logger.LogInformation($"Check Person '{command.Name}' for Registration '{command.RegistrationId}'");
 
+            string passportNumber = Regex.Replace(command.PassportNumber, @"[+()\s\-]", string.Empty);
+            string? inn = command.INN is not null ? Regex.Replace(command.INN, @"[+()\s\-]", string.Empty) : null;
+
             var prizmaRequest = new PersonCheckRequest
             {
                 Fio = command.Name,
-                PassportNumber = command.PassportNumber,
+                PassportNumber = passportNumber,
                 DateOfBirth = command.BirthDt,
-                Inn = command.INN
+                Inn = inn
             };
 
             var registration = await _dbContext.Registrations
@@ -72,9 +84,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
                 .FirstOrDefaultAsync();
 
             if (registration is null)
-            {
                 throw new NotFoundException(nameof(Registration), command.RegistrationId);
-            }
 
             await TryCheckPerson(prizmaRequest, registration, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -90,9 +100,8 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             catch (Exception ex)
             {
                 if (IsRetryNeeded(ex, registration))
-                {
                     throw new RetryRequiredException(ex.Message);
-                }
+
                 SetError(ex, registration);
                 return;
             }
@@ -118,9 +127,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
                 else
                 {
                     if (IsRetryNeeded(prizmaResponse.HttpStatusCode, registration))
-                    {
                         throw new RetryRequiredException(errorResponse.Message);
-                    }
 
                     Error error = ConstructErrorEntity(errorResponse, prizmaResponse.HttpStatusCode);
                     registration.SetError(error);
@@ -132,30 +139,29 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
         {
             _logger.LogError(ex, $"Failed to check Person for Registration '{registration.Id}'");
 
-            var error = new Error(ErrorSource.FastRegistrator, ex.Message);
+            var error = new Error(ErrorSource.PrizmaService, ex.Message);
             registration.SetError(error);
         }
 
         private bool IsRetryNeeded(int httpStatusCode, Registration registration)
         {
-            if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable || httpStatusCode == 529)
-            {
+            if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable)
                 return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
-            }
 
             return false;
         }
 
         private bool IsRetryNeeded(Exception exception, Registration registration)
         {
-            var isRetryNeeded = false;
-
-            if (exception is HttpRequestException)
+            if (exception is HttpRequestException requestException)
             {
-                isRetryNeeded = true;
-            }            
+                if (requestException.StatusCode == null)
+                    return CheckRetriesDuration(RETRIES_DURATIONS.REQUEST_ERROR, registration);
+                if (requestException.StatusCode == HttpStatusCode.ServiceUnavailable)
+                    return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
+            }
 
-            return isRetryNeeded && CheckRetriesDuration(RETRIES_DURATIONS.REQUEST_ERROR, registration);
+            return false;
         }
 
         private bool CheckRetriesDuration(int maxDurationInMinutes, Registration registration)
@@ -182,7 +188,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
                 Errors = errorResponse.Errors
             };
 
-            return new Error(source, message, JsonSerializer.Serialize(details));
+            return new Error(source, message, JsonSerializer.Serialize(details, _jsonOptions));
         }
     }
 }

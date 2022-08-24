@@ -21,6 +21,8 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
             if (@event.Registration.Error != null)
             {
                 logMessage += Environment.NewLine + $"Error from {@event.Registration.Error.Source}: {@event.Registration.Error.Message}";
+                if (@event.Registration.Error.Details != null)
+                    logMessage += Environment.NewLine + $"ErrorDetails: " + @event.Registration.Error.Details;
             }
 
             _logger.LogInformation(logMessage);
