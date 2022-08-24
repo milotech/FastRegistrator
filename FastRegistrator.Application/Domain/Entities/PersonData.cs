@@ -5,7 +5,7 @@ namespace FastRegistrator.ApplicationCore.Domain.Entities
     public class PersonData : BaseEntity<Guid>
     {        
         public PersonName Name { get; private set; } = null!;
-        public string PhoneNumber { get; private set; }
+        public string PhoneNumber { get; private set; } = null!;
         public string PassportNumber { get; private set; } = null!;
         public DateTime? BirthDay { get; private set; }
         public string Inn { get; private set; } = null!;

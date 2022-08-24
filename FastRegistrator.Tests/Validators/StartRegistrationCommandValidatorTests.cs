@@ -135,40 +135,20 @@ namespace FastRegistrator.Tests.Validators
                   .WithErrorMessage(StartRegistrationCommandValidator.PhoneNumberIsEmpty);
         }
 
-        [Fact]
-        [Description("Arrange Command come with wrong country code in phone number" +
-                     "Act Validate method is called" +
-                     "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_WrongCountryCode_FalseValidationAndErrorMessage()
-        {
-            // Arrange
-            var dbContext = CreateDbContext();
-            var validator = new StartRegistrationCommandValidator(dbContext);
-            var command = new StartRegistrationCommand
-            {
-                PhoneNumber = "19999999999"
-            };
 
-            // Act
-            var result = await validator.TestValidateAsync(command);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
-                  .WithErrorMessage(StartRegistrationCommandValidator.PhoneNumberHasWrongFormat);
-        }
 
         [Fact]
         [Description("Arrange Command come with wrong count of digits in phone number" +
                      "Act Validate method is called" +
                      "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_WrongCountOfDigits_FalseValidationAndErrorMessage()
+        public async Task Validate_TooLongPhoneNumber_FalseValidationAndErrorMessage()
         {
             // Arrange
             var dbContext = CreateDbContext();
             var validator = new StartRegistrationCommandValidator(dbContext);
             var command = new StartRegistrationCommand
             {
-                PhoneNumber = "899999999991"
+                PhoneNumber = "89999999999111111"
             };
 
             // Act
@@ -176,7 +156,7 @@ namespace FastRegistrator.Tests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.PhoneNumber)
-                  .WithErrorMessage(StartRegistrationCommandValidator.PhoneNumberHasWrongFormat);
+                  .WithErrorMessage(StartRegistrationCommandValidator.PhoneNumberTooLong);
         }
 
         [Fact]

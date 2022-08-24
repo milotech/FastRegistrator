@@ -12,7 +12,7 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
         public const string IdIsEmpty = "Registration Identifier is empty.";
         public const string RegistrationAlreadyExists = "Registration with specified Identifier already exists";
         public const string PhoneNumberIsEmpty = "Mobile phone is empty.";
-        public const string PhoneNumberHasWrongFormat = "Mobile phone has wrong format.";
+        public const string PhoneNumberTooLong = "Mobile phone can contain up to 16 symbols.";
         public const string FirstNameIsEmpty = "First name is empty.";
         public const string LastNameIsEmpty = "Last name is empty.";
         public const string PassportNumberIsEmpty = "PassportNumber is empty.";
@@ -31,7 +31,7 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
 
             Transform(command => command.PhoneNumber, RemoveAllRedundantSymbols)
                 .NotEmpty().WithMessage(PhoneNumberIsEmpty)
-                .Matches(@"^(7|8)\d{10}$").WithMessage(PhoneNumberHasWrongFormat);
+                .MaximumLength(16).WithMessage(PhoneNumberTooLong);
 
             RuleFor(command => command.FirstName)
                 .NotEmpty().WithMessage(FirstNameIsEmpty);

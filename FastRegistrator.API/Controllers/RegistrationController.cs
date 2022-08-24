@@ -1,4 +1,4 @@
-using FastRegistrator.ApplicationCore.Commands.AccountOpened;
+using FastRegistrator.ApplicationCore.Commands.CompleteRegistration;
 using FastRegistrator.ApplicationCore.Commands.StartRegistration;
 using FastRegistrator.ApplicationCore.DTOs.RegistrationStatusDTOs;
 using FastRegistrator.ApplicationCore.Queries;
@@ -32,7 +32,7 @@ namespace FastRegistrator.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> CompleteRegistration(AccountOpenedCommand command, CancellationToken cancel)
+        public async Task<ActionResult> CompleteRegistration(CompleteRegistrationByICCommand command, CancellationToken cancel)
         {
             await ExecuteCommand(command, cancel);
             return Ok();
