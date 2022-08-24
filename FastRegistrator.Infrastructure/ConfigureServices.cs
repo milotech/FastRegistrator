@@ -12,6 +12,7 @@ namespace FastRegistrator.Infrastructure
     public static class ConfigureServices
     {
         private const string PrizmaServiceUrl = "PrizmaService:Url";
+        private const string ICServiceUrl = "ICService:Url";
 
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
@@ -25,7 +26,7 @@ namespace FastRegistrator.Infrastructure
 
             services.AddHttpClient<IICService, ICService>(options =>
             {
-                var url = configuration[PrizmaServiceUrl];
+                var url = configuration[ICServiceUrl];
                 options.BaseAddress = new Uri(url);
             });
 
