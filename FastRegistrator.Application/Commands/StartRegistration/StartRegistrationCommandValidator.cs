@@ -44,8 +44,7 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
                 .Matches(@"^\d{10}$").WithMessage(PassportNumberHasWrongFormat);                     
                        
             Transform(command => command.Inn, RemoveAllRedundantSymbols)
-                .NotEmpty().WithMessage(InnIsEmpty)
-                .Matches(@"^\d{12}$").WithMessage(InnHasWrongFormat);
+                .Matches(@"^$|^\d{12}$").WithMessage(InnHasWrongFormat);
 
             RuleFor(command => command.FormData)
                 .NotEmpty().WithMessage(FormDataIsEmpty);

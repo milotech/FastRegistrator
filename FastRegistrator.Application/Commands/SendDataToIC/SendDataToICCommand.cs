@@ -2,7 +2,6 @@
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
 using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
-using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
@@ -47,17 +46,15 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
 
             var registration = await _dbContext.Registrations.Where(reg => reg.Id == request.RegistrationId)
                                                              .Include(reg => reg.PersonData)
+                                                             .Include(r => r.StatusHistory.OrderByDescending(i => i.StatusDT).Take(1))
                                                              .FirstOrDefaultAsync(cancellationToken);
 
             if (registration is null)
-            {
                 throw new NotFoundException(nameof(registration), request.RegistrationId);
-            }
 
             var icRegistrationData = ConstructICRegistrationData(registration);
 
             await SendDataToICAsync(registration, icRegistrationData, cancellationToken);
-
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
@@ -71,9 +68,8 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             catch (Exception ex)
             {
                 if (IsRetryNeeded(ex, registration))
-                {
                     throw new RetryRequiredException(ex.Message);
-                }
+
                 SetError(ex, registration);
                 return;
             }
@@ -87,10 +83,8 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             else
             {
                 if (IsRetryNeeded(icRegistrationResponse.HttpStatusCode, registration))
-                {
                     throw new RetryRequiredException(icRegistrationResponse.ICRegistrationError.Message);
-                }
-
+                
                 var error = new Error(ErrorSource.IC, icRegistrationResponse.ICRegistrationError.Message, icRegistrationResponse.ICRegistrationError.Detail);
                 registration.SetError(error);
 
@@ -102,27 +96,26 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
         {
             _logger.LogInformation($"Failed to send person data with Guid: {registration.Id} to IC.");
 
-            var error = new Error(ErrorSource.FastRegistrator, ex.Message);
+            var error = new Error(ErrorSource.IC, ex.Message);
             registration.SetError(error);
-        }
-
-        private bool IsRetryNeeded(Exception exception, Registration registration)
-        {
-            var isRetryNeeded = false;
-
-            if (exception is HttpRequestException)
-            {
-                isRetryNeeded = true;
-            }
-
-            return isRetryNeeded && CheckRetriesDuration(RETRIES_DURATIONS.REQUEST_ERROR, registration);
         }
 
         private bool IsRetryNeeded(int httpStatusCode, Registration registration)
         {
-            if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable || httpStatusCode == 529)
-            {
+            if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable)
                 return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
+
+            return false;
+        }
+
+        private bool IsRetryNeeded(Exception exception, Registration registration)
+        {
+            if (exception is HttpRequestException requestException)
+            {
+                if (requestException.StatusCode == null)
+                    return CheckRetriesDuration(RETRIES_DURATIONS.REQUEST_ERROR, registration);
+                if (requestException.StatusCode == HttpStatusCode.ServiceUnavailable)
+                    return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
             }
 
             return false;
