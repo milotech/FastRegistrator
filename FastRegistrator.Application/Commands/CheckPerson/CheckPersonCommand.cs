@@ -36,10 +36,10 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             public const int UNAVAILABLE_RESPONSE = 30;
         }
 
-        private IApplicationDbContext _dbContext;
-        private IPrizmaService _prizmaService;
-        private ILogger _logger;
-        private IDateTime _dateTime;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly IPrizmaService _prizmaService;
+        private readonly ILogger _logger;
+        private readonly IDateTime _dateTime;
 
         public CheckPersonCommandHandler(
             IApplicationDbContext dbContext,
@@ -117,7 +117,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
                 }
                 else
                 {
-                    if (IsRetryNeeded(prizmaResponse.HttpStatusCode, errorResponse, registration))
+                    if (IsRetryNeeded(prizmaResponse.HttpStatusCode, registration))
                     {
                         throw new RetryRequiredException(errorResponse.Message);
                     }
@@ -136,7 +136,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             registration.SetError(error);
         }
 
-        private bool IsRetryNeeded(int httpStatusCode, ErrorResponse errorResponse, Registration registration)
+        private bool IsRetryNeeded(int httpStatusCode, Registration registration)
         {
             if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable || httpStatusCode == 529)
             {

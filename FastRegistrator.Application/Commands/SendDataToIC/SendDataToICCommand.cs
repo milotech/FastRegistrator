@@ -2,11 +2,13 @@
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
 using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
+using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Net;
 
 namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
 {
@@ -15,15 +17,28 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
 
     public class SendDataToICCommandHandler : AsyncRequestHandler<SendDataToICCommand>
     {
+        // Maximum retries duration in minutes depending on the error type
+        private static class RETRIES_DURATIONS
+        {
+            public const int REQUEST_ERROR = 10;
+            public const int UNAVAILABLE_RESPONSE = 30;
+        }
+
         private readonly IICService _icService;
         private readonly IApplicationDbContext _dbContext;
         private readonly ILogger<SendDataToICCommandHandler> _logger;
+        private readonly IDateTime _dateTime;
 
-        public SendDataToICCommandHandler(IICService icService, IApplicationDbContext dbContext, ILogger<SendDataToICCommandHandler> logger)
+        public SendDataToICCommandHandler(
+            IICService icService, 
+            IApplicationDbContext dbContext, 
+            ILogger<SendDataToICCommandHandler> logger,
+            IDateTime dateTime)
         {
             _icService = icService;
             _dbContext = dbContext;
             _logger = logger;
+            _dateTime = dateTime;
         }
 
         protected override async Task Handle(SendDataToICCommand request, CancellationToken cancellationToken)
@@ -55,15 +70,15 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             }
             catch (Exception ex)
             {
-                _logger.LogInformation($"Failed to send person data with Giud: {registration.Id} to IC.");
-
-                var error = new Error(ErrorSource.FastRegistrator, ex.Message, null);
-                registration.SetError(error);
-
+                if (IsRetryNeeded(ex, registration))
+                {
+                    throw new RetryRequiredException(ex.Message);
+                }
+                SetError(ex, registration);
                 return;
             }
 
-            if (icRegistrationResponse.ErrorMessage is null)
+            if (icRegistrationResponse.ICRegistrationError is null)
             {
                 registration.SetPersonDataSentToIC();
 
@@ -71,14 +86,59 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             }
             else
             {
-                var error = new Error(ErrorSource.IC, icRegistrationResponse.ErrorMessage!, null);
+                if (IsRetryNeeded(icRegistrationResponse.HttpStatusCode, registration))
+                {
+                    throw new RetryRequiredException(icRegistrationResponse.ICRegistrationError.Message);
+                }
+
+                var error = new Error(ErrorSource.IC, icRegistrationResponse.ICRegistrationError.Message, icRegistrationResponse.ICRegistrationError.Detail);
                 registration.SetError(error);
 
-                _logger.LogInformation(icRegistrationResponse.ErrorMessage);
+                _logger.LogInformation(icRegistrationResponse.ICRegistrationError.Message);
             }
         }
 
+        private void SetError(Exception ex, Registration registration)
+        {
+            _logger.LogInformation($"Failed to send person data with Guid: {registration.Id} to IC.");
+
+            var error = new Error(ErrorSource.FastRegistrator, ex.Message);
+            registration.SetError(error);
+        }
+
+        private bool IsRetryNeeded(Exception exception, Registration registration)
+        {
+            var isRetryNeeded = false;
+
+            if (exception is HttpRequestException)
+            {
+                isRetryNeeded = true;
+            }
+
+            return isRetryNeeded && CheckRetriesDuration(RETRIES_DURATIONS.REQUEST_ERROR, registration);
+        }
+
+        private bool IsRetryNeeded(int httpStatusCode, Registration registration)
+        {
+            if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable || httpStatusCode == 529)
+            {
+                return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
+            }
+
+            return false;
+        }
+
+        private bool CheckRetriesDuration(int maxDurationInMinutes, Registration registration)
+        {
+            var serviceStartedDt = _dateTime.ServiceStarted;
+            var statusSetDt = registration.StatusHistory.FirstOrDefault()!.StatusDT;
+
+            var thresholdDate = serviceStartedDt > statusSetDt ? serviceStartedDt : statusSetDt;
+
+            return (_dateTime.Now - thresholdDate).TotalMinutes <= maxDurationInMinutes;
+        }
+
         private ICRegistrationData ConstructICRegistrationData(Registration registration)
-            => new ICRegistrationData(registration.Id, registration.PhoneNumber, registration.PersonData);
+            => new ICRegistrationData(registration.PhoneNumber, registration.PersonData.FormData);
     }
 }

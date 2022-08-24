@@ -1,12 +1,17 @@
 ﻿namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
 {
-    public record class ICRegistrationResponse
+    public class ICRegistrationResponse
     {
-        public string? ErrorMessage { get; init; }
+        public int HttpStatusCode { get; set; }
+        public ICRegistrationError? ICRegistrationError { get; set; }
 
-        public ICRegistrationResponse(string? errorMessage)
+        public ICRegistrationResponse()
+        { }
+
+        public ICRegistrationResponse(int httpStatusCode, ICRegistrationError? iCRegistrationError)
         {
-            ErrorMessage = errorMessage;
+            HttpStatusCode = httpStatusCode;
+            ICRegistrationError = iCRegistrationError;
         }
     }
 }

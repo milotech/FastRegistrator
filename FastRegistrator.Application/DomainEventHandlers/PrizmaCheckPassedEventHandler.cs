@@ -1,4 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Events;
+﻿using FastRegistrator.ApplicationCore.Commands.SendDataToIC;
+using FastRegistrator.ApplicationCore.Domain.Events;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -19,11 +20,17 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
             _cmdExecutor = cmdExecutor;
         }
 
-        public Task Handle(CommittedEvent<PrizmaCheckPassedEvent> @event, CancellationToken cancellationToken)
+        public Task Handle(CommittedEvent<PrizmaCheckPassedEvent> committedEvent, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Prizma check passed for '{@event.Event.Registration.Id}'");
+            var @event = committedEvent.Event;
 
-            // _cmdExecutor.Execute( send data to IC command )
+            _logger.LogInformation($"Prizma check passed for '{@event.Registration.Id}'");
+
+            var command = new SendDataToICCommand(@event.Registration.Id);
+
+            _cmdExecutor.Execute(command);
+
+            _logger.LogInformation($"Person data for registration with Guid '{@event.Registration.Id}' sent to IC.");
 
             return Task.CompletedTask;
         }

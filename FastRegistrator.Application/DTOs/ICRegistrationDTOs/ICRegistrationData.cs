@@ -1,18 +1,14 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
-
-namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
+﻿namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
 {
     public record class ICRegistrationData
     {
-        public Guid Id { get; init; }
-        public string PhoneNumber { get; init; } = null!;
-        public PersonData PersonData { get; init; } = null!;
+        public string Phone { get; init; } = null!;
+        public string Data { get; init; } = null!;
 
-        public ICRegistrationData(Guid id, string phoneNumber, PersonData personData)
+        public ICRegistrationData(string phone, string data)
         {
-            Id = id;
-            PhoneNumber = phoneNumber;
-            PersonData = personData;
+            Phone = phone;
+            Data = data;
         }
     }
 }
