@@ -7,13 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Commands\AccountOpened\**" />
     <Compile Remove="Entities\**" />
+    <EmbeddedResource Remove="Commands\AccountOpened\**" />
     <EmbeddedResource Remove="Entities\**" />
+    <None Remove="Commands\AccountOpened\**" />
     <None Remove="Entities\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\AccountOpened\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
 
