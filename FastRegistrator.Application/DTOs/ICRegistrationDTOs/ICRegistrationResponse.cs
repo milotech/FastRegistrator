@@ -2,15 +2,15 @@
 {
     public class ICRegistrationResponse
     {
-        public int StatusCode { get; set; }
+        public int HttpStatusCode { get; set; }
         public ICRegistrationError? ICRegistrationError { get; set; }
 
         public ICRegistrationResponse()
         { }
 
-        public ICRegistrationResponse(int statusCode, ICRegistrationError? iCRegistrationError)
+        public ICRegistrationResponse(int httpStatusCode, ICRegistrationError? iCRegistrationError)
         {
-            StatusCode = statusCode;
+            HttpStatusCode = httpStatusCode;
             ICRegistrationError = iCRegistrationError;
         }
     }

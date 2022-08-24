@@ -25,8 +25,9 @@ namespace FastRegistrator.Tests.Commands
             // Arrange
             var icService = new Mock<IICService>();
             var logger = new Mock<ILogger<SendDataToICCommandHandler>>();
+            var dateTime = new Mock<IDateTime>();
             using var context = CreateDbContext();
-            IRequestHandler<SendDataToICCommand> handler = new SendDataToICCommandHandler(icService.Object, context, logger.Object);
+            IRequestHandler<SendDataToICCommand> handler = new SendDataToICCommandHandler(icService.Object, context, logger.Object, dateTime.Object);
 
             var command = new SendDataToICCommand(GUID);
 
@@ -42,6 +43,7 @@ namespace FastRegistrator.Tests.Commands
         {
             // Arrange
             var logger = new Mock<ILogger<SendDataToICCommandHandler>>();
+            var dateTime = new Mock<IDateTime>();
             using var context = CreateDbContext();
 
             var personData = ConstructPersonData();
@@ -56,7 +58,7 @@ namespace FastRegistrator.Tests.Commands
 
             var command = new SendDataToICCommand(entityEntry.Entity.Id);
 
-            IRequestHandler<SendDataToICCommand> handler = new SendDataToICCommandHandler(icService.Object, context, logger.Object);
+            IRequestHandler<SendDataToICCommand> handler = new SendDataToICCommandHandler(icService.Object, context, logger.Object, dateTime.Object);
 
             // Act
             var result = handler.Handle(command, CancellationToken.None);
@@ -79,6 +81,7 @@ namespace FastRegistrator.Tests.Commands
             // Arrange
             const int successStatusCode = 200;
             var logger = new Mock<ILogger<SendDataToICCommandHandler>>();
+            var dateTime = new Mock<IDateTime>();
             using var context = CreateDbContext();
 
             var personData = ConstructPersonData();
@@ -94,7 +97,7 @@ namespace FastRegistrator.Tests.Commands
 
             var command = new SendDataToICCommand(entityEntry.Entity.Id);
 
-            IRequestHandler<SendDataToICCommand> handler = new SendDataToICCommandHandler(icService.Object, context, logger.Object);
+            IRequestHandler<SendDataToICCommand> handler = new SendDataToICCommandHandler(icService.Object, context, logger.Object, dateTime.Object);
 
             // Act
             var result = handler.Handle(command, CancellationToken.None);
@@ -116,6 +119,7 @@ namespace FastRegistrator.Tests.Commands
             // Arrange
             const int successStatusCode = 500;
             var logger = new Mock<ILogger<SendDataToICCommandHandler>>();
+            var dateTime = new Mock<IDateTime>();
             using var context = CreateDbContext();
 
             var personData = ConstructPersonData();
@@ -132,7 +136,7 @@ namespace FastRegistrator.Tests.Commands
 
             var command = new SendDataToICCommand(entityEntry.Entity.Id);
 
-            IRequestHandler<SendDataToICCommand> handler = new SendDataToICCommandHandler(icService.Object, context, logger.Object);
+            IRequestHandler<SendDataToICCommand> handler = new SendDataToICCommandHandler(icService.Object, context, logger.Object, dateTime.Object);
 
             // Act
             var result = handler.Handle(command, CancellationToken.None);

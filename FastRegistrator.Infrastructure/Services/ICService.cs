@@ -32,7 +32,7 @@ namespace FastRegistrator.Infrastructure.Services
                 icRegistrationResponse.ICRegistrationError = icRegistrationError;
             }
 
-            icRegistrationResponse.StatusCode = (int)result.StatusCode;
+            icRegistrationResponse.HttpStatusCode = (int)result.StatusCode;
 
             return icRegistrationResponse;
         }
