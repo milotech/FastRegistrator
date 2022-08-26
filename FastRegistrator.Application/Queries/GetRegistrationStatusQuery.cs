@@ -33,14 +33,10 @@ namespace FastRegistrator.ApplicationCore.Queries
                                                            .FirstOrDefaultAsync(cancellationToken);
 
             if (registration is null)
-            {
                 throw new NotFoundException(nameof(registration), query.Id);
-            }
 
             var registrationStatus = registration.StatusHistory.First()!.Status;
-
             var prizmaRejectionReason = registration.PrizmaCheckResult?.RejectionReasonCode;
-
             var registrationError = ConstructRegistrationError(registration);
 
             return new RegistrationStatusResponse(registration.Id, registration.Completed, registrationStatus, prizmaRejectionReason, registrationError);

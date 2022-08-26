@@ -31,7 +31,7 @@ namespace FastRegistrator.ApplicationCore.Behaviours
             }
             catch (ValidationException ex)
             {
-                _logger.LogError(ex, $"Validation failed for the command {request}");
+                _logger.LogError($"Command {request} : {ex.Message}");
                 throw;
             }
             catch (RetryRequiredException ex)

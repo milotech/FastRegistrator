@@ -65,8 +65,6 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 
         protected override async Task Handle(CheckPersonCommand command, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Check Person '{command.Name}' for Registration '{command.RegistrationId}'");
-
             string passportNumber = Regex.Replace(command.PassportNumber, @"[+()\s\-]", string.Empty);
             string? inn = command.INN is not null ? Regex.Replace(command.INN, @"[+()\s\-]", string.Empty) : null;
 

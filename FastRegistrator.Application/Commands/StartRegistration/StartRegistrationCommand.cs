@@ -22,7 +22,7 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
 
         public override string ToString()
         {
-            return nameof(StartRegistrationCommand) + $" {{ RegistrationId = {RegistrationId} }}";
+            return nameof(StartRegistrationCommand) + $" {{ RegistrationId = {RegistrationId}, PhoneNumber = {PhoneNumber} }}";
         }
     }
 
@@ -39,8 +39,6 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
 
         protected override async Task Handle(StartRegistrationCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Registration for person with phone number '{request.PhoneNumber}' is begun.");
-
             var registration = new Registration(request.RegistrationId, request.PhoneNumber, ConstructPersonData(request));
             _dbContext.Registrations.Add(registration);
 

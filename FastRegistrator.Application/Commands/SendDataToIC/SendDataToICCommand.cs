@@ -42,8 +42,6 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
 
         protected override async Task Handle(SendDataToICCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Trying to fetch a registration with Guid: {request.RegistrationId} for sending to IC");
-
             var registration = await _dbContext.Registrations.Where(reg => reg.Id == request.RegistrationId)
                                                              .Include(reg => reg.PersonData)
                                                              .Include(r => r.StatusHistory.OrderByDescending(i => i.StatusDT).Take(1))
@@ -78,7 +76,7 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
             {
                 registration.SetPersonDataSentToIC();
 
-                _logger.LogInformation("Person Data was sent to IC");
+                _logger.LogInformation("Registration data was sent to IC");
             }
             else
             {
@@ -87,14 +85,12 @@ namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
                 
                 var error = new Error(ErrorSource.IC, icRegistrationResponse.ICRegistrationError.Message, icRegistrationResponse.ICRegistrationError.Detail);
                 registration.SetError(error);
-
-                _logger.LogInformation(icRegistrationResponse.ICRegistrationError.Message);
             }
         }
 
         private void SetError(Exception ex, Registration registration)
         {
-            _logger.LogInformation($"Failed to send person data with Guid: {registration.Id} to IC.");
+            _logger.LogError(ex, $"Failed to send person data for Registration '{registration.Id}' to IC.");
 
             var error = new Error(ErrorSource.IC, ex.Message);
             registration.SetError(error);

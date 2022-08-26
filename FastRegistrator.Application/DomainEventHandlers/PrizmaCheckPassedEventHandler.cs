@@ -27,10 +27,7 @@ namespace FastRegistrator.ApplicationCore.DomainEventHandlers
             _logger.LogInformation($"Prizma check passed for '{@event.Registration.Id}'");
 
             var command = new SendDataToICCommand(@event.Registration.Id);
-
             _cmdExecutor.Execute(command);
-
-            _logger.LogInformation($"Person data for registration with Guid '{@event.Registration.Id}' sent to IC.");
 
             return Task.CompletedTask;
         }

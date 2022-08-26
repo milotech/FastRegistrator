@@ -1,7 +1,7 @@
 using FastRegistrator.API;
-using FastRegistrator.API.Filters;
 using FastRegistrator.ApplicationCore;
 using FastRegistrator.Infrastructure;
+using Hellang.Middleware.ProblemDetails;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -14,17 +14,17 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
-    // Add services to the container.
-
     builder.Host.UseSerilog((context, loggerConfig) => loggerConfig
             .ReadFrom.Configuration(context.Configuration)
             .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] ({SourceContext}) {Message:lj}{NewLine}{Exception}")
         );
 
-    builder.Services.AddControllers(options => options.Filters.Add(new ApiExceptionFilterAttribute()));
+    // Add services to the container.
+
+    builder.Services.AddControllers();
     builder.Services.AddApplicationServices();
     builder.Services.AddInfrastructureServices(builder.Configuration);
-
+    builder.Services.AddConfiguredProblemDetails();
     builder.Services.AddSwaggerGen(x =>
     {
         x.CustomSchemaIds(i => i.FullName);
@@ -33,20 +33,22 @@ try
     builder.Services.Configure<RouteOptions>(options =>
     {
         options.LowercaseUrls = true;
-    });
+    });    
 
     var app = builder.Build();
+    
     // Configure the HTTP request pipeline. 
 
     app.UseSwagger();
     app.UseSwaggerUI();
-
     app.UseHttpsRedirection();
-
     app.UseSerilogRequestLogging();
     app.UseAuthorization();
+    app.UseProblemDetails();
 
     app.MapControllers();
+
+    // Run application
 
     await app.InitialiseAsync();
     await app.RunAsync();

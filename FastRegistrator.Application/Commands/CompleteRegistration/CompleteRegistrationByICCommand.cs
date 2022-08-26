@@ -10,7 +10,14 @@ using Microsoft.Extensions.Logging;
 namespace FastRegistrator.ApplicationCore.Commands.CompleteRegistration
 {
     [Command(CommandExecutionMode.InPlace)]
-    public record class CompleteRegistrationByICCommand(string PhoneNumber, string? ErrorMessage) : IRequest;
+    public record class CompleteRegistrationByICCommand(string PhoneNumber, string? ErrorMessage) : IRequest
+    {
+        public override string ToString()
+        {
+            string? errorProp = ErrorMessage is not null ? ", ErrorMessage = " + ErrorMessage : null;
+            return nameof(CompleteRegistrationByICCommand) + $" {{ PhoneNumber = {PhoneNumber}{errorProp} }}";
+        }
+    }
 
     public class CompleteRegistrationByICCommandHandler : AsyncRequestHandler<CompleteRegistrationByICCommand>
     {

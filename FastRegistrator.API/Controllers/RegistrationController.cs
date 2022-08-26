@@ -9,33 +9,31 @@ namespace FastRegistrator.API.Controllers
 {
     public class RegistrationController : ApiControllerBase
     {
-        [HttpGet("{guid}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(typeof(RegistrationStatusResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<RegistrationStatusResponse>> GetStatus(Guid guid, CancellationToken cancel)
+        public async Task<RegistrationStatusResponse> GetStatus(Guid id, CancellationToken cancel)
         {
-            var getStatusQuery = new GetRegistrationStatusQuery(guid);
+            var getStatusQuery = new GetRegistrationStatusQuery(id);
             return await ExecuteQuery(getStatusQuery, cancel);
         }
 
         [HttpPost("start")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> StartRegistration(StartRegistrationCommand command, CancellationToken cancel)
+        public async Task StartRegistration(StartRegistrationCommand command, CancellationToken cancel)
         {
             await ExecuteCommand(command, cancel);
-            return Ok();
         }
 
         [HttpPost("complete")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> CompleteRegistration(CompleteRegistrationByICCommand command, CancellationToken cancel)
+        public async Task CompleteRegistration(CompleteRegistrationByICCommand command, CancellationToken cancel)
         {
             await ExecuteCommand(command, cancel);
-            return Ok();
         }
     }
 }
