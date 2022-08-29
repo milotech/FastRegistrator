@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastRegistrator.Infrastruct
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastRegistrator.ApplicationCore", "FastRegistrator.Application\FastRegistrator.ApplicationCore.csproj", "{B66B052B-EF46-4F99-852E-43058F55F77E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastRegistrator.Tests", "FastRegistrator.Tests\FastRegistrator.Tests.csproj", "{B09AF1D6-C286-4D5F-AB1F-22D69C692DD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastRegistrator.Tests", "FastRegistrator.Tests\FastRegistrator.Tests.csproj", "{B09AF1D6-C286-4D5F-AB1F-22D69C692DD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastRegistrator.IntegrationTests", "FastRegistrator.IntegrationTests\FastRegistrator.IntegrationTests.csproj", "{5D5A6CAE-27F4-4359-87C7-D94F929B4F47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{B09AF1D6-C286-4D5F-AB1F-22D69C692DD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B09AF1D6-C286-4D5F-AB1F-22D69C692DD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B09AF1D6-C286-4D5F-AB1F-22D69C692DD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D5A6CAE-27F4-4359-87C7-D94F929B4F47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D5A6CAE-27F4-4359-87C7-D94F929B4F47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D5A6CAE-27F4-4359-87C7-D94F929B4F47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D5A6CAE-27F4-4359-87C7-D94F929B4F47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

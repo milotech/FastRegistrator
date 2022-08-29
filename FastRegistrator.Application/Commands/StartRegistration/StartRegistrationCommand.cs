@@ -17,7 +17,7 @@ namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
         public string LastName { get; init; } = null!;
         public string PassportNumber { get; init; } = null!;
         public DateTime? BirthDay { get; init; }
-        public string Inn { get; init; } = null!;
+        public string? Inn { get; init; } = null!;
         public string FormData { get; init; } = null!;
 
         public override string ToString()
