@@ -7,6 +7,7 @@ using FastRegistrator.ApplicationCore.DTOs.RegistrationStatusQuery;
 using FastRegistrator.ApplicationCore.Interfaces;
 using Microsoft.AspNetCore.TestHost;
 using Moq;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 
@@ -15,6 +16,21 @@ namespace FastRegistrator.IntegrationTests
     public class RegistrationTests
         : IClassFixture<TestWebApplicationFactory>
     {
+        private static class ContentTypes
+        {
+            public const string ProblemDetailsJson = "application/problem+json; charset=utf-8";
+            public const string Json = "application/json; charset=utf-8";
+        }
+
+        private static class FastRegEndpoints
+        {
+            public const string RegistrationQuery = "/registration";
+            public const string StartRegistration = "/registration/start";
+            public const string CompleteRegistration = "/registration/complete";
+        }
+
+        private const string JsonMediaType = "application/json";
+
         private readonly TestWebApplicationFactory _factory;
 
         public RegistrationTests(TestWebApplicationFactory factory)
@@ -29,11 +45,11 @@ namespace FastRegistrator.IntegrationTests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/registration/" + TestData.NonExistentRegistrationId);
+            var response = await client.GetAsync($"{FastRegEndpoints.RegistrationQuery}/{TestData.NonExistentRegistrationId}");
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
-            Assert.Equal("application/problem+json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(ContentTypes.ProblemDetailsJson, response.Content.Headers.ContentType?.ToString());
         }
 
         [Fact]
@@ -43,11 +59,11 @@ namespace FastRegistrator.IntegrationTests
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("/registration/" + TestData.ExistentRegistrationId);
+            var response = await client.GetAsync($"{FastRegEndpoints.RegistrationQuery}/{TestData.ExistentRegistrationId}");
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(ContentTypes.Json, response.Content.Headers.ContentType?.ToString());
         }
 
         [Fact]
@@ -58,15 +74,15 @@ namespace FastRegistrator.IntegrationTests
             var content = new StringContent("");
 
             // Act
-            var response = await client.PostAsync("/registration/start", content);
+            var response = await client.PostAsync(FastRegEndpoints.StartRegistration, content);
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.UnsupportedMediaType, response.StatusCode);
-            Assert.Equal("application/problem+json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+            Assert.Equal(HttpStatusCode.UnsupportedMediaType, response.StatusCode);
+            Assert.Equal(ContentTypes.ProblemDetailsJson, response.Content.Headers.ContentType?.ToString());
         }
 
         [Fact]
-        public async Task StartRegistration_InvalidData_ReturnsBadRequest()
+        public async Task StartRegistration_InvalidCommandData_ReturnsBadRequest()
         {
             // Arrange
             var startRegistrationCommand = new StartRegistrationCommand()
@@ -80,18 +96,18 @@ namespace FastRegistrator.IntegrationTests
             var responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal("application/problem+json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(ContentTypes.ProblemDetailsJson, response.Content.Headers.ContentType?.ToString());
             Console.WriteLine(responseContent);
         }
 
         [Fact]
-        public async Task StartRegistration_Bankrupt_CompleteWithPrizmaRejectedStatus()
+        public async Task StartRegistration_ClientIsBankrupt_CompleteWithPrizmaRejectedStatus()
         {
             // Arrange
             var prizmaServiceResponse = new PersonCheckResponse
             {
-                HttpStatusCode = 200,
+                HttpStatusCode = (int)HttpStatusCode.OK,
                 PersonCheckResult = new PersonCheckResult
                 {
                     PrizmaJsonResponse = "{}",
@@ -105,7 +121,7 @@ namespace FastRegistrator.IntegrationTests
             var response = await PostRegistrationAsync(client, startRegistrationCommand);
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var registrationStatusResponse = await WaitForRegistrationCompletionAsync(client, startRegistrationCommand.RegistrationId, 5000);            
             Assert.Equal(RegistrationStatus.PrizmaCheckRejected, registrationStatusResponse.Status);
@@ -118,7 +134,7 @@ namespace FastRegistrator.IntegrationTests
             const string ICErrorMessage = "Unable to register client";
 
             // Arrange
-            var icServiceResponse = new ICRegistrationResponse(500, new ICRegistrationError(ICErrorMessage, null));
+            var icServiceResponse = new ICRegistrationResponse((int)HttpStatusCode.InternalServerError, new ICRegistrationError(ICErrorMessage, null));
             var client = CreateClientWithServiceMocks(icServiceResponse: icServiceResponse);
             var startRegistrationCommand = CreateValidStartRegistrationCommand();
 
@@ -126,7 +142,7 @@ namespace FastRegistrator.IntegrationTests
             var response = await PostRegistrationAsync(client, startRegistrationCommand);
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var registrationStatusResponse = await WaitForRegistrationCompletionAsync(client, startRegistrationCommand.RegistrationId, 5000);
             Assert.Equal(RegistrationStatus.Error, registrationStatusResponse.Status);
@@ -147,7 +163,7 @@ namespace FastRegistrator.IntegrationTests
             var response = await PostRegistrationAsync(client, startRegistrationCommand);
 
             // Assert
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var registrationStatusResponse = await WaitForRegistrationCompletionAsync(client, startRegistrationCommand.RegistrationId, 5000);
             Assert.Equal(RegistrationStatus.AccountOpened, registrationStatusResponse.Status);
@@ -158,7 +174,7 @@ namespace FastRegistrator.IntegrationTests
         private Task<HttpResponseMessage> PostRegistrationAsync(HttpClient client, StartRegistrationCommand command)
         {
             var json = JsonSerializer.Serialize(command);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var content = new StringContent(json, Encoding.UTF8, JsonMediaType);
             return client.PostAsync("/registration/start", content);
         }
 
@@ -168,7 +184,7 @@ namespace FastRegistrator.IntegrationTests
 
             while (!cancel.IsCancellationRequested)
             {
-                var statusResponse = await client.GetAsync("/registration/" + registrationId);
+                var statusResponse = await client.GetAsync($"{FastRegEndpoints.RegistrationQuery}/{registrationId}");
                 statusResponse.EnsureSuccessStatusCode();
 
                 var registrationStatusResponse = await statusResponse.Content.ReadFromJsonAsync<RegistrationStatusResponse>();
@@ -190,12 +206,12 @@ namespace FastRegistrator.IntegrationTests
             if (prizmaServiceResponse is null)
                 prizmaServiceResponse = new PersonCheckResponse
                 {
-                    HttpStatusCode = 200,
+                    HttpStatusCode = (int)HttpStatusCode.OK,
                     PersonCheckResult = new PersonCheckResult { RejectionReason = RejectionReason.None, PrizmaJsonResponse = "{}" }
                 };
 
             if (icServiceResponse is null)
-                icServiceResponse = new ICRegistrationResponse { HttpStatusCode = 200 };
+                icServiceResponse = new ICRegistrationResponse { HttpStatusCode = (int)HttpStatusCode.OK };
 
             var prizmaService = new Mock<IPrizmaService>();
             prizmaService
@@ -221,9 +237,9 @@ namespace FastRegistrator.IntegrationTests
                 icServiceSendMethodSetup.Callback(() =>
                 {
                     var json = JsonSerializer.Serialize(completeRegistrationCommand);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var content = new StringContent(json, Encoding.UTF8, JsonMediaType);
 
-                    client.PostAsync("/registration/complete", content);
+                    client.PostAsync(FastRegEndpoints.CompleteRegistration, content);
                 });
 
             return client;
