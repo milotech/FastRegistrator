@@ -1,10 +1,10 @@
-﻿using FastRegistrator.ApplicationCore.Commands.StartRegistration;
-using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
-using FastRegistrator.ApplicationCore.IntegrationEvents.Handlers;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Commands.StartRegistration;
+using FastRegistrator.Application.IntegrationEvents.Events;
+using FastRegistrator.Application.IntegrationEvents.Handlers;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 
-namespace FastRegistrator.ApplicationCore.Startup
+namespace FastRegistrator.Application.Startup
 {
     public static class EventBusSubscriptions
     {

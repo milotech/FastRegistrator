@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Interfaces;
 
 namespace FastRegistrator.Infrastructure.Services
 {

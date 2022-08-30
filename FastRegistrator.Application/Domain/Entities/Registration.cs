@@ -1,7 +1,7 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Enums;
-using FastRegistrator.ApplicationCore.Domain.Events;
+﻿using FastRegistrator.Application.Domain.Enums;
+using FastRegistrator.Application.Domain.Events;
 
-namespace FastRegistrator.ApplicationCore.Domain.Entities
+namespace FastRegistrator.Application.Domain.Entities
 {
     public class Registration : BaseEntity<Guid>
     {

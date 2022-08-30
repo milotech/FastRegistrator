@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.Attributes
+﻿namespace FastRegistrator.Application.Attributes
 {
     public class RetryAttribute : Attribute
     {

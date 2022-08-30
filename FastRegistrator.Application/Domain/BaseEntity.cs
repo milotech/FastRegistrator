@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace FastRegistrator.ApplicationCore.Domain
+namespace FastRegistrator.Application.Domain
 {
     public abstract class BaseEntity<T> : BaseEntity
     {

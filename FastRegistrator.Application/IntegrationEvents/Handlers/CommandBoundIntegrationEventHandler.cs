@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using FastRegistrator.ApplicationCore.Interfaces;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 
-namespace FastRegistrator.ApplicationCore.IntegrationEvents.Handlers
+namespace FastRegistrator.Application.IntegrationEvents.Handlers
 {
     public class CommandBoundIntegrationEventHandler<TEvent, TCommand> : IIntegrationEventHandler<TEvent>
         where TEvent : IIntegrationEvent

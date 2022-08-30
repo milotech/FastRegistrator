@@ -1,13 +1,13 @@
-﻿using FastRegistrator.ApplicationCore.Attributes;
-using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.Enums;
-using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Attributes;
+using FastRegistrator.Application.Domain.Entities;
+using FastRegistrator.Application.Domain.Enums;
+using FastRegistrator.Application.Exceptions;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FastRegistrator.ApplicationCore.Commands.CompleteRegistration
+namespace FastRegistrator.Application.Commands.CompleteRegistration
 {
     [Command(CommandExecutionMode.InPlace)]
     public record class CompleteRegistrationByICCommand(string PhoneNumber, string? ErrorMessage) : IRequest

@@ -1,5 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.ValueObjects;
+﻿using FastRegistrator.Application.Domain.Entities;
+using FastRegistrator.Application.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.Tests
+﻿namespace FastRegistrator.UnitTests
 {
     public static class Constants
     {

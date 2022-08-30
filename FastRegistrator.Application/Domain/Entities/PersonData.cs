@@ -1,6 +1,6 @@
-﻿using FastRegistrator.ApplicationCore.Domain.ValueObjects;
+﻿using FastRegistrator.Application.Domain.ValueObjects;
 
-namespace FastRegistrator.ApplicationCore.Domain.Entities
+namespace FastRegistrator.Application.Domain.Entities
 {
     public class PersonData : BaseEntity<Guid>
     {        

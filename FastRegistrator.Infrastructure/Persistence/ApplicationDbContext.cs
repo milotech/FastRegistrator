@@ -1,5 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Domain.Entities;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;

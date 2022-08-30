@@ -1,6 +1,6 @@
-﻿using FastRegistrator.ApplicationCore.DTOs.PrizmaService;
+﻿using FastRegistrator.Application.DTOs.PrizmaService;
 
-namespace FastRegistrator.ApplicationCore.Interfaces
+namespace FastRegistrator.Application.Interfaces
 {
     public interface IPrizmaService
     {

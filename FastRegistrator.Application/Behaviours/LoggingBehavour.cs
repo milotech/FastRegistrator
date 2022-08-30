@@ -1,9 +1,9 @@
-﻿using FastRegistrator.ApplicationCore.Exceptions;
+﻿using FastRegistrator.Application.Exceptions;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FastRegistrator.ApplicationCore.Behaviours
+namespace FastRegistrator.Application.Behaviours
 {
     public class LoggingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull, IRequest<TResponse>
     {

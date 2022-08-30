@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
+﻿using FastRegistrator.Application.Domain.Entities;
 using FastRegistrator.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

@@ -1,7 +1,7 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
+﻿using FastRegistrator.Application.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace FastRegistrator.ApplicationCore.Interfaces
+namespace FastRegistrator.Application.Interfaces
 {
     public interface IApplicationDbContext
     {

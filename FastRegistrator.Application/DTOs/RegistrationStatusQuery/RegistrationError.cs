@@ -1,6 +1,6 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Enums;
+﻿using FastRegistrator.Application.Domain.Enums;
 
-namespace FastRegistrator.ApplicationCore.DTOs.RegistrationStatusQuery
+namespace FastRegistrator.Application.DTOs.RegistrationStatusQuery
 {
     public record class RegistrationError
     {

@@ -1,6 +1,6 @@
-﻿using FastRegistrator.ApplicationCore.Attributes;
-using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Attributes;
+using FastRegistrator.Application.Exceptions;
+using FastRegistrator.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

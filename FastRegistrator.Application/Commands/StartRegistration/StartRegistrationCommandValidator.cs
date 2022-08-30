@@ -1,9 +1,9 @@
-﻿using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Interfaces;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
-namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
+namespace FastRegistrator.Application.Commands.StartRegistration
 {
     public class StartRegistrationCommandValidator : AbstractValidator<StartRegistrationCommand>
     {

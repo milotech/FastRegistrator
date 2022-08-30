@@ -1,9 +1,9 @@
-﻿using FastRegistrator.ApplicationCore.Commands.StartRegistration;
+﻿using FastRegistrator.Application.Commands.StartRegistration;
 using FluentValidation.TestHelper;
 using System.ComponentModel;
-using static FastRegistrator.Tests.Constants;
+using static FastRegistrator.UnitTests.Constants;
 
-namespace FastRegistrator.Tests.Validators
+namespace FastRegistrator.UnitTests.Validators
 {
     public class StartRegistrationCommandValidatorTests
         : TestWithDbContext
@@ -375,10 +375,10 @@ namespace FastRegistrator.Tests.Validators
         }
 
         [Fact]
-        [Description("Arrange Command come with empty snils" +
+        [Description("Arrange Command come with empty INN" +
                      "Act Validate method is called" +
-                     "Assert Validation result is false and it has appropriate error message")]
-        public async Task Validate_EmptySnils_FalseValidationAndErrorMessage()
+                     "Assert Validation result is true")]
+        public async Task Validate_EmptyInn_PassValidation()
         {
             // Arrange
             var dbContext = CreateDbContext();
@@ -392,8 +392,7 @@ namespace FastRegistrator.Tests.Validators
             var result = await validator.TestValidateAsync(command);
 
             // Assert
-            result.ShouldHaveValidationErrorFor(x => x.Inn)
-                  .WithErrorMessage(StartRegistrationCommandValidator.InnIsEmpty);
+            result.ShouldNotHaveValidationErrorFor(x => x.Inn);
         }
 
         [Fact]

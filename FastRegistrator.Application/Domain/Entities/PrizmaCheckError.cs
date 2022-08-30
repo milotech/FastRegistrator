@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.Domain.Entities
+﻿namespace FastRegistrator.Application.Domain.Entities
 {
     public class PrizmaCheckError : BaseEntity<int>
     {

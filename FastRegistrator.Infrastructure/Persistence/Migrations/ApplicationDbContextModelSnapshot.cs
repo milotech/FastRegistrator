@@ -22,7 +22,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Error", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.Error", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -42,7 +42,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     b.ToTable("Error");
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PersonData", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.PersonData", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -71,7 +71,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     b.ToTable("PersonData");
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckResult", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.PrizmaCheckResult", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -88,7 +88,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     b.ToTable("PrizmaChecks");
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Registration", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.Registration", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -106,7 +106,7 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     b.ToTable("Registrations");
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.StatusHistoryItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -130,24 +130,24 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                     b.ToTable("StatusHistory");
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Error", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.Error", b =>
                 {
-                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Registration", null)
+                    b.HasOne("FastRegistrator.Application.Domain.Entities.Registration", null)
                         .WithOne("Error")
-                        .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.Error", "Id")
+                        .HasForeignKey("FastRegistrator.Application.Domain.Entities.Error", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PersonData", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.PersonData", b =>
                 {
-                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Registration", null)
+                    b.HasOne("FastRegistrator.Application.Domain.Entities.Registration", null)
                         .WithOne("PersonData")
-                        .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.PersonData", "Id")
+                        .HasForeignKey("FastRegistrator.Application.Domain.Entities.PersonData", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsOne("FastRegistrator.ApplicationCore.Domain.ValueObjects.PersonName", "Name", b1 =>
+                    b.OwnsOne("FastRegistrator.Application.Domain.ValueObjects.PersonName", "Name", b1 =>
                         {
                             b1.Property<Guid>("PersonDataId")
                                 .HasColumnType("uniqueidentifier");
@@ -175,23 +175,23 @@ namespace FastRegistrator.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckResult", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.PrizmaCheckResult", b =>
                 {
-                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Registration", null)
+                    b.HasOne("FastRegistrator.Application.Domain.Entities.Registration", null)
                         .WithOne("PrizmaCheckResult")
-                        .HasForeignKey("FastRegistrator.ApplicationCore.Domain.Entities.PrizmaCheckResult", "Id")
+                        .HasForeignKey("FastRegistrator.Application.Domain.Entities.PrizmaCheckResult", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.StatusHistoryItem", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.StatusHistoryItem", b =>
                 {
-                    b.HasOne("FastRegistrator.ApplicationCore.Domain.Entities.Registration", null)
+                    b.HasOne("FastRegistrator.Application.Domain.Entities.Registration", null)
                         .WithMany("StatusHistory")
                         .HasForeignKey("RegistrationId");
                 });
 
-            modelBuilder.Entity("FastRegistrator.ApplicationCore.Domain.Entities.Registration", b =>
+            modelBuilder.Entity("FastRegistrator.Application.Domain.Entities.Registration", b =>
                 {
                     b.Navigation("Error");
 

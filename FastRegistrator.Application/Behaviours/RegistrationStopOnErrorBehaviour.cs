@@ -1,11 +1,11 @@
-﻿using FastRegistrator.ApplicationCore.Commands;
-using FastRegistrator.ApplicationCore.Commands.CompleteRegistration;
-using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Commands;
+using FastRegistrator.Application.Commands.CompleteRegistration;
+using FastRegistrator.Application.Exceptions;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FastRegistrator.ApplicationCore.Behaviours;
+namespace FastRegistrator.Application.Behaviours;
 
 public class RegistrationStopOnErrorBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull, IRequest<TResponse>, IRegistrationStopOnErrorTrigger

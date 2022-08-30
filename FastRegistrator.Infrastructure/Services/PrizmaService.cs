@@ -1,5 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.DTOs.PrizmaService;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.DTOs.PrizmaService;
+using FastRegistrator.Application.Interfaces;
 using System.Text.Json;
 
 namespace FastRegistrator.Infrastructure.Services;

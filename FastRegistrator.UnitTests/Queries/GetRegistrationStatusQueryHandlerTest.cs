@@ -1,13 +1,13 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.ValueObjects;
-using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Queries;
+﻿using FastRegistrator.Application.Domain.Entities;
+using FastRegistrator.Application.Domain.ValueObjects;
+using FastRegistrator.Application.Exceptions;
+using FastRegistrator.Application.Queries;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.ComponentModel;
-using static FastRegistrator.Tests.Constants;
+using static FastRegistrator.UnitTests.Constants;
 
-namespace FastRegistrator.Tests.Queries
+namespace FastRegistrator.UnitTests.Queries
 {
     public class GetRegistrationStatusQueryHandlerTest : TestWithDbContext
     {

@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Interfaces;
 using FastRegistrator.Infrastructure.Persistence;
 using FastRegistrator.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;

@@ -1,5 +1,5 @@
 using FastRegistrator.API;
-using FastRegistrator.ApplicationCore;
+using FastRegistrator.Application;
 using FastRegistrator.Infrastructure;
 using Hellang.Middleware.ProblemDetails;
 using Serilog;

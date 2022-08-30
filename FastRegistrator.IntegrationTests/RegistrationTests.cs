@@ -1,10 +1,10 @@
-﻿using FastRegistrator.ApplicationCore.Commands.CompleteRegistration;
-using FastRegistrator.ApplicationCore.Commands.StartRegistration;
-using FastRegistrator.ApplicationCore.Domain.Enums;
-using FastRegistrator.ApplicationCore.DTOs.ICService;
-using FastRegistrator.ApplicationCore.DTOs.PrizmaService;
-using FastRegistrator.ApplicationCore.DTOs.RegistrationStatusQuery;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Commands.CompleteRegistration;
+using FastRegistrator.Application.Commands.StartRegistration;
+using FastRegistrator.Application.Domain.Enums;
+using FastRegistrator.Application.DTOs.ICService;
+using FastRegistrator.Application.DTOs.PrizmaService;
+using FastRegistrator.Application.DTOs.RegistrationStatusQuery;
+using FastRegistrator.Application.Interfaces;
 using Microsoft.AspNetCore.TestHost;
 using Moq;
 using System.Net;

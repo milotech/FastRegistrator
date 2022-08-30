@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.Domain.ValueObjects
+﻿namespace FastRegistrator.Application.Domain.ValueObjects
 {
     public class PersonName
     {

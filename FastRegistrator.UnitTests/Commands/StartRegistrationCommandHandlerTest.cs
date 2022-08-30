@@ -1,13 +1,13 @@
-﻿using FastRegistrator.ApplicationCore.Commands.StartRegistration;
-using FastRegistrator.ApplicationCore.Domain.Enums;
+﻿using FastRegistrator.Application.Commands.StartRegistration;
+using FastRegistrator.Application.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.ComponentModel;
-using static FastRegistrator.Tests.Constants;
+using static FastRegistrator.UnitTests.Constants;
 
-namespace FastRegistrator.Tests.Commands
+namespace FastRegistrator.UnitTests.Commands
 {
     public class StartRegistrationCommandHandlerTest : TestWithDbContext
     {

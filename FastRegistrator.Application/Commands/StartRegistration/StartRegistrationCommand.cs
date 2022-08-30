@@ -1,11 +1,11 @@
-﻿using FastRegistrator.ApplicationCore.Attributes;
-using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.ValueObjects;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Attributes;
+using FastRegistrator.Application.Domain.Entities;
+using FastRegistrator.Application.Domain.ValueObjects;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FastRegistrator.ApplicationCore.Commands.StartRegistration
+namespace FastRegistrator.Application.Commands.StartRegistration
 {
     [Command(CommandExecutionMode.InPlace)]
     public record class StartRegistrationCommand : IRequest

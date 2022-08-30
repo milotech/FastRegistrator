@@ -1,18 +1,18 @@
-﻿using FastRegistrator.ApplicationCore.Commands.SendDataToIC;
-using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.Enums;
-using FastRegistrator.ApplicationCore.Domain.ValueObjects;
-using FastRegistrator.ApplicationCore.DTOs.ICService;
-using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Commands.SendDataToIC;
+using FastRegistrator.Application.Domain.Entities;
+using FastRegistrator.Application.Domain.Enums;
+using FastRegistrator.Application.Domain.ValueObjects;
+using FastRegistrator.Application.DTOs.ICService;
+using FastRegistrator.Application.Exceptions;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.ComponentModel;
-using static FastRegistrator.Tests.Constants;
+using static FastRegistrator.UnitTests.Constants;
 
-namespace FastRegistrator.Tests.Commands
+namespace FastRegistrator.UnitTests.Commands
 {
     public class SendDataToICCommandHandlerTest : TestWithDbContext
     {
@@ -69,7 +69,7 @@ namespace FastRegistrator.Tests.Commands
                                             .FirstOrDefaultAsync(p => p.PhoneNumber == PHONE_NUMBER);
 
             Assert.Contains(assertPerson!.StatusHistory, shi => shi.Status == RegistrationStatus.Error);
-            Assert.True(assertPerson!.Error!.Source == ErrorSource.FastRegistrator);
+            Assert.True(assertPerson!.Error!.Source == ErrorSource.IC);
         }
 
         [Fact]
