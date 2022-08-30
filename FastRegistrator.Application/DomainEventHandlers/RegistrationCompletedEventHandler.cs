@@ -1,8 +1,8 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Events;
+﻿using FastRegistrator.Application.Domain.Events;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FastRegistrator.ApplicationCore.DomainEventHandlers
+namespace FastRegistrator.Application.DomainEventHandlers
 {
     public class RegistrationCompletedCommittedEventHandler : INotificationHandler<CommittedEvent<RegistrationCompletedEvent>>
     {

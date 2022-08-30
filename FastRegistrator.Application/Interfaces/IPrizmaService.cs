@@ -1,9 +1,9 @@
-﻿using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
+﻿using FastRegistrator.Application.DTOs.PrizmaService;
 
-namespace FastRegistrator.ApplicationCore.Interfaces
+namespace FastRegistrator.Application.Interfaces
 {
     public interface IPrizmaService
     {
-        Task<PersonCheckCommonResponse> PersonCheck(PersonCheckRequest personCheckRequest, CancellationToken cancelToken);
+        Task<PersonCheckResponse> PersonCheck(PersonCheckRequest personCheckRequest, CancellationToken cancelToken);
     }
 }

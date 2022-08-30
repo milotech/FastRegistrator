@@ -1,6 +1,6 @@
-﻿using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Interfaces;
 
-namespace FastRegistrator.ApplicationCore.IntegrationEvents.Events
+namespace FastRegistrator.Application.IntegrationEvents.Events
 {
     public class TestIntegrationEvent : IIntegrationEvent
     {

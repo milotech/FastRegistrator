@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.Commands
+﻿namespace FastRegistrator.Application.Commands
 {
     public interface IRegistrationStopOnErrorTrigger
     {

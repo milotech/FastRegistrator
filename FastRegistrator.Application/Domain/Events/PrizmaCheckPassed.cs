@@ -1,7 +1,7 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
+﻿using FastRegistrator.Application.Domain.Entities;
 using MediatR;
 
-namespace FastRegistrator.ApplicationCore.Domain.Events
+namespace FastRegistrator.Application.Domain.Events
 {
     public record PrizmaCheckPassedEvent(Registration Registration) : INotification;
 }

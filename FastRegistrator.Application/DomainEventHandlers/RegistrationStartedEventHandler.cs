@@ -1,10 +1,10 @@
-﻿using FastRegistrator.ApplicationCore.Commands.CheckPerson;
-using FastRegistrator.ApplicationCore.Domain.Events;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Commands.CheckPerson;
+using FastRegistrator.Application.Domain.Events;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace FastRegistrator.ApplicationCore.DomainEventHandlers
+namespace FastRegistrator.Application.DomainEventHandlers
 {
     public class RegistrationStartedEventHandler : INotificationHandler<RegistrationStartedEvent>
     {

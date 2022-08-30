@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
+﻿namespace FastRegistrator.Application.DTOs.ICService
 {
     public class ICRegistrationError
     {

@@ -1,5 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Domain;
-using FastRegistrator.ApplicationCore.Domain.Events;
+﻿using FastRegistrator.Application.Domain;
+using FastRegistrator.Application.Domain.Events;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

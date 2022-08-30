@@ -18,11 +18,11 @@
 
   <ItemGroup>
     <PackageReference Include="Serilog" Version="2.11.0" />
-    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FastRegistrator.Application\FastRegistrator.ApplicationCore.csproj" />
+    <ProjectReference Include="..\FastRegistrator.Application\FastRegistrator.Application.csproj" />
     <ProjectReference Include="..\FastRegistrator.Infrastructure\FastRegistrator.Infrastructure.csproj" />
   </ItemGroup>
 

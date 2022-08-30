@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.Exceptions
+﻿namespace FastRegistrator.Application.Exceptions
 {
     public class RetryRequiredException : Exception
     {

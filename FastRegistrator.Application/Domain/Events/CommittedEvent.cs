@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace FastRegistrator.ApplicationCore.Domain.Events
+namespace FastRegistrator.Application.Domain.Events
 {
     public sealed class CommittedEvent<T> : INotification
         where T : INotification

@@ -1,12 +1,15 @@
 using FastRegistrator.API;
-using FastRegistrator.ApplicationCore;
+using FastRegistrator.Application;
 using FastRegistrator.Infrastructure;
 using Hellang.Middleware.ProblemDetails;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
+if (CreateBootstratpLogger)
+{
+    Log.Logger = new LoggerConfiguration()
+        .WriteTo.Console()
+        .CreateBootstrapLogger();
+}
 
 Log.Information("Starting the FastRegistrator Service...");
 
@@ -75,4 +78,10 @@ finally
 {
     Log.Information("FastRegistrator stopped");
     Log.CloseAndFlush();
+}
+
+// implicit public class for accessing it from IntegrationTests project
+public partial class Program 
+{
+    public static bool CreateBootstratpLogger = true;
 }

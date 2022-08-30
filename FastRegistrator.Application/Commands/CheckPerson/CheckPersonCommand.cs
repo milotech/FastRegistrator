@@ -1,9 +1,9 @@
-﻿using FastRegistrator.ApplicationCore.Attributes;
-using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.Enums;
-using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
-using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Attributes;
+using FastRegistrator.Application.Domain.Entities;
+using FastRegistrator.Application.Domain.Enums;
+using FastRegistrator.Application.DTOs.PrizmaService;
+using FastRegistrator.Application.Exceptions;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -13,7 +13,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Text.Unicode;
 
-namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
+namespace FastRegistrator.Application.Commands.CheckPerson
 {
     [Command(CommandExecutionMode.ExecutionQueue, ExecutionQueueParallelDegree = 10)]
     public record CheckPersonCommand(
@@ -90,7 +90,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 
         private async Task TryCheckPerson(PersonCheckRequest request, Registration registration, CancellationToken cancellationToken)
         {
-            PersonCheckCommonResponse? prizmaResponse;
+            PersonCheckResponse? prizmaResponse;
             try
             {
                 prizmaResponse = await _prizmaService.PersonCheck(request, cancellationToken);
@@ -172,7 +172,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             return (_dateTime.Now - thresholdDate).TotalMinutes <= maxDurationInMinutes;
         }
 
-        private Error ConstructErrorEntity(ErrorResponse errorResponse, int httpResponseStatusCode)
+        private Error ConstructErrorEntity(PersonCheckError errorResponse, int httpResponseStatusCode)
         {
             var source = errorResponse.PrizmaErrorCode > 0
                 ? ErrorSource.KonturPrizmaAPI

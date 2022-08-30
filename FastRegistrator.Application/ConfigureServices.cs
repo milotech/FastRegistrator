@@ -1,11 +1,11 @@
-﻿using FastRegistrator.ApplicationCore.Behaviours;
-using FastRegistrator.ApplicationCore.Startup;
+﻿using FastRegistrator.Application.Behaviours;
+using FastRegistrator.Application.Startup;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
-namespace FastRegistrator.ApplicationCore
+namespace FastRegistrator.Application
 {
     public static class ConfigureServices
     {

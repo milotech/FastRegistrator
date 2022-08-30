@@ -1,15 +1,15 @@
-﻿using FastRegistrator.ApplicationCore.Attributes;
-using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.Enums;
-using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
-using FastRegistrator.ApplicationCore.Exceptions;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.Attributes;
+using FastRegistrator.Application.Domain.Entities;
+using FastRegistrator.Application.Domain.Enums;
+using FastRegistrator.Application.DTOs.ICService;
+using FastRegistrator.Application.Exceptions;
+using FastRegistrator.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Net;
 
-namespace FastRegistrator.ApplicationCore.Commands.SendDataToIC
+namespace FastRegistrator.Application.Commands.SendDataToIC
 {
     [Command(CommandExecutionMode.Parallel)]
     public record class SendDataToICCommand(Guid RegistrationId) : IRequest, IRegistrationStopOnErrorTrigger;

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using System.Data.Common;
 
-namespace FastRegistrator.Tests
+namespace FastRegistrator.UnitTests
 {
     public abstract class TestWithDbContext : IDisposable
     {

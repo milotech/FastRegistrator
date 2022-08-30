@@ -1,5 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.IntegrationEvents.Events;
+using FastRegistrator.Application.Interfaces;
 using FastRegistrator.Infrastructure.EventBus;
 using FastRegistrator.Infrastructure.Options;
 using Microsoft.Extensions.Configuration;

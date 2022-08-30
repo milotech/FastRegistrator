@@ -1,6 +1,6 @@
-﻿using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
+﻿using FastRegistrator.Application.DTOs.ICService;
 
-namespace FastRegistrator.ApplicationCore.Interfaces
+namespace FastRegistrator.Application.Interfaces
 {
     public interface IICService
     {

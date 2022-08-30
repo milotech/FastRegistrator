@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
+﻿using FastRegistrator.Application.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

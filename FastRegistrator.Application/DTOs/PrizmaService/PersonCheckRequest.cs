@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs
+﻿namespace FastRegistrator.Application.DTOs.PrizmaService
 {
     public record class PersonCheckRequest
     {

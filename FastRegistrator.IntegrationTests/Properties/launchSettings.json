@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "FastRegistrator.IntegrationTests": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:50222;http://localhost:50223"
+    }
+  }
+}

@@ -1,6 +1,6 @@
-﻿namespace FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs
+﻿namespace FastRegistrator.Application.DTOs.PrizmaService
 {
-    public record ErrorResponse(
+    public record PersonCheckError(
         string Message,
         int PrizmaErrorCode,
         Dictionary<string, List<string>>? Errors);

@@ -1,5 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.Interfaces;
-using FastRegistrator.ApplicationCore.Startup;
+﻿using FastRegistrator.Application.Interfaces;
+using FastRegistrator.Application.Startup;
 using FastRegistrator.Infrastructure.Persistence;
 
 namespace FastRegistrator.API

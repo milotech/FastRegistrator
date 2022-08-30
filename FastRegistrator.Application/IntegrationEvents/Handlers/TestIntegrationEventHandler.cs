@@ -1,8 +1,8 @@
-﻿using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.IntegrationEvents.Events;
+using FastRegistrator.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace FastRegistrator.ApplicationCore.IntegrationEvents.Handlers
+namespace FastRegistrator.Application.IntegrationEvents.Handlers
 {
     public class TestIntegrationEventHandler : IIntegrationEventHandler<TestIntegrationEvent>
     {

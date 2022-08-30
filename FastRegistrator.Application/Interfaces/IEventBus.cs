@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.Interfaces
+﻿namespace FastRegistrator.Application.Interfaces
 {
     public interface IEventBus
     {

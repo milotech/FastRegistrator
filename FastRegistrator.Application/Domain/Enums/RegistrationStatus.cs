@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.Domain.Enums
+﻿namespace FastRegistrator.Application.Domain.Enums
 {
     public enum RegistrationStatus
     {

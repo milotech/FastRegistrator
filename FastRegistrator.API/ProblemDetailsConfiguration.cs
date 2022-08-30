@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.Exceptions;
+﻿using FastRegistrator.Application.Exceptions;
 using FluentValidation;
 using Hellang.Middleware.ProblemDetails;
 

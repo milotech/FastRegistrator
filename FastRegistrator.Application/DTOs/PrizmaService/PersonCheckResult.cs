@@ -1,6 +1,6 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Enums;
+﻿using FastRegistrator.Application.Domain.Enums;
 
-namespace FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
+namespace FastRegistrator.Application.DTOs.PrizmaService;
 
 public record class PersonCheckResult
 {

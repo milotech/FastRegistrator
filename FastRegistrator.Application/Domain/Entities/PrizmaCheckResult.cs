@@ -1,6 +1,6 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Enums;
+﻿using FastRegistrator.Application.Domain.Enums;
 
-namespace FastRegistrator.ApplicationCore.Domain.Entities
+namespace FastRegistrator.Application.Domain.Entities
 {
     public class PrizmaCheckResult : BaseEntity<Guid>
     {

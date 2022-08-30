@@ -1,11 +1,11 @@
-﻿using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.Domain.Enums;
-using FastRegistrator.ApplicationCore.Domain.Events;
-using FastRegistrator.ApplicationCore.Domain.ValueObjects;
+﻿using FastRegistrator.Application.Domain.Entities;
+using FastRegistrator.Application.Domain.Enums;
+using FastRegistrator.Application.Domain.Events;
+using FastRegistrator.Application.Domain.ValueObjects;
 using System.ComponentModel;
-using static FastRegistrator.Tests.Constants;
+using static FastRegistrator.UnitTests.Constants;
 
-namespace FastRegistrator.Tests.Domain
+namespace FastRegistrator.UnitTests.Domain
 {
     public class RegistrationTests
     {

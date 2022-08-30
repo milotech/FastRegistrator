@@ -1,5 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.DTOs.ICService;
+using FastRegistrator.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 

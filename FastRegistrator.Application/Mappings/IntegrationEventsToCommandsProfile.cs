@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using FastRegistrator.ApplicationCore.Commands.StartRegistration;
-using FastRegistrator.ApplicationCore.IntegrationEvents.Events;
+using FastRegistrator.Application.Commands.StartRegistration;
+using FastRegistrator.Application.IntegrationEvents.Events;
 
-namespace FastRegistrator.ApplicationCore.Mappings
+namespace FastRegistrator.Application.Mappings
 {
     internal class IntegrationEventsToCommandsProfile : Profile
     {

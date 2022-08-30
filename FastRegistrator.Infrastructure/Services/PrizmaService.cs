@@ -1,5 +1,5 @@
-﻿using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
-using FastRegistrator.ApplicationCore.Interfaces;
+﻿using FastRegistrator.Application.DTOs.PrizmaService;
+using FastRegistrator.Application.Interfaces;
 using System.Text.Json;
 
 namespace FastRegistrator.Infrastructure.Services;
@@ -19,7 +19,7 @@ public class PrizmaService : IPrizmaService
         _httpClient = httpClient;
     }
 
-    public async Task<PersonCheckCommonResponse> PersonCheck(PersonCheckRequest personCheckRequest, CancellationToken cancelToken)
+    public async Task<PersonCheckResponse> PersonCheck(PersonCheckRequest personCheckRequest, CancellationToken cancelToken)
     {
         var requestUri = $"{PERSON_CHECK_PATH}?Fio={personCheckRequest.Fio}&PassportNumber={personCheckRequest.PassportNumber}";
         if (!string.IsNullOrEmpty(personCheckRequest.Inn))
@@ -33,13 +33,12 @@ public class PrizmaService : IPrizmaService
         var result = await _httpClient.GetAsync(requestUri, cancelToken);
         var content = await result.Content.ReadAsStringAsync(cancelToken);
 
-        var personCheckCommonResponse = new PersonCheckCommonResponse();
-        
+        var personCheckResponse = new PersonCheckResponse();        
 
         if (result.IsSuccessStatusCode)
         {
             var model = JsonSerializer.Deserialize<PersonCheckResult>(content, _jsonOptions);
-            personCheckCommonResponse.PersonCheckResult = model;
+            personCheckResponse.PersonCheckResult = model;
         }
         else
         {
@@ -47,12 +46,12 @@ public class PrizmaService : IPrizmaService
             {
                 result.EnsureSuccessStatusCode();
             }
-            var model = JsonSerializer.Deserialize<ErrorResponse>(content!, _jsonOptions);
-            personCheckCommonResponse.ErrorResponse = model;
+            var model = JsonSerializer.Deserialize<PersonCheckError>(content!, _jsonOptions);
+            personCheckResponse.ErrorResponse = model;
         }
 
-        personCheckCommonResponse.HttpStatusCode = (int)result.StatusCode;
+        personCheckResponse.HttpStatusCode = (int)result.StatusCode;
 
-        return personCheckCommonResponse;
+        return personCheckResponse;
     }
 }
