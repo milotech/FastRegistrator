@@ -74,11 +74,9 @@ namespace FastRegistrator.IntegrationTests
                 RegistrationId = Guid.NewGuid(),
             };
             var client = _factory.CreateClient();
-            var json = JsonSerializer.Serialize(startRegistrationCommand);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             // Act
-            var response = await client.PostAsync("/registration/start", content);
+            var response = await PostRegistrationAsync(client, startRegistrationCommand);
             var responseContent = await response.Content.ReadAsStringAsync();
 
             // Assert
