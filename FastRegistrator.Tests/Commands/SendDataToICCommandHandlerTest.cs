@@ -2,7 +2,7 @@
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
 using FastRegistrator.ApplicationCore.Domain.ValueObjects;
-using FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs;
+using FastRegistrator.ApplicationCore.DTOs.ICService;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;

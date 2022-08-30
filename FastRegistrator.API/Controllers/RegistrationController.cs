@@ -1,6 +1,6 @@
 using FastRegistrator.ApplicationCore.Commands.CompleteRegistration;
 using FastRegistrator.ApplicationCore.Commands.StartRegistration;
-using FastRegistrator.ApplicationCore.DTOs.RegistrationStatusDTOs;
+using FastRegistrator.ApplicationCore.DTOs.RegistrationStatusQuery;
 using FastRegistrator.ApplicationCore.Queries;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;

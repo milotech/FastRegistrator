@@ -1,5 +1,5 @@
 ﻿using FastRegistrator.ApplicationCore.Domain.Entities;
-using FastRegistrator.ApplicationCore.DTOs.RegistrationStatusDTOs;
+using FastRegistrator.ApplicationCore.DTOs.RegistrationStatusQuery;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;

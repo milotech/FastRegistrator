@@ -1,4 +1,4 @@
-﻿namespace FastRegistrator.ApplicationCore.DTOs.ICRegistrationDTOs
+﻿namespace FastRegistrator.ApplicationCore.DTOs.ICService
 {
     public record class ICRegistrationData
     {

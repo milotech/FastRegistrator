@@ -1,7 +1,7 @@
 ﻿using FastRegistrator.ApplicationCore.Attributes;
 using FastRegistrator.ApplicationCore.Domain.Entities;
 using FastRegistrator.ApplicationCore.Domain.Enums;
-using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
+using FastRegistrator.ApplicationCore.DTOs.PrizmaService;
 using FastRegistrator.ApplicationCore.Exceptions;
 using FastRegistrator.ApplicationCore.Interfaces;
 using MediatR;
@@ -90,7 +90,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
 
         private async Task TryCheckPerson(PersonCheckRequest request, Registration registration, CancellationToken cancellationToken)
         {
-            PersonCheckCommonResponse? prizmaResponse;
+            PersonCheckResponse? prizmaResponse;
             try
             {
                 prizmaResponse = await _prizmaService.PersonCheck(request, cancellationToken);
@@ -172,7 +172,7 @@ namespace FastRegistrator.ApplicationCore.Commands.CheckPerson
             return (_dateTime.Now - thresholdDate).TotalMinutes <= maxDurationInMinutes;
         }
 
-        private Error ConstructErrorEntity(ErrorResponse errorResponse, int httpResponseStatusCode)
+        private Error ConstructErrorEntity(PersonCheckError errorResponse, int httpResponseStatusCode)
         {
             var source = errorResponse.PrizmaErrorCode > 0
                 ? ErrorSource.KonturPrizmaAPI

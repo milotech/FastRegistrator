@@ -1,4 +1,4 @@
-﻿using FastRegistrator.ApplicationCore.DTOs.PrizmaServiceDTOs;
+﻿using FastRegistrator.ApplicationCore.DTOs.PrizmaService;
 using FastRegistrator.ApplicationCore.Interfaces;
 using System.Text.Json;
 
@@ -19,7 +19,7 @@ public class PrizmaService : IPrizmaService
         _httpClient = httpClient;
     }
 
-    public async Task<PersonCheckCommonResponse> PersonCheck(PersonCheckRequest personCheckRequest, CancellationToken cancelToken)
+    public async Task<PersonCheckResponse> PersonCheck(PersonCheckRequest personCheckRequest, CancellationToken cancelToken)
     {
         var requestUri = $"{PERSON_CHECK_PATH}?Fio={personCheckRequest.Fio}&PassportNumber={personCheckRequest.PassportNumber}";
         if (!string.IsNullOrEmpty(personCheckRequest.Inn))
@@ -33,8 +33,7 @@ public class PrizmaService : IPrizmaService
         var result = await _httpClient.GetAsync(requestUri, cancelToken);
         var content = await result.Content.ReadAsStringAsync(cancelToken);
 
-        var personCheckCommonResponse = new PersonCheckCommonResponse();
-        
+        var personCheckCommonResponse = new PersonCheckResponse();        
 
         if (result.IsSuccessStatusCode)
         {
@@ -47,7 +46,7 @@ public class PrizmaService : IPrizmaService
             {
                 result.EnsureSuccessStatusCode();
             }
-            var model = JsonSerializer.Deserialize<ErrorResponse>(content!, _jsonOptions);
+            var model = JsonSerializer.Deserialize<PersonCheckError>(content!, _jsonOptions);
             personCheckCommonResponse.ErrorResponse = model;
         }
 
