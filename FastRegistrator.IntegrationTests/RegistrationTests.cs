@@ -175,7 +175,7 @@ namespace FastRegistrator.IntegrationTests
         {
             var json = JsonSerializer.Serialize(command);
             var content = new StringContent(json, Encoding.UTF8, JsonMediaType);
-            return client.PostAsync("/registration/start", content);
+            return client.PostAsync(FastRegEndpoints.StartRegistration, content);
         }
 
         private async Task<RegistrationStatusResponse> WaitForRegistrationCompletionAsync(HttpClient client, Guid registrationId, int waitTimeout)
