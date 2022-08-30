@@ -33,12 +33,12 @@ public class PrizmaService : IPrizmaService
         var result = await _httpClient.GetAsync(requestUri, cancelToken);
         var content = await result.Content.ReadAsStringAsync(cancelToken);
 
-        var personCheckCommonResponse = new PersonCheckResponse();        
+        var personCheckResponse = new PersonCheckResponse();        
 
         if (result.IsSuccessStatusCode)
         {
             var model = JsonSerializer.Deserialize<PersonCheckResult>(content, _jsonOptions);
-            personCheckCommonResponse.PersonCheckResult = model;
+            personCheckResponse.PersonCheckResult = model;
         }
         else
         {
@@ -47,11 +47,11 @@ public class PrizmaService : IPrizmaService
                 result.EnsureSuccessStatusCode();
             }
             var model = JsonSerializer.Deserialize<PersonCheckError>(content!, _jsonOptions);
-            personCheckCommonResponse.ErrorResponse = model;
+            personCheckResponse.ErrorResponse = model;
         }
 
-        personCheckCommonResponse.HttpStatusCode = (int)result.StatusCode;
+        personCheckResponse.HttpStatusCode = (int)result.StatusCode;
 
-        return personCheckCommonResponse;
+        return personCheckResponse;
     }
 }
