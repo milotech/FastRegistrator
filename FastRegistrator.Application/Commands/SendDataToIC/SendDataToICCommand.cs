@@ -23,19 +23,19 @@ namespace FastRegistrator.Application.Commands.SendDataToIC
             public const int UNAVAILABLE_RESPONSE = 30;
         }
 
-        private readonly IICService _icService;
         private readonly IApplicationDbContext _dbContext;
+        private readonly IICService _icService;
         private readonly ILogger<SendDataToICCommandHandler> _logger;
         private readonly IDateTime _dateTime;
 
         public SendDataToICCommandHandler(
-            IICService icService, 
-            IApplicationDbContext dbContext, 
+            IApplicationDbContext dbContext,
+            IICService icService,
             ILogger<SendDataToICCommandHandler> logger,
             IDateTime dateTime)
         {
-            _icService = icService;
             _dbContext = dbContext;
+            _icService = icService;
             _logger = logger;
             _dateTime = dateTime;
         }
