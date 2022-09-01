@@ -33,7 +33,7 @@ namespace FastRegistrator.Application.Commands.CheckPerson
     public class CheckPersonCommandHandler : AsyncRequestHandler<CheckPersonCommand>
     {
         // Maximum retries duration in minutes depending on the error type
-        private static class RETRIES_DURATIONS
+        public static class RETRIES_DURATIONS
         {
             public const int REQUEST_ERROR = 10;
             public const int UNAVAILABLE_RESPONSE = 30;
