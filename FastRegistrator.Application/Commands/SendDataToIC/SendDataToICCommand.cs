@@ -124,7 +124,7 @@ namespace FastRegistrator.Application.Commands.SendDataToIC
 
             var thresholdDate = serviceStartedDt > statusSetDt ? serviceStartedDt : statusSetDt;
 
-            return (_dateTime.Now - thresholdDate).TotalMinutes <= maxDurationInMinutes;
+            return (_dateTime.UtcNow - thresholdDate).TotalMinutes <= maxDurationInMinutes;
         }
 
         private ICRegistrationData ConstructICRegistrationData(Registration registration)
