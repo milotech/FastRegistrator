@@ -41,18 +41,18 @@ namespace FastRegistrator.UnitTests.Commands
         [Description("Arrange PersonCheck method throws HttpRequestException when retry need for request error" +
                      "Act Handler for SendDataToICCommand is called" +
                      "Assert Handler throws RetryRequiredException")]
-        public async Task Handle_RequestErrorDateTimeNowLessThanRetriesDuration_ThrowsRetryRequiredException()
+        public async Task Handle_RequestError_RetriesDurationDoesntExceedMaximum_ThrowsRetryRequiredException()
         {
             // Arrange
-            const int DELAY_FOR_RETRY = RETRIES_DURATIONS.REQUEST_ERROR - 5;
-            const int DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY = 180;
+            const int CURRENT_RETRIES_DURATION = RETRIES_DURATIONS.REQUEST_ERROR - 1;
+            const int LOCAL_TIME_OFFSET = 180;
 
-            using var context = CreateDbContext();
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
 
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
+            using var context = CreateDbContext();
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
@@ -60,10 +60,10 @@ namespace FastRegistrator.UnitTests.Commands
 
             var dateTime = new Mock<IDateTime>();
             dateTime.Setup(x => x.Now)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION + LOCAL_TIME_OFFSET));
 
             dateTime.Setup(x => x.UtcNow)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_RETRY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION));
 
             var prizmaService = new Mock<IPrizmaService>();
             prizmaService.Setup(x => x.PersonCheck(It.IsAny<PersonCheckRequest>(), It.IsAny<CancellationToken>()))
