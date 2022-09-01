@@ -44,7 +44,7 @@ namespace FastRegistrator.UnitTests.Commands
         public async Task Handle_RequestError_RetriesDurationDoesntExceedMaximum_ThrowsRetryRequiredException()
         {
             // Arrange
-            const int CURRENT_RETRIES_DURATION = RETRIES_DURATIONS.REQUEST_ERROR - 1;
+            const int CURRENT_RETRIES_DURATION = MAX_RETRIES_DURATIONS.REQUEST_ERROR - 1;
             const int LOCAL_TIME_OFFSET = 180;
 
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
@@ -81,18 +81,18 @@ namespace FastRegistrator.UnitTests.Commands
         [Description("Arrange PersonCheck method throws HttpRequestException when retry doesn't need for request error" +
                      "Act Handler for SendDataToICCommand is called" +
                      "Assert Handler set Error status for registration")]
-        public async Task Handle_RequestErrorDateTimeNowGreaterThanRetriesDuration_CompleteRegistrationWithError()
+        public async Task Handle_RequestError_RetriesDurationExceedMaximum_CompleteRegistrationWithError()
         {
             // Arrange
-            const int DELAY_FOR_SKIP_RETRY = RETRIES_DURATIONS.REQUEST_ERROR + 5;
-            const int DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY = 180;
+            const int CURRENT_RETRIES_DURATION = MAX_RETRIES_DURATIONS.REQUEST_ERROR + 1;
+            const int LOCAL_TIME_OFFSET = 180;
 
-            using var context = CreateDbContext();
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
 
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
+            using var context = CreateDbContext();
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
@@ -100,10 +100,10 @@ namespace FastRegistrator.UnitTests.Commands
 
             var dateTime = new Mock<IDateTime>();
             dateTime.Setup(x => x.Now)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION + LOCAL_TIME_OFFSET));
 
             dateTime.Setup(x => x.UtcNow)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_SKIP_RETRY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION));
 
             var prizmaService = new Mock<IPrizmaService>();
             prizmaService.Setup(x => x.PersonCheck(It.IsAny<PersonCheckRequest>(), It.IsAny<CancellationToken>()))
@@ -129,18 +129,18 @@ namespace FastRegistrator.UnitTests.Commands
         [Description("Arrange PersonCheck method throws HttpRequestException when retry need for unavailable response" +
                      "Act Handler for SendDataToICCommand is called" +
                      "Assert Handler throws RetryRequiredException")]
-        public async Task Handle_UnavailableResponseDateTimeNowLessThanRetriesDuration_ThrowsRetryRequiredException()
+        public async Task Handle_UnavailableResponse_RetriesDurationDoesntExceedMaximum_ThrowsRetryRequiredException()
         {
             // Arrange
-            const int DELAY_FOR_RETRY = RETRIES_DURATIONS.UNAVAILABLE_RESPONSE - 5;
-            const int DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY = 180;
+            const int CURRENT_RETRIES_DURATION = MAX_RETRIES_DURATIONS.UNAVAILABLE_RESPONSE - 1;
+            const int LOCAL_TIME_OFFSET = 180;
 
-            using var context = CreateDbContext();
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
 
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
+            using var context = CreateDbContext();
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
@@ -148,10 +148,10 @@ namespace FastRegistrator.UnitTests.Commands
 
             var dateTime = new Mock<IDateTime>();
             dateTime.Setup(x => x.Now)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION + LOCAL_TIME_OFFSET));
 
             dateTime.Setup(x => x.UtcNow)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_RETRY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION));
 
             var prizmaService = new Mock<IPrizmaService>();
             var httpRequestException = new HttpRequestException(null, null, statusCode: HttpStatusCode.ServiceUnavailable);
@@ -170,18 +170,18 @@ namespace FastRegistrator.UnitTests.Commands
         [Description("Arrange PersonCheck method throws HttpRequestException when retry doesn't need for unavailable response" +
                      "Act Handler for SendDataToICCommand is called" +
                      "Assert Handler set Error status for registration")]
-        public async Task Handle_UnavailableResponseDateTimeNowGreaterThanRetriesDuration_CompleteRegistrationWithError()
+        public async Task Handle_UnavailableResponse_RetriesDurationExceedMaximum_CompleteRegistrationWithError()
         {
             // Arrange
-            const int DELAY_FOR_SKIP_RETRY = RETRIES_DURATIONS.UNAVAILABLE_RESPONSE + 5;
-            const int DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY = 180;
+            const int CURRENT_RETRIES_DURATION = MAX_RETRIES_DURATIONS.UNAVAILABLE_RESPONSE + 1;
+            const int LOCAL_TIME_OFFSET = 180;
 
-            using var context = CreateDbContext();
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
 
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
+            using var context = CreateDbContext();
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
@@ -189,10 +189,10 @@ namespace FastRegistrator.UnitTests.Commands
 
             var dateTime = new Mock<IDateTime>();
             dateTime.Setup(x => x.Now)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION + LOCAL_TIME_OFFSET));
 
             dateTime.Setup(x => x.UtcNow)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_SKIP_RETRY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION));
 
             var prizmaService = new Mock<IPrizmaService>();
             var httpRequestException = new HttpRequestException(null, null, statusCode: HttpStatusCode.ServiceUnavailable);
@@ -222,12 +222,12 @@ namespace FastRegistrator.UnitTests.Commands
         public async Task Handle_PersonCheckThrowsRegularException_CompleteRegistrationWithError()
         {
             // Arrange
-            using var context = CreateDbContext();
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
 
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
+            using var context = CreateDbContext();
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
@@ -260,12 +260,12 @@ namespace FastRegistrator.UnitTests.Commands
         public async Task Handle_PersonCheckReturnsSuccessResponse_SetPrizmaCheckResult()
         {
             // Arrange
-            using var context = CreateDbContext();
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
 
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
+            using var context = CreateDbContext();
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
@@ -302,12 +302,12 @@ namespace FastRegistrator.UnitTests.Commands
         public async Task Handle_PersonCheckReturnsFailedResponseWithErrorResponseNull_CompleteRegistrationWithError()
         {
             // Arrange
-            using var context = CreateDbContext();
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
 
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
+            using var context = CreateDbContext();
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
@@ -338,18 +338,18 @@ namespace FastRegistrator.UnitTests.Commands
         }
 
         [Fact]
-        [Description("Arrange PersonCheck method returns failed PersonCheckResponse and retry doesn't need" +
+        [Description("Arrange PersonCheck method returns failed PersonCheckResponse and HttpStatusCode isn't ServiceUnavailable" +
                      "Act Handler for SendDataToICCommand is called" +
                      "Assert Handler set Error status for registration")]
         public async Task Handle_PersonCheckReturnsFailedResponseWithoutRetry_CompleteRegistrationWithError()
         {
             // Arrange
-            using var context = CreateDbContext();
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
 
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
+            using var context = CreateDbContext();
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
@@ -380,21 +380,21 @@ namespace FastRegistrator.UnitTests.Commands
         }
 
         [Fact]
-        [Description("Arrange PersonCheck method returns failed PersonCheckResponse and retry is needed" +
+        [Description("Arrange PersonCheck method returns failed PersonCheckResponse and HttpStatusCode is ServiceUnavailable" +
                      "Act Handler for SendDataToICCommand is called" +
                      "Assert Handler throws RetryRequiredException")]
         public async Task Handle_PersonCheckReturnsFailedResponseWithRetry_ThrowsRetryRequiredException()
         {
             // Arrange
-            const int DELAY_FOR_RETRY = RETRIES_DURATIONS.UNAVAILABLE_RESPONSE - 5;
-            const int DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY = 180;
+            const int CURRENT_RETRIES_DURATION = MAX_RETRIES_DURATIONS.UNAVAILABLE_RESPONSE - 1;
+            const int LOCAL_TIME_OFFSET = 180;
 
-            using var context = CreateDbContext();
             var logger = new Mock<ILogger<CheckPersonCommandHandler>>();
 
             var personData = ConstructPersonData();
             var registration = new Registration(GUID, PHONE_NUMBER, personData);
 
+            using var context = CreateDbContext();
             var entityEntry = context.Registrations.Add(registration);
             await context.SaveChangesAsync();
 
@@ -402,10 +402,10 @@ namespace FastRegistrator.UnitTests.Commands
 
             var dateTime = new Mock<IDateTime>();
             dateTime.Setup(x => x.Now)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_PROHIBIT_USING_NOW_PROPERTY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION + LOCAL_TIME_OFFSET));
 
             dateTime.Setup(x => x.UtcNow)
-                    .Returns(statusDt.AddMinutes(DELAY_FOR_RETRY));
+                    .Returns(statusDt.AddMinutes(CURRENT_RETRIES_DURATION));
 
             var prizmaService = new Mock<IPrizmaService>();
             var prizmaCheckResponse = new PersonCheckResponse
