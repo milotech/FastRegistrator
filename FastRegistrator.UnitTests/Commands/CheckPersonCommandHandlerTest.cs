@@ -20,7 +20,7 @@ namespace FastRegistrator.UnitTests.Commands
     {
         [Fact]
         [Description("Arrange Registration data doesn't exist in database" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler throws a NotFoundException")]
         public async Task Handle_RegistrationDataDoesntExist_ThrowsNotFoundException()
         {
@@ -39,7 +39,7 @@ namespace FastRegistrator.UnitTests.Commands
 
         [Fact]
         [Description("Arrange PersonCheck method throws HttpRequestException when retry need for request error" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler throws RetryRequiredException")]
         public async Task Handle_RequestError_RetriesDurationDoesntExceedMaximum_ThrowsRetryRequiredException()
         {
@@ -79,7 +79,7 @@ namespace FastRegistrator.UnitTests.Commands
 
         [Fact]
         [Description("Arrange PersonCheck method throws HttpRequestException when retry doesn't need for request error" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler set Error status for registration")]
         public async Task Handle_RequestError_RetriesDurationExceedsMaximum_CompleteRegistrationWithError()
         {
@@ -127,7 +127,7 @@ namespace FastRegistrator.UnitTests.Commands
 
         [Fact]
         [Description("Arrange PersonCheck method throws HttpRequestException when retry need for unavailable response" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler throws RetryRequiredException")]
         public async Task Handle_UnavailableResponse_RetriesDurationDoesntExceedMaximum_ThrowsRetryRequiredException()
         {
@@ -168,7 +168,7 @@ namespace FastRegistrator.UnitTests.Commands
 
         [Fact]
         [Description("Arrange PersonCheck method throws HttpRequestException when retry doesn't need for unavailable response" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler set Error status for registration")]
         public async Task Handle_UnavailableResponse_RetriesDurationExceedsMaximum_CompleteRegistrationWithError()
         {
@@ -217,7 +217,7 @@ namespace FastRegistrator.UnitTests.Commands
 
         [Fact]
         [Description("Arrange PersonCheck method throws regular Exception" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler set Error status for registration")]
         public async Task Handle_PersonCheckThrowsRegularException_CompleteRegistrationWithError()
         {
@@ -255,7 +255,7 @@ namespace FastRegistrator.UnitTests.Commands
 
         [Fact]
         [Description("Arrange PersonCheck method returns success PersonCheckResponse" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler sets PrizmaCheckResult")]
         public async Task Handle_PersonCheckReturnsSuccessResponse_SetPrizmaCheckResult()
         {
@@ -297,7 +297,7 @@ namespace FastRegistrator.UnitTests.Commands
 
         [Fact]
         [Description("Arrange PersonCheck method returns failed PersonCheckResponse with errorResponse is null" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler set Error status for registration")]
         public async Task Handle_PersonCheckReturnsFailedResponseWithErrorResponseNull_CompleteRegistrationWithError()
         {
@@ -339,7 +339,7 @@ namespace FastRegistrator.UnitTests.Commands
 
         [Fact]
         [Description("Arrange PersonCheck method returns failed PersonCheckResponse and HttpStatusCode isn't ServiceUnavailable" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler set Error status for registration")]
         public async Task Handle_PersonCheckReturnsFailedResponseWithoutRetry_CompleteRegistrationWithError()
         {
@@ -381,7 +381,7 @@ namespace FastRegistrator.UnitTests.Commands
 
         [Fact]
         [Description("Arrange PersonCheck method returns failed PersonCheckResponse and HttpStatusCode is ServiceUnavailable" +
-                     "Act Handler for SendDataToICCommand is called" +
+                     "Act Handler for CheckPersonCommand is called" +
                      "Assert Handler throws RetryRequiredException")]
         public async Task Handle_PersonCheckReturnsFailedResponseWithRetry_ThrowsRetryRequiredException()
         {
