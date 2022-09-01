@@ -169,7 +169,7 @@ namespace FastRegistrator.Application.Commands.CheckPerson
 
             var thresholdDate = serviceStartedDt > statusSetDt ? serviceStartedDt : statusSetDt;
 
-            return (_dateTime.Now - thresholdDate).TotalMinutes <= maxDurationInMinutes;
+            return (_dateTime.UtcNow - thresholdDate).TotalMinutes <= maxDurationInMinutes;
         }
 
         private Error ConstructErrorEntity(PersonCheckError errorResponse, int httpResponseStatusCode)
