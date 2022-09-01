@@ -81,7 +81,7 @@ namespace FastRegistrator.UnitTests.Commands
         [Description("Arrange PersonCheck method throws HttpRequestException when retry doesn't need for request error" +
                      "Act Handler for SendDataToICCommand is called" +
                      "Assert Handler set Error status for registration")]
-        public async Task Handle_RequestError_RetriesDurationExceedMaximum_CompleteRegistrationWithError()
+        public async Task Handle_RequestError_RetriesDurationExceedsMaximum_CompleteRegistrationWithError()
         {
             // Arrange
             const int CURRENT_RETRIES_DURATION = MAX_RETRIES_DURATIONS.REQUEST_ERROR + 1;
@@ -170,7 +170,7 @@ namespace FastRegistrator.UnitTests.Commands
         [Description("Arrange PersonCheck method throws HttpRequestException when retry doesn't need for unavailable response" +
                      "Act Handler for SendDataToICCommand is called" +
                      "Assert Handler set Error status for registration")]
-        public async Task Handle_UnavailableResponse_RetriesDurationExceedMaximum_CompleteRegistrationWithError()
+        public async Task Handle_UnavailableResponse_RetriesDurationExceedsMaximum_CompleteRegistrationWithError()
         {
             // Arrange
             const int CURRENT_RETRIES_DURATION = MAX_RETRIES_DURATIONS.UNAVAILABLE_RESPONSE + 1;
