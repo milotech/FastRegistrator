@@ -33,7 +33,7 @@ namespace FastRegistrator.Application.Commands.CheckPerson
     public class CheckPersonCommandHandler : AsyncRequestHandler<CheckPersonCommand>
     {
         // Maximum retries duration in minutes depending on the error type
-        private static class RETRIES_DURATIONS
+        public static class MAX_RETRIES_DURATIONS
         {
             public const int REQUEST_ERROR = 10;
             public const int UNAVAILABLE_RESPONSE = 30;
@@ -144,7 +144,7 @@ namespace FastRegistrator.Application.Commands.CheckPerson
         private bool IsRetryNeeded(int httpStatusCode, Registration registration)
         {
             if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable)
-                return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
+                return CheckRetriesDuration(MAX_RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
 
             return false;
         }
@@ -154,9 +154,9 @@ namespace FastRegistrator.Application.Commands.CheckPerson
             if (exception is HttpRequestException requestException)
             {
                 if (requestException.StatusCode == null)
-                    return CheckRetriesDuration(RETRIES_DURATIONS.REQUEST_ERROR, registration);
+                    return CheckRetriesDuration(MAX_RETRIES_DURATIONS.REQUEST_ERROR, registration);
                 if (requestException.StatusCode == HttpStatusCode.ServiceUnavailable)
-                    return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
+                    return CheckRetriesDuration(MAX_RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
             }
 
             return false;
@@ -169,7 +169,7 @@ namespace FastRegistrator.Application.Commands.CheckPerson
 
             var thresholdDate = serviceStartedDt > statusSetDt ? serviceStartedDt : statusSetDt;
 
-            return (_dateTime.Now - thresholdDate).TotalMinutes <= maxDurationInMinutes;
+            return (_dateTime.UtcNow - thresholdDate).TotalMinutes <= maxDurationInMinutes;
         }
 
         private Error ConstructErrorEntity(PersonCheckError errorResponse, int httpResponseStatusCode)

@@ -17,25 +17,25 @@ namespace FastRegistrator.Application.Commands.SendDataToIC
     public class SendDataToICCommandHandler : AsyncRequestHandler<SendDataToICCommand>
     {
         // Maximum retries duration in minutes depending on the error type
-        private static class RETRIES_DURATIONS
+        public static class MAX_RETRIES_DURATIONS
         {
             public const int REQUEST_ERROR = 10;
             public const int UNAVAILABLE_RESPONSE = 30;
         }
 
-        private readonly IICService _icService;
         private readonly IApplicationDbContext _dbContext;
+        private readonly IICService _icService;
         private readonly ILogger<SendDataToICCommandHandler> _logger;
         private readonly IDateTime _dateTime;
 
         public SendDataToICCommandHandler(
-            IICService icService, 
-            IApplicationDbContext dbContext, 
+            IApplicationDbContext dbContext,
+            IICService icService,
             ILogger<SendDataToICCommandHandler> logger,
             IDateTime dateTime)
         {
-            _icService = icService;
             _dbContext = dbContext;
+            _icService = icService;
             _logger = logger;
             _dateTime = dateTime;
         }
@@ -99,7 +99,7 @@ namespace FastRegistrator.Application.Commands.SendDataToIC
         private bool IsRetryNeeded(int httpStatusCode, Registration registration)
         {
             if (httpStatusCode == (int)HttpStatusCode.ServiceUnavailable)
-                return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
+                return CheckRetriesDuration(MAX_RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
 
             return false;
         }
@@ -109,9 +109,9 @@ namespace FastRegistrator.Application.Commands.SendDataToIC
             if (exception is HttpRequestException requestException)
             {
                 if (requestException.StatusCode == null)
-                    return CheckRetriesDuration(RETRIES_DURATIONS.REQUEST_ERROR, registration);
+                    return CheckRetriesDuration(MAX_RETRIES_DURATIONS.REQUEST_ERROR, registration);
                 if (requestException.StatusCode == HttpStatusCode.ServiceUnavailable)
-                    return CheckRetriesDuration(RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
+                    return CheckRetriesDuration(MAX_RETRIES_DURATIONS.UNAVAILABLE_RESPONSE, registration);
             }
 
             return false;
@@ -124,7 +124,7 @@ namespace FastRegistrator.Application.Commands.SendDataToIC
 
             var thresholdDate = serviceStartedDt > statusSetDt ? serviceStartedDt : statusSetDt;
 
-            return (_dateTime.Now - thresholdDate).TotalMinutes <= maxDurationInMinutes;
+            return (_dateTime.UtcNow - thresholdDate).TotalMinutes <= maxDurationInMinutes;
         }
 
         private ICRegistrationData ConstructICRegistrationData(Registration registration)

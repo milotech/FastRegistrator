@@ -46,7 +46,7 @@ namespace FastRegistrator.Application.Commands.CompleteRegistration
             {
                 throw new NotFoundException(nameof(Registration), command.PhoneNumber);
             }
-            else if(registrations.Count == 1)
+            else if (registrations.Count == 1)
             {
                 registration = registrations[0];
             }
