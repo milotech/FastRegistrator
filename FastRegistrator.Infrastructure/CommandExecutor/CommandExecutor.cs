@@ -104,7 +104,7 @@ namespace FastRegistrator.Infrastructure.CommandExecutor
                 var queue = (_commandTypes[type].Queue as CommandsQueue<TResponse>)!;
                 _ = Task.Run(async () =>
                 {
-                    await Task.Delay(RetryDelay, _cancel);
+                    await Task.Delay(RetryDelay, queueItem.Cancel);
                     queue.Enqueue(queueItem);
                 });
             }
