@@ -7,7 +7,7 @@ namespace FastRegistrator.Infrastructure.Persistence
 {
     public static class MediatorExtensions
     {
-        public static async Task<IEnumerable<INotification>> DispatchDomainEvents(this IMediator mediator, DbContext context)
+        public static async Task<IEnumerable<INotification>> DispatchDomainEvents(this IMediator mediator, DbContext context, CancellationToken cancel)
         {
             var entities = context.ChangeTracker
                 .Entries<BaseEntity>()
@@ -15,14 +15,14 @@ namespace FastRegistrator.Infrastructure.Persistence
                 .Select(e => e.Entity);
 
             var domainEvents = entities
-                .SelectMany(e => e.DomainEvents)
+                .SelectMany(e => e.DomainEvents!)
                 .ToList();
 
             entities.ToList().ForEach(e => e.ClearDomainEvents());
 
             foreach (var domainEvent in domainEvents)
             {
-                await mediator.Publish(domainEvent);
+                await mediator.Publish(domainEvent, cancel);
             }
 
             return domainEvents;

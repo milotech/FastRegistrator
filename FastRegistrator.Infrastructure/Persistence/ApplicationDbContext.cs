@@ -30,7 +30,7 @@ namespace FastRegistrator.Infrastructure.Persistence
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            var domainEvents = await _mediator.DispatchDomainEvents(this);
+            var domainEvents = await _mediator.DispatchDomainEvents(this, cancellationToken);
 
             var result = await base.SaveChangesAsync(cancellationToken);
 
