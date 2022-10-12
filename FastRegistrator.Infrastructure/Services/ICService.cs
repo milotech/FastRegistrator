@@ -14,7 +14,7 @@ namespace FastRegistrator.Infrastructure.Services
         };
 
         private readonly HttpClient _httpClient;
-        private const string IC_PATH = "/integrationservice/fastregistration/updateuserdata";
+        private const string IC_PATH = "fastregistration/updateuserdata";
 
         public ICService(HttpClient httpClient)
         {
