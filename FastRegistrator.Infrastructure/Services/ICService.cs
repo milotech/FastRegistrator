@@ -1,6 +1,7 @@
-﻿using FastRegistrator.Application.DTOs.ICService;
+using FastRegistrator.Application.DTOs.ICService;
 using FastRegistrator.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace FastRegistrator.Infrastructure.Services
@@ -14,16 +15,22 @@ namespace FastRegistrator.Infrastructure.Services
         };
 
         private readonly HttpClient _httpClient;
-        private const string IC_PATH = "fastregistration/updateuserdata";
+        private readonly ILogger<ICService> _logger;
+        private const string IC_PATH = "https://test-vtbcb-internal/api/Vtbcb-AuthServices-Test/api/fastregistration/updateuserdata";
 
-        public ICService(HttpClient httpClient)
+        public ICService(HttpClient httpClient, ILogger<ICService> logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
         public async Task<ICRegistrationResponse> SendData(ICRegistrationData registrationData, CancellationToken cancellationToken)
         {
             var stringContent = new StringContent(registrationData.Data, System.Text.Encoding.UTF8, "application/json");
+
+            _logger.LogInformation(stringContent.ToString());
+            _logger.LogInformation("-----------");
+            _logger.LogInformation(registrationData.Data);
 
             var result = await _httpClient.PostAsync(IC_PATH, stringContent, cancellationToken);
             var content = await result.Content.ReadAsStringAsync(cancellationToken);
