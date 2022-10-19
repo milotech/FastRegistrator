@@ -23,8 +23,7 @@ namespace FastRegistrator.Infrastructure.Services
 
         public async Task<ICRegistrationResponse> SendData(ICRegistrationData registrationData, CancellationToken cancellationToken)
         {
-            var stringRegistrationData = JsonSerializer.Serialize(registrationData, _jsonOptions);
-            var stringContent = new StringContent(stringRegistrationData, System.Text.Encoding.UTF8, "application/json");
+            var stringContent = new StringContent(registrationData.Data, System.Text.Encoding.UTF8, "application/json");
 
             var result = await _httpClient.PostAsync(IC_PATH, stringContent, cancellationToken);
             var content = await result.Content.ReadAsStringAsync(cancellationToken);

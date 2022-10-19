@@ -51,6 +51,10 @@ namespace FastRegistrator.Application.Startup
                             var checkPassedEvent = new PrizmaCheckPassedEvent(registration);
                             await _mediator.Publish(new CommittedEvent<PrizmaCheckPassedEvent>(checkPassedEvent), cancel);
                             break;
+                        case RegistrationStatus.PersonDataSentToIC:
+                            var registrationCompletedEvent = new RegistrationCompletedEvent(registration);
+                            await _mediator.Publish(new CommittedEvent<RegistrationCompletedEvent>(registrationCompletedEvent), cancel);
+                            break;
                         default:
                             _logger.LogError($"Inconsistent db state for registration '{registration.Id}'");
                             break;
